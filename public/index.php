@@ -103,6 +103,18 @@ switch ($action) {
         $controller->confirm_booking();
         break;
 
+    case 'booking_success':
+        $controller->booking_success();
+        break;
+
+    case 'my_bookings':
+        $controller->my_bookings();
+        break;
+
+    case 'cancel_booking':
+        $controller->cancel_booking();
+        break;
+
     case 'index':
     default:
         $controller->index();

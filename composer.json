@@ -1,15 +1,15 @@
 {
-    "name": "nhom2/quanly_datsan_thethao",
-    "description": "He thong dat san the thao",
-    "autoload": {
-        "psr-4": {
-            "Nhom2\\QuanlyDatsanThethao\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Thanh Long"
-        }
-    ],
-    "require": {}
+  "name": "nhom2/quanly_datsan_thethao",
+  "description": "He thong dat san the thao",
+  "autoload": {
+    "psr-4": {
+      "Nhom2\\QuanlyDatsanThethao\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Thanh Long"
+    }
+  ],
+  "require": {}
 }

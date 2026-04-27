@@ -172,6 +172,9 @@ function isActive($action, $current_action)
             </div>
             <div class="dropdown-content">
                 <a href="index.php?action=change_password"><i class="fas fa-key"></i> Đổi mật khẩu</a>
+                 <a href="index.php?action=my_bookings">
+        <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
+    </a>
                 <div style="border-top: 1px solid #eee;"></div>
                 <a href="index.php?action=logout" style="color: #dc3545;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
             </div>

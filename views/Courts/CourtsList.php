@@ -260,7 +260,6 @@ body{
 
                             </div>
 
-                            <!-- FIXED BOOKING -->
                             <a href="index.php?action=booking&id=<?= $court['id'] ?>"
                                class="btn-book">
                                 Đặt sân
