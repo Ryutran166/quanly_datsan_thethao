@@ -14,8 +14,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 }
 
 body{
-    background:var(--light);
-    font-family:'Open Sans',sans-serif;
+    background:#1a1a1a !important;  
 }
 
 /* HEADER */

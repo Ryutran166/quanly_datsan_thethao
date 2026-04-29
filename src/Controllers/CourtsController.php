@@ -22,6 +22,14 @@ class CourtsController
         $this->userModel = new UserModel();
     }
 
+    public function home()
+    {
+        require_once PROJECT_ROOT . '/views/layout/header.php';
+        require_once PROJECT_ROOT . '/views/Home/Home.php';
+        require_once PROJECT_ROOT . '/views/layout/footer.php';
+    }
+
+
     /* =============================
        DANH SÁCH SÂN
     ============================== */

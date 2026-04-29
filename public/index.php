@@ -7,14 +7,49 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Nhom2\QuanlyDatsanThethao\Controllers\CourtsController;
 use Nhom2\QuanlyDatsanThethao\Controllers\UserController;
 
-$action = $_GET['action'] ?? 'index';
+$action = $_GET['action'] ?? 'home';
 
-$public_actions = ['login', 'register', 'do_login', 'do_register'];
+$protected_actions = [
+    'create',
+    'add',
+    'do_add_user',
+    'edit',
+    'update',
+    'delete',
+    'confirm_booking',
+    'my_bookings',
+    'cancel_booking',
+    'user',
+    'add_user',
+    'edit_user',
+    'update_user',
+    'delete_user'
+];
 
-if (!in_array($action, $public_actions) && !isset($_SESSION['user_id'])) {
+if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
     header("Location:index.php?action=login");
     exit();
 }
+$admin_actions = [
+    'user',
+    'add_user',
+    'edit_user',
+    'update_user',
+    'delete_user',
+    'create',
+    'add',
+    'do_add_user',
+    'edit',
+    'update',
+    'delete'
+];
+
+if (in_array($action, $admin_actions)) {
+    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+        header("Location:index.php");
+        exit();
+    }
+} 
 
 /* ===============================
    CHỌN CONTROLLER
@@ -42,12 +77,9 @@ switch ($action) {
         break;
 }
 
-/* ===============================
-   THỰC THI ACTION
-================================= */
+
 switch ($action) {
 
-    /* ---------- USER ---------- */
     case 'login':
         $controller->showLoginForm();
         break;
@@ -72,8 +104,6 @@ switch ($action) {
         $controller->index();
         break;
 
-
-    /* ---------- COURTS ---------- */
 
     case 'create':
         $controller->create();
@@ -115,8 +145,17 @@ switch ($action) {
         $controller->cancel_booking();
         break;
 
+
+
+    case 'home':
+        $controller->home();
+        break;
+
     case 'index':
+        $controller->index(); 
+        break;
+
     default:
-        $controller->index();
+        $controller->home();
         break;
 }

@@ -45,7 +45,8 @@ class UserController
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                header('Location: index.php');
+                $_SESSION['user_role'] = $user['role'];
+                header('Location: index.php?action=home');
                 exit();
             } else {
                 $error = "Email hoặc mật khẩu không chính xác.";
@@ -128,7 +129,7 @@ class UserController
             );
         }
 
-        header('Location: index.php?action=login');
+        header('Location: index.php?action=home');
         exit();
     }
 
