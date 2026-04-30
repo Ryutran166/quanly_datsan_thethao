@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 28, 2026 at 10:58 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th4 30, 2026 lúc 07:51 AM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `datsan_thethao_db`
+-- Cơ sở dữ liệu: `datsan_thethao_db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bookings`
+-- Cấu trúc bảng cho bảng `bookings`
 --
 
 CREATE TABLE `bookings` (
@@ -32,7 +32,6 @@ CREATE TABLE `bookings` (
   `court_id` int(11) NOT NULL,
   `customer_name` varchar(255) NOT NULL,
   `customer_phone` varchar(20) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
   `booking_date` date NOT NULL,
   `total_amount` decimal(10,2) DEFAULT NULL,
   `status` enum('Pending','Confirmed','Cancelled','Locked') DEFAULT 'Pending',
@@ -40,16 +39,21 @@ CREATE TABLE `bookings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `bookings`
+-- Đang đổ dữ liệu cho bảng `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `court_id`, `customer_name`, `customer_phone`, `user_id`, `booking_date`, `total_amount`, `status`, `created_at`) VALUES
-(7, 8, 'Nguyễn Trung Kiên', '0357124853', NULL, '2026-04-27', NULL, 'Confirmed', '2026-04-27 10:05:51');
+INSERT INTO `bookings` (`id`, `court_id`, `customer_name`, `customer_phone`, `booking_date`, `total_amount`, `status`, `created_at`) VALUES
+(1, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 08:01:25'),
+(2, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 08:36:31'),
+(3, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:14'),
+(4, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:18'),
+(5, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:22'),
+(6, 8, 'Koori', '0935461720', '2026-04-29', NULL, 'Confirmed', '2026-04-28 09:18:32');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `booking_details`
+-- Cấu trúc bảng cho bảng `booking_details`
 --
 
 CREATE TABLE `booking_details` (
@@ -59,16 +63,21 @@ CREATE TABLE `booking_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `booking_details`
+-- Đang đổ dữ liệu cho bảng `booking_details`
 --
 
 INSERT INTO `booking_details` (`id`, `booking_id`, `slot_id`) VALUES
-(7, 7, 3);
+(1, 1, 4),
+(2, 2, 5),
+(3, 3, 2),
+(4, 4, 3),
+(5, 5, 1),
+(6, 6, 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `courts`
+-- Cấu trúc bảng cho bảng `courts`
 --
 
 CREATE TABLE `courts` (
@@ -83,7 +92,7 @@ CREATE TABLE `courts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Danh sach san cau long';
 
 --
--- Dumping data for table `courts`
+-- Đang đổ dữ liệu cho bảng `courts`
 --
 
 INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image_url`, `created_at`, `updated_at`) VALUES
@@ -95,7 +104,7 @@ INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image_url`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `time_slots`
+-- Cấu trúc bảng cho bảng `time_slots`
 --
 
 CREATE TABLE `time_slots` (
@@ -106,7 +115,7 @@ CREATE TABLE `time_slots` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `time_slots`
+-- Đang đổ dữ liệu cho bảng `time_slots`
 --
 
 INSERT INTO `time_slots` (`id`, `start_time`, `end_time`, `price_modifier`) VALUES
@@ -124,7 +133,7 @@ INSERT INTO `time_slots` (`id`, `start_time`, `end_time`, `price_modifier`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
 CREATE TABLE `users` (
@@ -133,33 +142,36 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `phone` varchar(15) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `role` varchar(20) DEFAULT 'customer'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `created_at`) VALUES
-(3, 'Trần Thanh Long', 'longtran@gmail.com', '$2y$10$wiwQktlRtI1FWPSy9dmkkuypChKchKngX60sseb3.8/EMSfrDBKEC', '0939448811', '2026-04-26 16:41:17'),
-(4, 'Đỗ Thành Đô', 'do@gmail.com', '$2y$10$GwS2UuWN2nVuciJTK6TFCuOe.Hg9Iw3dR86RQP0edmolN.tDLcfrK', '098419224', '2026-04-26 16:59:54'),
-(5, 'Huỳnh Thành Hiệp ', 'hiep@gmail.com', '$2y$10$xaRQrIm47ZG4/ef9QETqAucJNUffd2M6o5t5ttYzQQNVHUgYYrQq6', '0994244344', '2026-04-26 17:14:05'),
-(7, 'Nguyễn Trung Kiên', 'trungkien@gmail.com', '$2y$10$JsVARjR8Tmt1OjtXuwX8WOhpe28dnwa7buYsGhMzgXs.Q5HqTs9XO', '0357124853', '2026-04-27 08:38:37');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `created_at`, `role`) VALUES
+(3, 'Trần Thanh Long', 'longtran@gmail.com', '$2y$10$wiwQktlRtI1FWPSy9dmkkuypChKchKngX60sseb3.8/EMSfrDBKEC', '0939448811', '2026-04-26 16:41:17', 'customer'),
+(4, 'Đỗ Thành Đô', 'do@gmail.com', '$2y$10$GwS2UuWN2nVuciJTK6TFCuOe.Hg9Iw3dR86RQP0edmolN.tDLcfrK', '098419224', '2026-04-26 16:59:54', 'customer'),
+(5, 'Huỳnh Thành Hiệp ', 'hiep@gmail.com', '$2y$10$xaRQrIm47ZG4/ef9QETqAucJNUffd2M6o5t5ttYzQQNVHUgYYrQq6', '0994244344', '2026-04-26 17:14:05', 'customer'),
+(6, 'Nguyễn Trung Kiên', 'kien@gmail.com', '$2y$10$mDAwMUXQmoZqt1jPyLXY9uCvSGENxnl6KvQnVp/VUTzY7c3E2V8tq', '098422144', '2026-04-27 05:46:23', 'customer'),
+(7, 'Koori', 'Koori@gmail.com', '$2y$10$c7/4jbTbakkc9n6QK4Lgyuv0PjwNTFajvwPT/yzkPYrSGgesklhAS', '0935461720', '2026-04-28 07:56:44', 'customer'),
+(8, 'Kooria', 'kazel@gmail.com', '$2y$10$lETAprMEKzI5Rhd/1oGSXev9jqed/6VWi6.mMXjUn4ZE60hxHCh0C', '0935461720', '2026-04-29 15:58:58', 'admin'),
+(9, 'Kooriaa', 'aquari@gmail.com', '$2y$10$6xhk.QiZjYIFXcUoYNIcxuU5SFxSwBZpPmtUFJ.T4iLR57cdXqfom', '0935461720', '2026-04-29 18:28:21', 'customer');
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `bookings`
+-- Chỉ mục cho bảng `bookings`
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `court_id` (`court_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `court_id` (`court_id`);
 
 --
--- Indexes for table `booking_details`
+-- Chỉ mục cho bảng `booking_details`
 --
 ALTER TABLE `booking_details`
   ADD PRIMARY KEY (`id`),
@@ -167,71 +179,70 @@ ALTER TABLE `booking_details`
   ADD KEY `slot_id` (`slot_id`);
 
 --
--- Indexes for table `courts`
+-- Chỉ mục cho bảng `courts`
 --
 ALTER TABLE `courts`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_status` (`status`);
 
 --
--- Indexes for table `time_slots`
+-- Chỉ mục cho bảng `time_slots`
 --
 ALTER TABLE `time_slots`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `bookings`
+-- AUTO_INCREMENT cho bảng `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `booking_details`
+-- AUTO_INCREMENT cho bảng `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `courts`
+-- AUTO_INCREMENT cho bảng `courts`
 --
 ALTER TABLE `courts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `time_slots`
+-- AUTO_INCREMENT cho bảng `time_slots`
 --
 ALTER TABLE `time_slots`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `bookings`
+-- Các ràng buộc cho bảng `bookings`
 --
 ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`court_id`) REFERENCES `courts` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`court_id`) REFERENCES `courts` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `booking_details`
+-- Các ràng buộc cho bảng `booking_details`
 --
 ALTER TABLE `booking_details`
   ADD CONSTRAINT `booking_details_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
