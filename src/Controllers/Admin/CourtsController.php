@@ -1,7 +1,7 @@
 <?php
-// src/Controllers/CourtsController.php
+// src/Controllers/Admin/CourtsController.php
 
-namespace Nhom2\QuanlyDatsanThethao\Controllers;
+namespace Nhom2\QuanlyDatsanThethao\Controllers\Admin;
 
 use Nhom2\QuanlyDatsanThethao\Models\CourtsModel;
 use Nhom2\QuanlyDatsanThethao\Models\BookingModel;
@@ -33,13 +33,57 @@ class CourtsController
     /* =============================
        DANH SÁCH SÂN
     ============================== */
-    public function index()
+   public function index()
     {
         $keyword = $_GET['keyword'] ?? null;
 
-        $courts = $this->courtsModel->getAllCourts($keyword);
+        // Tạm thời comment dòng gọi Model này lại để dùng data mẫu
+        // $courts = $this->courtsModel->getAllCourts($keyword);
 
-        require_once PROJECT_ROOT . '/views/Courts/CourtsList.php';
+        // Dữ liệu mẫu (Mock Data)
+        $courts = [
+            [
+                'id' => 1,
+                'name' => 'Sân Cầu Lông Sky Light',
+                'type' => 'Thảm Victor',
+                'price' => 80000,
+                'status' => 'available',
+                'image' => 'court1.jpg'
+            ],
+            [
+                'id' => 2,
+                'name' => 'Sân Tennis Riverside',
+                'type' => 'Sân cứng',
+                'price' => 150000,
+                'status' => 'available',
+                'image' => 'court2.jpg'
+            ],
+            [
+                'id' => 3,
+                'name' => 'Sân Bóng Đá Mini A1',
+                'type' => 'Cỏ nhân tạo',
+                'price' => 250000,
+                'status' => 'maintenance',
+                'image' => 'court3.jpg'
+            ],
+            [
+                'id' => 4,
+                'name' => 'Sân Cầu Lông Thành Công',
+                'type' => 'Thảm Yonex',
+                'price' => 90000,
+                'status' => 'available',
+                'image' => null // Test trường hợp không có ảnh
+            ]
+        ];
+
+        // Giả lập tính năng tìm kiếm theo từ khóa nếu muốn test search
+        if ($keyword) {
+            $courts = array_filter($courts, function($court) use ($keyword) {
+                return strpos(strtolower($court['name']), strtolower($keyword)) !== false;
+            });
+        }
+
+        require_once PROJECT_ROOT . '/views/admin/courts/CourtsList.php';
     }
 
     /* =============================

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nhom2\QuanlyDatsanThethao\Controllers;
+namespace Nhom2\QuanlyDatsanThethao\Controllers\Admin;
 
 use Nhom2\QuanlyDatsanThethao\Models\UserModel;
 

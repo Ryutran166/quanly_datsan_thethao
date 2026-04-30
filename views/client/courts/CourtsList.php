@@ -224,8 +224,19 @@ body{
 
                 <div class="court-card">
 
-                    <img class="court-image"
-                         src="<?= !empty($court['image_url']) ? $court['image_url'] : 'https://images.unsplash.com/photo-1599474924187-334a4ae593c1?q=80&w=600' ?>">
+                    <!-- <img class="court-image"
+                         src="<?= !empty($court['image_url']) ? $court['image_url'] : 'https://www.sport9.vn/images/uploaded/2025/tong-hop-danh-sach-san-bong-da-ha-noi.jpg' ?>"> -->
+
+                    <?php
+                        $images = [
+                            "https://www.sport9.vn/images/uploaded/2025/tong-hop-danh-sach-san-bong-da-ha-noi.jpg",
+                            "https://sonsanepoxy.vn/wp-content/uploads/2023/07/thi-cong-san-bong-da-1.jpeg",
+                            "https://vending-cdn.kootoro.com/torov-cms/upload/image/1735182232525-S%C3%A2n%20trung%20t%C3%A2m%20b%C3%B3ng%20%C4%91%C3%A1%20Lam%20S%C6%A1n.jpg"
+                        ];
+                        $image = $images[array_rand($images)];
+                    ?>
+
+                    <img class="court-image" src="<?= $image ?>">
 
                     <div class="card-body">
 

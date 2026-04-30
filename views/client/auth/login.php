@@ -190,7 +190,7 @@
             <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>
 
-        <form action="index.php?action=do_login" method="POST">
+        <form action="/do_login" method="POST">
             <div class="form-group">
                 <label>Email Address</label>
                 <input type="email" name="email" placeholder="name@example.com" required>
@@ -212,8 +212,8 @@
 
         <div class="divider"><span>Don't have an account?</span></div>
 
-        <a href="index.php?action=register" class="btn-secondary">Sign up</a>
-        <a href="index.php?action=home" class="back-home">← Quay lại trang chủ</a>
+        <a href="/register" class="btn-secondary">Sign up</a>
+        <a href="/" class="back-home">← Quay lại trang chủ</a>
     </div>
 
     <div class="footer-text" style="margin-top: 20px; font-size: 11px; color: #888;">

@@ -125,10 +125,10 @@
             </div>
 
             <button type="submit" id="btn-confirm" disabled
-        class="btn btn-success"
-        style="width:100%; margin-top:1rem; padding:12px 0; font-weight:bold;  font-size:1.05rem; border-radius:10px; background: blue; color: white; outline:none;border:none;">
-    Xác nhận đặt sân
-</button>
+                    class="btn btn-success"
+                    style="width:100%; margin-top:1rem; padding:12px 0; font-weight:bold;  font-size:1.05rem; border-radius:10px; background: blue; color: white; outline:none;border:none;">
+                Xác nhận đặt sân
+            </button>
 
             <div style="margin-top:20px; font-size:0.85rem; color:#6c757d; background:#fff8f0; padding:14px; border-radius:8px; border-left:4px solid #fd7e14;">
                 <i class="fa fa-info-circle me-2"></i>

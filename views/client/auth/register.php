@@ -128,12 +128,12 @@
 <body>
     <div class="header-nav">
         <span>CourtReserve</span>
-        <a href="index.php" style="font-weight: normal; font-size: 13px; text-decoration: none; color: #007bff;">← Quay lại Trang chủ</a>
+        <a href="/" style="font-weight: normal; font-size: 13px; text-decoration: none; color: #007bff;">← Quay lại Trang chủ</a>
     </div>
 
     <div class="container">
         <h2 style="font-size: 24px;">Tham gia cùng chúng tôi</h2>
-        <form action="index.php?action=do_register" method="POST">
+        <form action="/do_register" method="POST">
             <div class="form-group">
                 <label>Họ và tên</label>
                 <input type="text" name="name" placeholder="..." required>
@@ -164,7 +164,7 @@
         </form>
 
         <p style="font-size: 13px; margin-top: 20px; color: #666;">
-            Đã có tài khoản? <a href="index.php?action=login" style="color: var(--primary-green); text-decoration: none; font-weight: bold;">Đăng nhập</a>
+            Đã có tài khoản? <a href="/login" style="color: var(--primary-green); text-decoration: none; font-weight: bold;">Đăng nhập</a>
         </p>
 
         <p style="font-size: 10px; color: #999; margin-top: 25px; line-height: 1.4;">
