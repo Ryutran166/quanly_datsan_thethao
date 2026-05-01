@@ -1,0 +1,361 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th5 01, 2026 lúc 04:24 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Cơ sở dữ liệu: `datsan_thethao_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `bookings`
+--
+
+CREATE TABLE `bookings` (
+  `id` int(11) NOT NULL,
+  `court_id` int(11) NOT NULL,
+  `customer_name` varchar(255) NOT NULL,
+  `customer_phone` varchar(20) DEFAULT NULL,
+  `booking_date` date NOT NULL,
+  `total_amount` decimal(10,2) DEFAULT NULL,
+  `status` enum('Pending','Confirmed','Cancelled','Locked') DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `bookings`
+--
+
+INSERT INTO `bookings` (`id`, `court_id`, `customer_name`, `customer_phone`, `booking_date`, `total_amount`, `status`, `created_at`) VALUES
+(1, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 08:01:25'),
+(2, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 08:36:31'),
+(3, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:14'),
+(4, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:18'),
+(5, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:22'),
+(6, 8, 'Koori', '0935461720', '2026-04-29', NULL, 'Confirmed', '2026-04-28 09:18:32'),
+(7, 8, 'Kooria', '0935461720', '2026-05-01', NULL, 'Confirmed', '2026-05-01 10:23:36');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `booking_details`
+--
+
+CREATE TABLE `booking_details` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `slot_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `booking_details`
+--
+
+INSERT INTO `booking_details` (`id`, `booking_id`, `slot_id`) VALUES
+(1, 1, 4),
+(2, 2, 5),
+(3, 3, 2),
+(4, 4, 3),
+(5, 5, 1),
+(6, 6, 2),
+(7, 7, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `courts`
+--
+
+CREATE TABLE `courts` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL COMMENT 'VD: San A1, San VIP B2',
+  `price` decimal(10,2) NOT NULL COMMENT 'Gia thue gio thuong (VND)',
+  `status` enum('available','booked','maintenance') NOT NULL DEFAULT 'available',
+  `address` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'địa chỉ sân',
+  `image` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Danh sach san cau long';
+
+--
+-- Đang đổ dữ liệu cho bảng `courts`
+--
+
+INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image`, `created_at`, `updated_at`) VALUES
+(3, 'Sân Huỳnh Châu', 200000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 16:06:38', '2026-04-27 14:32:57'),
+(6, 'Sân Hoàng Huy', 300000.00, 'available', NULL, '', '2026-04-26 18:30:44', '2026-04-26 19:37:24'),
+(7, 'Sân An Bình', 300000.00, 'available', NULL, '', '2026-04-26 18:30:59', '2026-04-26 19:37:19'),
+(8, 'Sân Tây Đô', 300000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 19:11:27', '2026-04-27 14:48:50'),
+(13, 'hanabi', 5.00, 'available', NULL, NULL, '2026-05-01 17:45:22', '2026-05-01 17:45:22');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `khuyen_mai`
+--
+
+CREATE TABLE `khuyen_mai` (
+  `id` int(11) NOT NULL,
+  `tieu_de` varchar(255) DEFAULT NULL,
+  `noi_dung` text DEFAULT NULL,
+  `hinh_anh` varchar(255) DEFAULT NULL,
+  `code` varchar(50) DEFAULT NULL,
+  `loai` enum('global','personal') DEFAULT 'global',
+  `giam_phan_tram` int(11) DEFAULT 0,
+  `ngay_bat_dau` date DEFAULT NULL,
+  `ngay_ket_thuc` date DEFAULT NULL,
+  `so_ngay_hieu_luc` int(11) DEFAULT NULL,
+  `trang_thai` enum('active','inactive') DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `khuyen_mai`
+--
+
+INSERT INTO `khuyen_mai` (`id`, `tieu_de`, `noi_dung`, `hinh_anh`, `code`, `loai`, `giam_phan_tram`, `ngay_bat_dau`, `ngay_ket_thuc`, `so_ngay_hieu_luc`, `trang_thai`) VALUES
+(1, 'Giam 1m', 'dsada', NULL, NULL, '', 0, '0000-00-00', '2026-05-01', NULL, 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `time_slots`
+--
+
+CREATE TABLE `time_slots` (
+  `id` int(11) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `price_modifier` decimal(3,2) DEFAULT 1.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `time_slots`
+--
+
+INSERT INTO `time_slots` (`id`, `start_time`, `end_time`, `price_modifier`) VALUES
+(1, '06:00:00', '07:00:00', 1.00),
+(2, '07:00:00', '08:00:00', 1.00),
+(3, '08:00:00', '09:00:00', 1.00),
+(4, '09:00:00', '10:00:00', 1.00),
+(5, '10:00:00', '11:00:00', 1.00),
+(6, '14:00:00', '15:00:00', 1.00),
+(7, '15:00:00', '16:00:00', 1.00),
+(8, '16:00:00', '17:00:00', 1.00),
+(9, '17:00:00', '18:00:00', 1.00),
+(10, '18:00:00', '19:00:00', 1.00);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `tin_tuc`
+--
+
+CREATE TABLE `tin_tuc` (
+  `id` int(11) NOT NULL,
+  `tieu_de` varchar(255) DEFAULT NULL,
+  `noi_dung` text DEFAULT NULL,
+  `hinh_anh` varchar(255) DEFAULT NULL,
+  `ngay_dang` datetime DEFAULT NULL,
+  `tac_gia` varchar(100) DEFAULT NULL,
+  `trang_thai` tinyint(4) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `role` varchar(20) DEFAULT 'customer'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `created_at`, `role`) VALUES
+(3, 'Trần Thanh Long', 'longtran@gmail.com', '$2y$10$wiwQktlRtI1FWPSy9dmkkuypChKchKngX60sseb3.8/EMSfrDBKEC', '0939448811', '2026-04-26 16:41:17', 'customer'),
+(4, 'Đỗ Thành Đô', 'do@gmail.com', '$2y$10$GwS2UuWN2nVuciJTK6TFCuOe.Hg9Iw3dR86RQP0edmolN.tDLcfrK', '098419224', '2026-04-26 16:59:54', 'customer'),
+(5, 'Huỳnh Thành Hiệp ', 'hiep@gmail.com', '$2y$10$xaRQrIm47ZG4/ef9QETqAucJNUffd2M6o5t5ttYzQQNVHUgYYrQq6', '0994244344', '2026-04-26 17:14:05', 'customer'),
+(6, 'Nguyễn Trung Kiên', 'kien@gmail.com', '$2y$10$mDAwMUXQmoZqt1jPyLXY9uCvSGENxnl6KvQnVp/VUTzY7c3E2V8tq', '098422144', '2026-04-27 05:46:23', 'customer'),
+(7, 'Koori', 'Koori@gmail.com', '$2y$10$c7/4jbTbakkc9n6QK4Lgyuv0PjwNTFajvwPT/yzkPYrSGgesklhAS', '0935461720', '2026-04-28 07:56:44', 'customer'),
+(8, 'Kooria', 'kazel@gmail.com', '$2y$10$lETAprMEKzI5Rhd/1oGSXev9jqed/6VWi6.mMXjUn4ZE60hxHCh0C', '0935461720', '2026-04-29 15:58:58', 'admin'),
+(9, 'Kooriaa', 'aquari@gmail.com', '$2y$10$6xhk.QiZjYIFXcUoYNIcxuU5SFxSwBZpPmtUFJ.T4iLR57cdXqfom', '0935461720', '2026-04-29 18:28:21', 'customer');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `user_khuyen_mai`
+--
+
+CREATE TABLE `user_khuyen_mai` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `promotion_id` int(11) DEFAULT NULL,
+  `ngay_nhan` datetime DEFAULT current_timestamp(),
+  `ngay_het_han` datetime DEFAULT NULL,
+  `trang_thai` enum('unused','used','expired') DEFAULT 'unused'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Chỉ mục cho các bảng đã đổ
+--
+
+--
+-- Chỉ mục cho bảng `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `court_id` (`court_id`);
+
+--
+-- Chỉ mục cho bảng `booking_details`
+--
+ALTER TABLE `booking_details`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_booking_slot` (`booking_id`,`slot_id`),
+  ADD KEY `slot_id` (`slot_id`);
+
+--
+-- Chỉ mục cho bảng `courts`
+--
+ALTER TABLE `courts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_status` (`status`);
+
+--
+-- Chỉ mục cho bảng `khuyen_mai`
+--
+ALTER TABLE `khuyen_mai`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`);
+
+--
+-- Chỉ mục cho bảng `time_slots`
+--
+ALTER TABLE `time_slots`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `tin_tuc`
+--
+ALTER TABLE `tin_tuc`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `user_khuyen_mai`
+--
+ALTER TABLE `user_khuyen_mai`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `promotion_id` (`promotion_id`);
+
+--
+-- AUTO_INCREMENT cho các bảng đã đổ
+--
+
+--
+-- AUTO_INCREMENT cho bảng `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `booking_details`
+--
+ALTER TABLE `booking_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `courts`
+--
+ALTER TABLE `courts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT cho bảng `khuyen_mai`
+--
+ALTER TABLE `khuyen_mai`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `time_slots`
+--
+ALTER TABLE `time_slots`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT cho bảng `tin_tuc`
+--
+ALTER TABLE `tin_tuc`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT cho bảng `user_khuyen_mai`
+--
+ALTER TABLE `user_khuyen_mai`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Các ràng buộc cho các bảng đã đổ
+--
+
+--
+-- Các ràng buộc cho bảng `bookings`
+--
+ALTER TABLE `bookings`
+  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`court_id`) REFERENCES `courts` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `booking_details`
+--
+ALTER TABLE `booking_details`
+  ADD CONSTRAINT `booking_details_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `booking_details_ibfk_2` FOREIGN KEY (`slot_id`) REFERENCES `time_slots` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `user_khuyen_mai`
+--
+ALTER TABLE `user_khuyen_mai`
+  ADD CONSTRAINT `user_khuyen_mai_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `user_khuyen_mai_ibfk_2` FOREIGN KEY (`promotion_id`) REFERENCES `khuyen_mai` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
