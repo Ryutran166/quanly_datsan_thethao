@@ -21,6 +21,7 @@ class UserController
         // Sử dụng hằng số PROJECT_ROOT đã định nghĩa ở index.php
         require_once PROJECT_ROOT . '/views/User/login.php';
     }
+    
 
     /**
      * Xử lý logic đăng nhập
@@ -45,7 +46,12 @@ class UserController
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                header('Location: index.php');
+                $_SESSION['user_role'] = $user['role'];
+                if ($user['role'] === 'admin') {
+                    header('Location: index.php?action=admin_dashboard');
+                } else {
+                    header('Location: index.php?action=home');
+                }
                 exit();
             } else {
                 $error = "Email hoặc mật khẩu không chính xác.";
@@ -53,6 +59,7 @@ class UserController
             }
         }
     }
+
 
     /**
      * Hiển thị form đăng ký
@@ -128,7 +135,7 @@ class UserController
             );
         }
 
-        header('Location: index.php?action=login');
+        header('Location: index.php?action=home');
         exit();
     }
 

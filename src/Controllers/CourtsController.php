@@ -7,6 +7,7 @@ use Nhom2\QuanlyDatsanThethao\Models\CourtsModel;
 use Nhom2\QuanlyDatsanThethao\Models\BookingModel;
 use Nhom2\QuanlyDatsanThethao\Models\UserModel;
 use Nhom2\QuanlyDatsanThethao\Database;
+use Nhom2\QuanlyDatsanThethao\Models\VoucherModel;
 
 class CourtsController
 {
@@ -21,6 +22,14 @@ class CourtsController
         $this->bookingModel = new BookingModel($pdo);
         $this->userModel = new UserModel();
     }
+
+    public function home()
+    {
+        require_once PROJECT_ROOT . '/views/layout/header.php';
+        require_once PROJECT_ROOT . '/views/Home/Home.php';
+        require_once PROJECT_ROOT . '/views/layout/footer.php';
+    }
+
 
     /* =============================
        DANH SÁCH SÂN
@@ -55,11 +64,11 @@ class CourtsController
                 'name'      => $_POST['name'],
                 'price'     => $_POST['price'],
                 'status'    => 'available',
-                'image_url' => $_POST['image_url']
+                'image' => $_POST['image']
             ]);
         }
 
-        header("Location:index.php");
+        header("Location:index.php?action=index");
         exit();
     }
 
@@ -90,13 +99,13 @@ class CourtsController
                 'name' => $_POST['name'],
                 'price' => $_POST['price'],
                 'status' => $_POST['status'],
-                'image_url' => $_POST['image_url']
+                'image' => $_POST['image']
             ];
 
             $this->courtsModel->updateCourt($id, $data);
         }
 
-        header("Location:index.php");
+        header("Location:index.php?action=index");
         exit();
     }
 
@@ -109,7 +118,7 @@ class CourtsController
 
         $this->courtsModel->deleteCourt($id);
 
-        header("Location:index.php");
+        header("Location:index.php?action=index");
         exit();
     }
 
@@ -165,6 +174,39 @@ class CourtsController
         require_once PROJECT_ROOT . '/views/layout/footer.php';
     }
 
+
+    public function applyVoucher($price, $code)
+    {
+        $promo = $this->promotionModel->getByCode($code);
+
+        if (!$promo) return $price;
+
+        $discount = $promo['giam_phan_tram'];
+
+        $final = $price - ($price * $discount / 100);
+
+        return $final;
+    }
+
+    public function checkVoucher()
+    {
+        header('Content-Type: application/json');
+
+        $code = $_GET['code'] ?? '';
+
+        $promotionModel = new PromotionModel();
+        $promo = $promotionModel->getByCode($code);
+
+        if ($promo && $promo['trang_thai'] === 'active') {
+            echo json_encode([
+                'success' => true,
+                'discount' => $promo['giam_phan_tram']
+            ]);
+        } else {
+            echo json_encode(['success' => false]);
+        }
+        exit();
+    }
 
     public function confirm_booking()
     {

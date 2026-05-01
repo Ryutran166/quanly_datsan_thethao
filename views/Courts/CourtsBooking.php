@@ -117,7 +117,22 @@
                 <strong><?= number_format($court['price']) ?> VNĐ/giờ</strong>
             </div>
 
+            <div style="margin-bottom:15px;">
+                <input type="text" id="voucher_code"
+                    placeholder="Nhập mã giảm giá..."
+                    style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+
+                <button type="button"
+                    onclick="applyVoucher()"
+                    style="margin-top:8px; width:100%; padding:10px; border:none; border-radius:8px; background:#0d6efd; color:white;">
+                    Áp dụng mã
+                </button>
+
+                <p id="voucher-msg" style="font-size:13px; margin-top:5px;"></p>
+            </div>
+
             <hr style="margin:20px 0;">
+            
 
             <div style="background:#f0f9ff; padding:18px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-weight:600;">Tổng cộng</span>
@@ -141,26 +156,65 @@
 <script>
 const PRICE = <?= (int)$court['price'] ?>;
 let selectedBtn = null;
+let discount = 0; // % giảm
 
 function selectSlot(btn) {
     if (selectedBtn) {
         selectedBtn.style.background = '#fff';
         selectedBtn.style.borderColor = '#ddd';
-        selectedBtn.style.color = '#212529';
-        selectedBtn.querySelectorAll('span')[0].style.background = '#198754'; // dot
+        selectedBtn.querySelectorAll('span')[0].style.background = '#198754';
         selectedBtn.querySelectorAll('span')[1].style.color = '#212529';
         selectedBtn.querySelectorAll('span')[2].style.color = '#888';
     }
+
     btn.style.background = '#198754';
     btn.style.borderColor = '#157347';
     btn.querySelectorAll('span')[0].style.background = '#fff';
     btn.querySelectorAll('span')[1].style.color = '#fff';
     btn.querySelectorAll('span')[2].style.color = '#c8f0e3';
+
     selectedBtn = btn;
 
-    document.getElementById('selected_slot_id').value = btn.getAttribute('data-slot-id');
-    document.getElementById('display-time').innerText  = btn.getAttribute('data-time');
-    document.getElementById('display-total').innerText = PRICE.toLocaleString('vi-VN') + ' VNĐ';
+    document.getElementById('selected_slot_id').value = btn.dataset.slotId;
+    document.getElementById('display-time').innerText  = btn.dataset.time;
+
+    updateTotal();
     document.getElementById('btn-confirm').disabled = false;
+}
+
+// ===== VOUCHER =====
+function applyVoucher() {
+    const code = document.getElementById('voucher_code').value;
+
+    fetch('index.php?action=check_voucher&code=' + code)
+    .then(res => res.json())
+    .then(data => {
+        const msg = document.getElementById('voucher-msg');
+
+        if (data.success) {
+            discount = data.discount;
+
+            msg.innerHTML = "✅ Giảm " + discount + "%";
+            msg.style.color = "green";
+        } else {
+            discount = 0;
+            msg.innerHTML = "❌ Mã không hợp lệ";
+            msg.style.color = "red";
+        }
+
+        updateTotal(); 
+    });
+}
+
+// ===== TÍNH TIỀN =====
+function updateTotal() {
+    let total = PRICE;
+
+    if (discount > 0) {
+        total = total - (total * discount / 100);
+    }
+
+    document.getElementById('display-total').innerText =
+        total.toLocaleString('vi-VN') + ' VNĐ';
 }
 </script>

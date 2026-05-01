@@ -98,8 +98,8 @@ a {
             </select>
 
             <label>Link ảnh</label>
-            <input type="text" name="image_url"
-                value="<?php echo $court['image_url']; ?>">
+            <input type="text" name="image"
+                value="<?php echo $court['image']; ?>">
 
             <button type="submit">Lưu thay đổi</button>
         </form>

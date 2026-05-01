@@ -14,8 +14,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 }
 
 body{
-    background:var(--light);
-    font-family:'Open Sans',sans-serif;
+    background:#1a1a1a !important;  
 }
 
 /* HEADER */
@@ -125,13 +124,12 @@ body{
 }
 
 /* BUTTONS */
-.card-footer{
+.card-footer {
     margin-top:18px;
     display:flex;
-    justify-content:space-between;
+    justify-content: flex-end; 
     align-items:center;
 }
-
 .action-left{
     display:flex;
     gap:10px;
@@ -194,10 +192,12 @@ body{
         </div>
 
         <!-- FIXED -->
-        <a href="index.php?action=create"
-           class="btn btn-success px-4 py-2 rounded-pill">
-            + Thêm sân mới
-        </a>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+            <a href="index.php?action=create"
+            class="btn btn-success px-4 py-2 rounded-pill">
+                + Thêm sân mới
+            </a>
+        <?php endif; ?>
 
     </div>
 
@@ -226,7 +226,7 @@ body{
                 <div class="court-card">
 
                     <img class="court-image"
-                         src="<?= !empty($court['image_url']) ? $court['image_url'] : 'https://images.unsplash.com/photo-1599474924187-334a4ae593c1?q=80&w=600' ?>">
+                         src="<?= !empty($court['image']) ? $court['image'] : 'https://images.unsplash.com/photo-1599474924187-334a4ae593c1?q=80&w=600' ?>">
 
                     <div class="card-body">
 
@@ -245,20 +245,22 @@ body{
 
                         <div class="card-footer">
 
-                            <div class="action-left">
+                            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                                <div class="action-left">
 
-                                <a href="index.php?action=edit&id=<?= $court['id'] ?>"
-                                   class="btn-icon">
-                                    <i class="fa fa-pen"></i>
-                                </a>
+                                    <a href="index.php?action=edit&id=<?= $court['id'] ?>"
+                                    class="btn-icon">
+                                        <i class="fa fa-pen"></i>
+                                    </a>
 
-                                <a href="index.php?action=delete&id=<?= $court['id'] ?>"
-                                   class="btn-icon btn-delete"
-                                   onclick="return confirm('Bạn chắc chắn muốn xóa?')">
-                                    <i class="fa fa-trash"></i>
-                                </a>
+                                    <a href="index.php?action=delete&id=<?= $court['id'] ?>"
+                                    class="btn-icon btn-delete"
+                                    onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
 
-                            </div>
+                                </div>
+                            <?php endif; ?>
 
                             <a href="index.php?action=booking&id=<?= $court['id'] ?>"
                                class="btn-book">

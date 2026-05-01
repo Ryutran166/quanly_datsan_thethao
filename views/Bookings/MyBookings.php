@@ -84,7 +84,7 @@ function statusBadge(string $status, string $date): string {
             <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:20px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
 
                 <!-- Ảnh sân -->
-                <img src="<?= htmlspecialchars($b['image_url'] ?? 'assets/images/default-court.jpg') ?>"
+                <img src="<?= htmlspecialchars($b['image'] ?? 'assets/images/default-court.jpg') ?>"
                      alt="court"
                      style="width:80px; height:80px; border-radius:10px; object-fit:cover; flex-shrink:0; background:#f3f4f6;">
 

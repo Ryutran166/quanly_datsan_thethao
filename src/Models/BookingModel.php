@@ -68,7 +68,7 @@ class BookingModel {
             b.created_at,
             c.name          AS court_name,
             c.price,
-            c.image_url,
+            c.image,
             ts.start_time,
             ts.end_time
         FROM bookings b
