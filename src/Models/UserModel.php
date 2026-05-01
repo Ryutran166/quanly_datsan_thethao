@@ -64,9 +64,7 @@ class UserModel
 
     public function getUserById($id)
     {
-        $stmt = $this->conn->prepare("SELECT * FROM users
-
-WHERE id = :id");
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE id = :id");
 
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -74,30 +72,36 @@ WHERE id = :id");
     }
     // HÀM THÊM MỚI: Cập nhật thông tin sinh viên (bài 03)
     public function updateUser($id, $name, $email, $phone, $password = '')
-{
-    try {
-        if (!empty($password)) {
-            // Trường hợp có đổi mật khẩu mới
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $sql = "UPDATE users SET name = :name, email = :email, phone = :phone, password = :password WHERE id = :id";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':password', $hashedPassword);
-        } else {
-            // Trường hợp không đổi mật khẩu (giữ nguyên pass cũ)
-            $sql = "UPDATE users SET name = :name, email = :email, phone = :phone WHERE id = :id";
-            $stmt = $this->conn->prepare($sql);
+    {
+        try {
+            if (!empty($password)) {
+                // Trường hợp có đổi mật khẩu mới
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+                $sql = "UPDATE users SET name = :name, email = :email, phone = :phone, password = :password WHERE id = :id";
+                $stmt = $this->conn->prepare($sql);
+                $stmt->bindParam(':password', $hashedPassword);
+            } else {
+                // Trường hợp không đổi mật khẩu (giữ nguyên pass cũ)
+                $sql = "UPDATE users SET name = :name, email = :email, phone = :phone WHERE id = :id";
+                $stmt = $this->conn->prepare($sql);
+            }
+
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':phone', $phone);
+
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            // Ghi log lỗi để debug nếu cần
+            error_log($e->getMessage());
+            return false;
         }
-
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':phone', $phone);
-
-        return $stmt->execute();
-    } catch (\PDOException $e) {
-        // Ghi log lỗi để debug nếu cần
-        error_log($e->getMessage());
-        return false;
     }
-}
+    public function deleteUser($id)
+    {
+        $stmt = $this->conn->prepare("DELETE FROM users WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
 }

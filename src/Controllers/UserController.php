@@ -236,6 +236,17 @@ class UserController
                 exit();
             }
         }
+header('Location: index.php?action=user');
+        exit();
+    }
+
+    
+    public function delete()
+    {
+        $id = $_GET['id'] ?? null;
+        if ($id) {
+            $this->userModel->deleteUser($id);
+        }
         header('Location: index.php?action=user');
         exit();
     }

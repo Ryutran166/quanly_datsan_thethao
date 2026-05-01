@@ -68,8 +68,28 @@ switch ($action) {
         $controller->logout();
         break;
 
-    case 'user':
+case 'user':
         $controller->index();
+        break;
+
+    case 'add_user':
+        $controller->add();
+        break;
+
+    case 'do_add_user':
+        $controller->store();
+        break;
+
+    case 'edit_user':
+        $controller->edit();
+        break;
+
+    case 'update_user':
+        $controller->update();
+        break;
+
+    case 'delete_user':
+        $controller->delete();
         break;
 
 
