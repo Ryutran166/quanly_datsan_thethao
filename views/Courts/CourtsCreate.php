@@ -141,7 +141,7 @@
                         <h6 class="fw-bold">Drag & Drop images here</h6>
                         <p class="text-muted small">Support PNG, JPG up to 10MB</p>
                         <button type="button" class="btn btn-sm btn-dark px-4 rounded-pill">Browse Files</button>
-                        <input type="file" name="image_file" id="imgInp" class="d-none">
+                        <input type="text" name="image_url" class="form-control" placeholder="Nhập link ảnh sân">
                     </div>
                 </div>
 

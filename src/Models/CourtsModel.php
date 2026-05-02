@@ -41,15 +41,17 @@ class CourtsModel
     public function addCourts($data)
     {
         $stmt = $this->conn->prepare("
-        INSERT INTO courts (name, price, status, image_url) 
-        VALUES (:name, :price, :status, :image_url)
+        INSERT INTO courts
+        (name, price, status, image_url, owner_id)
+        VALUES
+        (:name, :price, :status, :image_url, :owner_id)
     ");
 
-        // Gán các giá trị từ mảng truyền vào
         $stmt->bindValue(':name', $data['name']);
         $stmt->bindValue(':price', $data['price']);
         $stmt->bindValue(':status', $data['status'] ?? 'available');
         $stmt->bindValue(':image_url', $data['image_url'] ?? null);
+        $stmt->bindValue(':owner_id', $data['owner_id']);
 
         return $stmt->execute();
     }
@@ -108,6 +110,17 @@ class CourtsModel
         return $stmt->execute();
     }
 
-    
-   
+    public function getCourtsByOwner($ownerId)
+    {
+        $stmt = $this->conn->prepare("
+        SELECT * FROM courts
+        WHERE owner_id = :owner_id
+        ORDER BY id DESC
+    ");
+
+        $stmt->bindParam(':owner_id', $ownerId);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

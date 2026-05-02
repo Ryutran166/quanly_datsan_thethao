@@ -1,81 +1,74 @@
-<!DOCTYPE html>
-<html lang="vi">
+<?php
+require_once PROJECT_ROOT . '/views/layout/header.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,
-initial-scale=1.0">
-    <title>Chỉnh sửa thông tin User</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
+<style>
+.container-form {
+    max-width: 600px;
+    margin: auto;
+}
 
-        .container {
-            max-width: 600px;
-            margin: auto;
-        }
+form {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: white;
+}
 
-        form {
-            padding: 20px;
-            border: 1px solid #ccc;
+form input,
+form select {
+    display: block;
+    margin-bottom: 10px;
+    width: 95%;
+    padding: 8px;
+}
 
-            border-radius: 5px;
-        }
+form button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>
 
-        form input {
-            display: block;
-            margin-bottom: 10px;
-            width:
+<div class="container-form">
+    <h1>Chỉnh sửa thông tin User</h1>
 
-                95%;
-            padding: 8px;
-        }
+    <form action="index.php?action=update_user" method="POST">
+        <input type="hidden" name="id" value="<?= $user['id']; ?>">
 
-        form button {
-            padding: 10px 15px;
-            background-color:
-                #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+        <label>Họ và Tên:</label>
+        <input type="text" name="name"
+               value="<?= htmlspecialchars($user['name']); ?>" required>
 
-        a {
-            text-decoration: none;
-            color: #007bff;
-        }
-    </style>
-</head>
+        <label>Email:</label>
+        <input type="email" name="email"
+               value="<?= htmlspecialchars($user['email']); ?>" required>
 
-<body>
-    <div class="container">
-        <h1>Chỉnh sửa thông tin User</h1>
-        <form action="index.php?action=update_user" method="POST">
-            <input type="hidden" name="id" value="<?php echo
+        <label>SĐT:</label>
+        <input type="text" name="phone"
+               value="<?= htmlspecialchars($user['phone']); ?>" required>
 
-                                                    $user['id']; ?>">
+        <label>Vai trò:</label>
+        <select name="role" required>
+            <option value="customer" <?= ($user['role'] == 'customer') ? 'selected' : '' ?>>
+                Customer
+            </option>
+            <option value="owner" <?= ($user['role'] == 'owner') ? 'selected' : '' ?>>
+                Owner
+            </option>
+            <option value="admin" <?= ($user['role'] == 'admin') ? 'selected' : '' ?>>
+                Admin
+            </option>
+        </select>
 
-            <label for="name">Họ và Tên:</label>
-            <input type="text" id="name" name="name"
-                value="<?php echo htmlspecialchars($user['name']); ?>"
-                required>
+        <button type="submit">Lưu thay đổi</button>
+    </form>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email"
-                value="<?php echo htmlspecialchars($user['email']); ?>"
-                required>
+    <p><a href="index.php?action=user">Quay về</a></p>
+</div>
 
-            <label for="phone">Số điện thoại:</label>
-            <input type="text" id="phone" name="phone"
-                value="<?php echo htmlspecialchars($user['phone']); ?>"
-                required>
-
-            <button type="submit">Lưu thay đổi</button>
-        </form>
-        <p><a href="index.php">Quay về danh sách</a></p>
-    </div>
-</body>
-
-</html>
+<?php
+require_once PROJECT_ROOT . '/views/layout/footer.php';
+?>

@@ -45,7 +45,8 @@ class UserController
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                header('Location: index.php');
+                $_SESSION['user_role'] = strtolower(trim($user['role']));
+                header('Location: index.php?action=home');
                 exit();
             } else {
                 $error = "Email hoặc mật khẩu không chính xác.";
@@ -128,7 +129,7 @@ class UserController
             );
         }
 
-        header('Location: index.php?action=login');
+        header('Location: index.php?action=home');
         exit();
     }
 
@@ -161,12 +162,13 @@ class UserController
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $name = $_POST['name'] ?? '';
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             $phone = $_POST['phone'] ?? '';
+            $role = $_POST['role'] ?? 'customer';
 
-            // Kiểm tra trống
             if (empty($name) || empty($email) || empty($password)) {
                 $error = "Vui lòng nhập đầy đủ thông tin.";
                 require_once PROJECT_ROOT . '/views/layout/header.php';
@@ -175,17 +177,17 @@ class UserController
                 return;
             }
 
-            $result = $this->userModel->createUser($name, $email, $password, $phone);
+            $result = $this->userModel->createUser(
+                $name,
+                $email,
+                $password,
+                $phone,
+                $role
+            );
 
             if ($result) {
-                // Thêm thành công -> Quay về trang danh sách user
-                header('Location: index.php?action=user&status=added');
+                header('Location:index.php?action=user&status=added');
                 exit();
-            } else {
-                $error = "Email đã tồn tại trong hệ thống.";
-                require_once PROJECT_ROOT . '/views/layout/header.php';
-                require_once PROJECT_ROOT . '/views/User/add.php';
-                require_once PROJECT_ROOT . '/views/layout/footer.php';
             }
         }
     }
@@ -211,7 +213,7 @@ class UserController
 
         // SỬA LỖI ĐƯỜNG DẪN Ở ĐÂY: Sử dụng PROJECT_ROOT và đúng tên file edit.php
         require_once PROJECT_ROOT . '/views/layout/header.php';
-        require_once PROJECT_ROOT . '/views/User/UserEdit.php'; 
+        require_once PROJECT_ROOT . '/views/User/UserEdit.php';
         require_once PROJECT_ROOT . '/views/layout/footer.php';
     }
 
@@ -221,26 +223,34 @@ class UserController
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $id = $_POST['id'] ?? null;
             $name = $_POST['name'] ?? '';
             $email = $_POST['email'] ?? '';
             $phone = $_POST['phone'] ?? '';
-            
-            // Lấy mật khẩu nếu admin muốn đổi mật khẩu cho user
-            $password = $_POST['password'] ?? ''; 
+            $password = $_POST['password'] ?? '';
+            $role = $_POST['role'] ?? 'customer';
 
             if ($id && !empty($name) && !empty($email)) {
-                // Gọi model để cập nhật
-                $this->userModel->updateUser($id, $name, $email, $phone, $password);
-                header('Location: index.php?action=user&status=updated');
+
+                $this->userModel->updateUser(
+                    $id,
+                    $name,
+                    $email,
+                    $phone,
+                    $password,
+                    $role
+                );
+
+                header('Location:index.php?action=user&status=updated');
                 exit();
             }
         }
-header('Location: index.php?action=user');
+
+        header('Location:index.php?action=user');
         exit();
     }
 
-    
     public function delete()
     {
         $id = $_GET['id'] ?? null;

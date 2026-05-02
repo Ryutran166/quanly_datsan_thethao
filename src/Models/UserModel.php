@@ -57,7 +57,7 @@ class UserModel
      */
     public function getAllUsers()
     {
-        $stmt = $this->conn->prepare("SELECT id, name, email, phone FROM users ORDER BY id DESC");
+        $stmt = $this->conn->prepare("SELECT id, name, email, phone, role FROM users ORDER BY id DESC");
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -71,18 +71,18 @@ class UserModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     // HÀM THÊM MỚI: Cập nhật thông tin sinh viên (bài 03)
-    public function updateUser($id, $name, $email, $phone, $password = '')
+    public function updateUser($id, $name, $email, $phone, $password, $role = '')
     {
         try {
             if (!empty($password)) {
                 // Trường hợp có đổi mật khẩu mới
                 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-                $sql = "UPDATE users SET name = :name, email = :email, phone = :phone, password = :password WHERE id = :id";
+                $sql = "UPDATE users SET name = :name, email = :email, phone = :phone, password = :password , role = :role WHERE id = :id";
                 $stmt = $this->conn->prepare($sql);
                 $stmt->bindParam(':password', $hashedPassword);
             } else {
                 // Trường hợp không đổi mật khẩu (giữ nguyên pass cũ)
-                $sql = "UPDATE users SET name = :name, email = :email, phone = :phone WHERE id = :id";
+                $sql = "UPDATE users SET name = :name, email = :email, phone = :phone , role = :role WHERE id = :id";
                 $stmt = $this->conn->prepare($sql);
             }
 
@@ -90,6 +90,7 @@ class UserModel
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':phone', $phone);
+            $stmt->bindParam(':role', $role);
 
             return $stmt->execute();
         } catch (\PDOException $e) {

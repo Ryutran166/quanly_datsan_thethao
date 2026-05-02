@@ -22,6 +22,14 @@ class CourtsController
         $this->userModel = new UserModel();
     }
 
+    public function home()
+    {
+        require_once PROJECT_ROOT . '/views/layout/header.php';
+        require_once PROJECT_ROOT . '/views/Home/Home.php';
+        require_once PROJECT_ROOT . '/views/layout/footer.php';
+    }
+
+
     /* =============================
        DANH SÁCH SÂN
     ============================== */
@@ -39,6 +47,13 @@ class CourtsController
     ============================== */
     public function create()
     {
+        if (
+            !isset($_SESSION['user_role']) ||
+            !in_array($_SESSION['user_role'], ['admin', 'owner'])
+        ) {
+            die("Bạn không có quyền thêm sân.");
+        }
+
         require_once PROJECT_ROOT . '/views/layout/header.php';
         require_once PROJECT_ROOT . '/views/Courts/CourtsCreate.php';
         require_once PROJECT_ROOT . '/views/layout/footer.php';
@@ -49,17 +64,27 @@ class CourtsController
     ============================== */
     public function add()
     {
+        if (
+            !isset($_SESSION['user_role']) ||
+            !in_array($_SESSION['user_role'], ['admin', 'owner'])
+        ) {
+            die("Không có quyền.");
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+            $ownerId = $_SESSION['user_id'];
+
             $this->courtsModel->addCourts([
-                'name'      => $_POST['name'],
-                'price'     => $_POST['price'],
-                'status'    => 'available',
-                'image_url' => $_POST['image_url']
+                'name'       => $_POST['name'],
+                'price'      => $_POST['price'],
+                'status'     => 'available',
+                'image_url'  => $_POST['image_url'],
+                'owner_id'   => $ownerId
             ]);
         }
 
-        header("Location:index.php");
+        header("Location:index.php?action=courts");
         exit();
     }
 
@@ -69,8 +94,18 @@ class CourtsController
     public function edit()
     {
         $id = $_GET['id'];
-
         $court = $this->courtsModel->getCourtById($id);
+
+        if (!$court) {
+            die("Sân không tồn tại.");
+        }
+
+        if (
+            $_SESSION['user_role'] == 'owner' &&
+            $court['owner_id'] != $_SESSION['user_id']
+        ) {
+            die("Bạn không được sửa sân người khác.");
+        }
 
         require_once PROJECT_ROOT . '/views/layout/header.php';
         require_once PROJECT_ROOT . '/views/Courts/CourtsEdit.php';
@@ -85,6 +120,14 @@ class CourtsController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $id = $_POST['id'];
+            $court = $this->courtsModel->getCourtById($id);
+
+            if (
+                $_SESSION['user_role'] == 'owner' &&
+                $court['owner_id'] != $_SESSION['user_id']
+            ) {
+                die("Không có quyền cập nhật.");
+            }
 
             $data = [
                 'name' => $_POST['name'],
@@ -99,13 +142,20 @@ class CourtsController
         header("Location:index.php");
         exit();
     }
-
     /* =============================
        DELETE
     ============================== */
     public function delete()
     {
         $id = $_GET['id'];
+        $court = $this->courtsModel->getCourtById($id);
+
+        if (
+            $_SESSION['user_role'] == 'owner' &&
+            $court['owner_id'] != $_SESSION['user_id']
+        ) {
+            die("Không được xoá sân người khác.");
+        }
 
         $this->courtsModel->deleteCourt($id);
 
@@ -139,16 +189,16 @@ class CourtsController
 
         // Danh sách khung giờ cố định
         $timeSlots = [
-            ['id'=>1,  'start_time'=>'06:00:00', 'end_time'=>'07:00:00'],
-            ['id'=>2,  'start_time'=>'07:00:00', 'end_time'=>'08:00:00'],
-            ['id'=>3,  'start_time'=>'08:00:00', 'end_time'=>'09:00:00'],
-            ['id'=>4,  'start_time'=>'09:00:00', 'end_time'=>'10:00:00'],
-            ['id'=>5,  'start_time'=>'10:00:00', 'end_time'=>'11:00:00'],
-            ['id'=>6,  'start_time'=>'14:00:00', 'end_time'=>'15:00:00'],
-            ['id'=>7,  'start_time'=>'15:00:00', 'end_time'=>'16:00:00'],
-            ['id'=>8,  'start_time'=>'16:00:00', 'end_time'=>'17:00:00'],
-            ['id'=>9,  'start_time'=>'17:00:00', 'end_time'=>'18:00:00'],
-            ['id'=>10, 'start_time'=>'18:00:00', 'end_time'=>'19:00:00'],
+            ['id' => 1,  'start_time' => '06:00:00', 'end_time' => '07:00:00'],
+            ['id' => 2,  'start_time' => '07:00:00', 'end_time' => '08:00:00'],
+            ['id' => 3,  'start_time' => '08:00:00', 'end_time' => '09:00:00'],
+            ['id' => 4,  'start_time' => '09:00:00', 'end_time' => '10:00:00'],
+            ['id' => 5,  'start_time' => '10:00:00', 'end_time' => '11:00:00'],
+            ['id' => 6,  'start_time' => '14:00:00', 'end_time' => '15:00:00'],
+            ['id' => 7,  'start_time' => '15:00:00', 'end_time' => '16:00:00'],
+            ['id' => 8,  'start_time' => '16:00:00', 'end_time' => '17:00:00'],
+            ['id' => 9,  'start_time' => '17:00:00', 'end_time' => '18:00:00'],
+            ['id' => 10, 'start_time' => '18:00:00', 'end_time' => '19:00:00'],
         ];
 
         $bookedSlots = $this->bookingModel->getBookedSlots($id, $date);
@@ -202,72 +252,78 @@ class CourtsController
             'status'         => 'confirmed',
         ]);
 
-         header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&slot_id=$slotId");
-    exit();
+        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&slot_id=$slotId");
+        exit();
     }
 
     public function booking_success()
-{
-    $courtId = (int) ($_GET['court_id'] ?? 0);
-    $slotId  = (int) ($_GET['slot_id']  ?? 0);
-    $date    =        $_GET['date']      ?? '';
+    {
+        $courtId = (int) ($_GET['court_id'] ?? 0);
+        $slotId  = (int) ($_GET['slot_id']  ?? 0);
+        $date    =        $_GET['date']      ?? '';
 
-    $court = $this->courtsModel->getCourtById($courtId);
-    $slot  = $this->bookingModel->getSlotById($slotId);
+        $court = $this->courtsModel->getCourtById($courtId);
+        $slot  = $this->bookingModel->getSlotById($slotId);
 
-    if (!$court) {
-        header("Location: index.php");
+        if (!$court) {
+            header("Location: index.php");
+            exit();
+        }
+
+        require_once PROJECT_ROOT . '/views/layout/header.php';
+        require_once PROJECT_ROOT . '/views/Courts/BookingSuccess.php';
+        require_once PROJECT_ROOT . '/views/layout/footer.php';
+    }
+
+    public function my_bookings()
+    {
+        $userId   = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            header("Location: index.php?action=login");
+            exit();
+        }
+
+        $bookings = $this->bookingModel->getBookingsByUser($userId);
+
+        // Nhóm theo trạng thái
+        $upcoming  = array_filter(
+            $bookings,
+            fn($b) =>
+            $b['booking_status'] === 'confirmed' && strtotime($b['booking_date']) >= strtotime('today')
+        );
+        $past      = array_filter(
+            $bookings,
+            fn($b) =>
+            strtotime($b['booking_date']) < strtotime('today')
+        );
+        $cancelled = array_filter(
+            $bookings,
+            fn($b) =>
+            $b['booking_status'] === 'cancelled'
+        );
+
+        require_once PROJECT_ROOT . '/views/layout/header.php';
+        require_once PROJECT_ROOT . '/views/Bookings/MyBookings.php';
+        require_once PROJECT_ROOT . '/views/layout/footer.php';
+    }
+
+    public function cancel_booking()
+    {
+        $bookingId = (int) ($_GET['id']  ?? 0);
+        $userId    = $_SESSION['user_id'] ?? null;
+
+        if (!$bookingId || !$userId) {
+            header("Location: index.php?action=my_bookings");
+            exit();
+        }
+
+        $success = $this->bookingModel->cancelBooking($bookingId, $userId);
+
+        if ($success) {
+            header("Location: index.php?action=my_bookings&success=cancelled");
+        } else {
+            header("Location: index.php?action=my_bookings&error=cannot_cancel");
+        }
         exit();
     }
-
-    require_once PROJECT_ROOT . '/views/layout/header.php';
-    require_once PROJECT_ROOT . '/views/Courts/BookingSuccess.php';
-    require_once PROJECT_ROOT . '/views/layout/footer.php';
-}
-
-public function my_bookings()
-{
-    $userId   = $_SESSION['user_id'] ?? null;
-    if (!$userId) {
-        header("Location: index.php?action=login");
-        exit();
-    }
-
-    $bookings = $this->bookingModel->getBookingsByUser($userId);
-
-    // Nhóm theo trạng thái
-    $upcoming  = array_filter($bookings, fn($b) => 
-        $b['booking_status'] === 'confirmed' && strtotime($b['booking_date']) >= strtotime('today')
-    );
-    $past      = array_filter($bookings, fn($b) => 
-        strtotime($b['booking_date']) < strtotime('today')
-    );
-    $cancelled = array_filter($bookings, fn($b) => 
-        $b['booking_status'] === 'cancelled'
-    );
-
-    require_once PROJECT_ROOT . '/views/layout/header.php';
-    require_once PROJECT_ROOT . '/views/Bookings/MyBookings.php';
-    require_once PROJECT_ROOT . '/views/layout/footer.php';
-}
-
-public function cancel_booking()
-{
-    $bookingId = (int) ($_GET['id']  ?? 0);
-    $userId    = $_SESSION['user_id'] ?? null;
-
-    if (!$bookingId || !$userId) {
-        header("Location: index.php?action=my_bookings");
-        exit();
-    }
-
-    $success = $this->bookingModel->cancelBooking($bookingId, $userId);
-
-    if ($success) {
-        header("Location: index.php?action=my_bookings&success=cancelled");
-    } else {
-        header("Location: index.php?action=my_bookings&error=cannot_cancel");
-    }
-    exit();
-}
 }

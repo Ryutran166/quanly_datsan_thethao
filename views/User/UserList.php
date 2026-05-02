@@ -3,13 +3,16 @@
         background-color: #fff;
         border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
+
     .table-modern {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0 15px; /* Tạo khoảng cách giữa các hàng */
+        border-spacing: 0 15px;
+        /* Tạo khoảng cách giữa các hàng */
     }
+
     .table-modern th {
         color: #9ea0a5;
         font-weight: 600;
@@ -18,25 +21,30 @@
         padding: 10px 20px;
         border-bottom: 1px solid #f0f1f3;
     }
+
     .table-modern tbody tr {
         background-color: #fff;
         transition: transform 0.2s;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
     }
+
     .table-modern tbody tr:hover {
         transform: scale(1.01);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
+
     .table-modern td {
         padding: 15px 20px;
         vertical-align: middle;
     }
+
     /* Avatar giả lập */
     .user-info {
         display: flex;
         align-items: center;
         gap: 12px;
     }
+
     .avatar-circle {
         width: 40px;
         height: 40px;
@@ -48,6 +56,7 @@
         color: white;
         font-weight: bold;
     }
+
     /* Badge phong cách hiện đại */
     .badge-role {
         padding: 5px 12px;
@@ -57,6 +66,7 @@
         background: #f1f3f9;
         color: #5e72e4;
     }
+
     .status-active {
         color: #2dce89;
         display: flex;
@@ -64,15 +74,18 @@
         gap: 5px;
         font-size: 0.9rem;
     }
+
     .status-active::before {
         content: "●";
         font-size: 12px;
     }
+
     .action-btns a {
         color: #adb5bd;
         margin: 0 8px;
         transition: 0.3s;
     }
+
     .action-btns a:hover {
         color: #5e72e4;
     }
@@ -115,7 +128,9 @@
                             <div style="font-size: 0.8rem; color: #8898aa;"><?= htmlspecialchars($user['phone'] ?? '---') ?></div>
                         </td>
                         <td>
-                            <span class="badge-role">CUSTOMER</span>
+                            <span class="badge-role">
+                                <?= strtoupper(htmlspecialchars($user['role'])) ?>
+                            </span>
                         </td>
                         <td>
                             <span class="status-active">Active</span>
@@ -124,9 +139,9 @@
                             <a href="index.php?action=edit_user&id=<?= $user['id'] ?>" title="Sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="index.php?action=delete_user&id=<?= $user['id'] ?>" 
-                               style="color: #fb6340;" 
-                               onclick="return confirm('Xóa user này?')" title="Xóa">
+                            <a href="index.php?action=delete_user&id=<?= $user['id'] ?>"
+                                style="color: #fb6340;"
+                                onclick="return confirm('Xóa user này?')" title="Xóa">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>

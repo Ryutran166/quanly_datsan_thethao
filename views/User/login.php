@@ -161,6 +161,20 @@
             font-size: 13px;
             margin-bottom: 15px;
         }
+
+        .back-home {
+            display: block;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .back-home:hover {
+            color: var(--primary-green);
+        }
+
     </style>
 
 <body>
@@ -171,7 +185,7 @@
 
     <div class="container">
         <h1>Đặt sân thể thao</h1>
-        <h2>Chào mừng trở </h2>
+        <h2>Chào mừng trở lại</h2>
         <?php if (isset($error)): ?>
             <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>
@@ -199,6 +213,7 @@
         <div class="divider"><span>Don't have an account?</span></div>
 
         <a href="index.php?action=register" class="btn-secondary">Sign up</a>
+        <a href="index.php?action=home" class="back-home">← Quay lại trang chủ</a>
     </div>
 
     <div class="footer-text" style="margin-top: 20px; font-size: 11px; color: #888;">
