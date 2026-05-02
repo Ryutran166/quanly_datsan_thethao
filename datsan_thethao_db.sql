@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 30, 2026 lúc 07:51 AM
+-- Thời gian đã tạo: Th5 02, 2026 lúc 09:08 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Phiên bản PHP: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -88,18 +88,20 @@ CREATE TABLE `courts` (
   `address` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'địa chỉ sân',
   `image_url` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `owner_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Danh sach san cau long';
 
 --
 -- Đang đổ dữ liệu cho bảng `courts`
 --
 
-INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image_url`, `created_at`, `updated_at`) VALUES
-(3, 'Sân Huỳnh Châu', 200000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 16:06:38', '2026-04-27 14:32:57'),
-(6, 'Sân Hoàng Huy', 300000.00, 'available', NULL, '', '2026-04-26 18:30:44', '2026-04-26 19:37:24'),
-(7, 'Sân An Bình', 300000.00, 'available', NULL, '', '2026-04-26 18:30:59', '2026-04-26 19:37:19'),
-(8, 'Sân Tây Đô', 300000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 19:11:27', '2026-04-27 14:48:50');
+INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image_url`, `created_at`, `updated_at`, `owner_id`) VALUES
+(3, 'Sân Huỳnh Châu', 200000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 16:06:38', '2026-04-27 14:32:57', 0),
+(6, 'Sân Hoàng Huy', 300000.00, 'available', NULL, '', '2026-04-26 18:30:44', '2026-04-26 19:37:24', 0),
+(7, 'Sân An Bình', 300000.00, 'available', NULL, '', '2026-04-26 18:30:59', '2026-04-26 19:37:19', 0),
+(8, 'Sân Tây Đô', 300000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 19:11:27', '2026-04-27 14:48:50', 0),
+(15, 'Sân 442', 200000.00, 'available', NULL, '', '2026-05-02 14:06:07', '2026-05-02 14:06:07', 11);
 
 -- --------------------------------------------------------
 
@@ -151,13 +153,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `created_at`, `role`) VALUES
-(3, 'Trần Thanh Long', 'longtran@gmail.com', '$2y$10$wiwQktlRtI1FWPSy9dmkkuypChKchKngX60sseb3.8/EMSfrDBKEC', '0939448811', '2026-04-26 16:41:17', 'customer'),
+(3, 'Trần Thanh Long', 'longtran@gmail.com', '$2y$10$wiwQktlRtI1FWPSy9dmkkuypChKchKngX60sseb3.8/EMSfrDBKEC', '0939448811', '2026-04-26 16:41:17', 'admin'),
 (4, 'Đỗ Thành Đô', 'do@gmail.com', '$2y$10$GwS2UuWN2nVuciJTK6TFCuOe.Hg9Iw3dR86RQP0edmolN.tDLcfrK', '098419224', '2026-04-26 16:59:54', 'customer'),
 (5, 'Huỳnh Thành Hiệp ', 'hiep@gmail.com', '$2y$10$xaRQrIm47ZG4/ef9QETqAucJNUffd2M6o5t5ttYzQQNVHUgYYrQq6', '0994244344', '2026-04-26 17:14:05', 'customer'),
 (6, 'Nguyễn Trung Kiên', 'kien@gmail.com', '$2y$10$mDAwMUXQmoZqt1jPyLXY9uCvSGENxnl6KvQnVp/VUTzY7c3E2V8tq', '098422144', '2026-04-27 05:46:23', 'customer'),
 (7, 'Koori', 'Koori@gmail.com', '$2y$10$c7/4jbTbakkc9n6QK4Lgyuv0PjwNTFajvwPT/yzkPYrSGgesklhAS', '0935461720', '2026-04-28 07:56:44', 'customer'),
 (8, 'Kooria', 'kazel@gmail.com', '$2y$10$lETAprMEKzI5Rhd/1oGSXev9jqed/6VWi6.mMXjUn4ZE60hxHCh0C', '0935461720', '2026-04-29 15:58:58', 'admin'),
-(9, 'Kooriaa', 'aquari@gmail.com', '$2y$10$6xhk.QiZjYIFXcUoYNIcxuU5SFxSwBZpPmtUFJ.T4iLR57cdXqfom', '0935461720', '2026-04-29 18:28:21', 'customer');
+(9, 'Kooriaa', 'aquari@gmail.com', '$2y$10$6xhk.QiZjYIFXcUoYNIcxuU5SFxSwBZpPmtUFJ.T4iLR57cdXqfom', '0935461720', '2026-04-29 18:28:21', 'customer'),
+(11, 'Ryu Tran', 'ryu@gmail.com', '$2y$10$KAxjAKhyj4WSZY96T9zC3ODMDOE9ne.75qT/mYn/HKcKahh0XCFMu', '0337797091', '2026-05-02 06:28:28', 'owner');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -217,7 +220,7 @@ ALTER TABLE `booking_details`
 -- AUTO_INCREMENT cho bảng `courts`
 --
 ALTER TABLE `courts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT cho bảng `time_slots`
@@ -229,7 +232,7 @@ ALTER TABLE `time_slots`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
