@@ -155,9 +155,29 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         background: white;
         border-radius: 16px;
     }
+
+    .courts-page .page-header {
+        margin-bottom: 25px;
+    }
+
+    .courts-page .d-flex.justify-content-between {
+        margin-bottom: 30px;
+    }
+
+    .courts-page .card-container {
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
+
+    .pagination {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
 </style>
 
-<div class="container py-5">
+<div class="container py-5 courts-page">
 
     <div class="page-header">
 
@@ -282,6 +302,27 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         <?php endif; ?>
 
     </div>
+
+</div>
+<div class="pagination mt-4 text-center">
+
+    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+
+        <a href="?action=index&keyword=<?= urlencode($keyword ?? '') ?>&page=<?= $i ?>"
+            style="
+            padding:10px 15px;
+            margin:0 5px;
+            border-radius:8px;
+            text-decoration:none;
+            background:<?= ($i == $currentPage) ? '#2dce89' : '#fff' ?>;
+            color:<?= ($i == $currentPage) ? '#fff' : '#333' ?>;
+            font-weight:600;
+            box-shadow:0 2px 8px rgba(0,0,0,.08);
+        ">
+            <?= $i ?>
+        </a>
+
+    <?php endfor; ?>
 
 </div>
 

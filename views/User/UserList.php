@@ -10,7 +10,6 @@
         width: 100%;
         border-collapse: separate;
         border-spacing: 0 15px;
-        /* Tạo khoảng cách giữa các hàng */
     }
 
     .table-modern th {
@@ -38,7 +37,6 @@
         vertical-align: middle;
     }
 
-    /* Avatar giả lập */
     .user-info {
         display: flex;
         align-items: center;
@@ -57,7 +55,6 @@
         font-weight: bold;
     }
 
-    /* Badge phong cách hiện đại */
     .badge-role {
         padding: 5px 12px;
         border-radius: 20px;
@@ -89,72 +86,175 @@
     .action-btns a:hover {
         color: #5e72e4;
     }
+
+    .search-box {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-box input {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+        min-width: 250px;
+    }
+
+    .search-box button {
+        background: #5e72e4;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .pagination a:hover {
+        background: #5e72e4 !important;
+        color: white !important;
+    }
 </style>
+
 <div class="user-list-container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h2 style="font-weight: 700; color: #32325d; margin: 0;">Danh sách người dùng hệ thống</h2>
-        <a href="index.php?action=add_user" class="btn btn-primary" style="background: #2dce89; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+
+        <h1 style="font-weight:700; color:#32325d; margin:0;">
+            <?php
+            if (!empty($keyword)) {
+                echo "Kết quả tìm kiếm cho: '" . htmlspecialchars($keyword) . "'";
+            } else {
+                echo "Danh sách người dùng hệ thống";
+            }
+            ?>
+        </h1>
+
+        <form action="index.php" method="GET" class="search-box">
+            <input type="hidden" name="action" value="user">
+
+            <input type="text"
+                name="keyword"
+                placeholder="Tìm kiếm theo tên..."
+                value="<?= htmlspecialchars($keyword ?? '') ?>">
+
+            <button type="submit">Tìm kiếm</button>
+        </form>
+
+        <a href="index.php?action=add_user"
+            class="btn btn-primary"
+            style="background:#2dce89; border:none; border-radius:8px; padding:10px 20px; font-weight:600;">
             <i class="fa fa-plus me-2"></i> Thêm User mới
         </a>
+
     </div>
 
     <table class="table-modern">
         <thead>
             <tr>
                 <th>Username</th>
-                <th>Email / Số điện thoại</th>
+                <th>Email / SĐT</th>
                 <th>Role</th>
                 <th>Status</th>
-                <th style="text-align: right;">Actions</th>
+                <th style="text-align:right;">Actions</th>
             </tr>
         </thead>
+
         <tbody>
+
             <?php if (!empty($users)): ?>
                 <?php foreach ($users as $user): ?>
                     <tr>
+
                         <td>
                             <div class="user-info">
                                 <div class="avatar-circle">
                                     <?= strtoupper(substr($user['name'], 0, 1)) ?>
                                 </div>
+
                                 <div>
-                                    <div style="font-weight: 600; color: #32325d;"><?= htmlspecialchars($user['name']) ?></div>
-                                    <div style="font-size: 0.8rem; color: #8898aa;">@<?= strtolower(explode(' ', $user['name'])[0]) ?></div>
+                                    <div style="font-weight:600; color:#32325d;">
+                                        <?= htmlspecialchars($user['name']) ?>
+                                    </div>
+
+                                    <div style="font-size:0.8rem; color:#8898aa;">
+                                        @<?= strtolower(explode(' ', $user['name'])[0]) ?>
+                                    </div>
                                 </div>
                             </div>
                         </td>
+
                         <td>
-                            <div style="color: #525f7f; font-size: 0.9rem;"><?= htmlspecialchars($user['email']) ?></div>
-                            <div style="font-size: 0.8rem; color: #8898aa;"><?= htmlspecialchars($user['phone'] ?? '---') ?></div>
+                            <div style="color:#525f7f; font-size:0.9rem;">
+                                <?= htmlspecialchars($user['email']) ?>
+                            </div>
+
+                            <div style="font-size:0.8rem; color:#8898aa;">
+                                <?= htmlspecialchars($user['phone'] ?? '---') ?>
+                            </div>
                         </td>
+
                         <td>
                             <span class="badge-role">
-                                <?= strtoupper(htmlspecialchars($user['role'])) ?>
+                                <?= strtoupper($user['role']) ?>
                             </span>
                         </td>
+
                         <td>
                             <span class="status-active">Active</span>
                         </td>
-                        <td style="text-align: right;" class="action-btns">
+
+                        <td style="text-align:right;" class="action-btns">
+
                             <a href="index.php?action=edit_user&id=<?= $user['id'] ?>" title="Sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
+
                             <a href="index.php?action=delete_user&id=<?= $user['id'] ?>"
-                                style="color: #fb6340;"
-                                onclick="return confirm('Xóa user này?')" title="Xóa">
+                                onclick="return confirm('Xóa user này?')"
+                                style="color:#fb6340;"
+                                title="Xóa">
                                 <i class="fas fa-trash"></i>
                             </a>
+
                         </td>
+
                     </tr>
                 <?php endforeach; ?>
+
             <?php else: ?>
+
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 50px; color: #adb5bd;">
-                        <i class="fas fa-user-slash d-block mb-2" style="font-size: 2rem;"></i>
+                    <td colspan="5" style="text-align:center; padding:50px; color:#adb5bd;">
+                        <i class="fas fa-user-slash d-block mb-2" style="font-size:2rem;"></i>
                         Không có người dùng nào.
                     </td>
                 </tr>
+
             <?php endif; ?>
+
         </tbody>
+
     </table>
+    <!-- PHÂN TRANG -->
+    <div class="pagination" style="margin-top:25px; text-align:center;">
+
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+
+            <a href="index.php?action=user&keyword=<?= urlencode($keyword ?? '') ?>&page=<?= $i ?>"
+                style="
+                    display:inline-block;
+                    padding:8px 14px;
+                    margin:0 4px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:600;
+                    background:<?= ($i == $currentPage) ? '#5e72e4' : '#f1f3f9' ?>;
+                    color:<?= ($i == $currentPage) ? 'white' : '#32325d' ?>;
+                ">
+                <?= $i ?>
+            </a>
+
+        <?php endfor; ?>
+    </div>
 </div>

@@ -123,4 +123,51 @@ class CourtsModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getCourts($keyword = null, $limit = 6, $offset = 0)
+{
+    // Đếm tổng số sân
+    $sqlCount = "SELECT COUNT(*) FROM courts";
+    $params = [];
+
+    if ($keyword) {
+        $sqlCount .= " WHERE name LIKE :keyword";
+        $params[':keyword'] = "%{$keyword}%";
+    }
+
+    $stmtCount = $this->conn->prepare($sqlCount);
+    $stmtCount->execute($params);
+    $totalRecords = $stmtCount->fetchColumn();
+
+
+    // Lấy dữ liệu phân trang
+    $sqlData = "SELECT * FROM courts";
+
+    if ($keyword) {
+        $sqlData .= " WHERE name LIKE :keyword";
+    }
+
+    $sqlData .= "
+        ORDER BY id DESC
+        LIMIT :limit
+        OFFSET :offset
+    ";
+
+    $stmtData = $this->conn->prepare($sqlData);
+
+    if ($keyword) {
+        $stmtData->bindValue(':keyword', "%{$keyword}%");
+    }
+
+    $stmtData->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmtData->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+    $stmtData->execute();
+
+    $courts = $stmtData->fetchAll(PDO::FETCH_ASSOC);
+
+    return [
+        'data' => $courts,
+        'total' => $totalRecords
+    ];
+}
 }

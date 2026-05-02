@@ -35,13 +35,30 @@ class CourtsController
     ============================== */
     public function index()
     {
+        $recordsPerPage = 6;
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+        if ($currentPage < 1) {
+            $currentPage = 1;
+        }
+
+        $offset = ($currentPage - 1) * $recordsPerPage;
+
         $keyword = $_GET['keyword'] ?? null;
 
-        $courts = $this->courtsModel->getAllCourts($keyword);
+        $result = $this->courtsModel->getCourts(
+            $keyword,
+            $recordsPerPage,
+            $offset
+        );
+
+        $courts = $result['data'];
+        $totalRecords = $result['total'];
+
+        $totalPages = ceil($totalRecords / $recordsPerPage);
 
         require_once PROJECT_ROOT . '/views/Courts/CourtsList.php';
     }
-
     /* =============================
        FORM THÊM
     ============================== */

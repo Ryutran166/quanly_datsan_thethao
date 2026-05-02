@@ -135,15 +135,31 @@ class UserController
 
     public function index()
     {
-        // 1. Lấy dữ liệu từ Model
-        $users = $this->userModel->getAllUsers();
+        // --- CÀI ĐẶT CÁC BIẾN PHÂN TRANG ---
+        $recordsPerPage = 5; // Số sinh viên mỗi trang
+        $currentPage = isset($_GET['page']) ?
+            (int)$_GET['page'] : 1;
+        if ($currentPage < 1) {
+            $currentPage = 1;
+        }
+        $offset = ($currentPage - 1) * $recordsPerPage;
+        $keyword = $_GET['keyword'] ?? null;
 
-        // 2. Truyền dữ liệu vào view
+        // --- GỌI MODEL ---
+        $result = $this->userModel->getUsers(
+            $keyword,
+            $recordsPerPage,
+            $offset
+        );
+        $users = $result['data'];
+        $totalRecords = $result['total'];
+        // --- TÍNH TOÁN SỐ TRANG ---
+        $totalPages = ceil($totalRecords / $recordsPerPage);
+
         require_once PROJECT_ROOT . '/views/layout/header.php';
         require_once PROJECT_ROOT . '/views/User/UserList.php';
         require_once PROJECT_ROOT . '/views/layout/footer.php';
     }
-
     // src/Controllers/UserController.php
 
     /**
