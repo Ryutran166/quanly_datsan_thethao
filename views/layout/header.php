@@ -398,6 +398,8 @@ function isActive($action, $current_action)
             <a href="index.php?action=my_bookings" class="sub-link <?= isActive('my_bookings', $current_action) ?>">
                 <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
             </a>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
             <a href="index.php?action=user" class="sub-link <?= isActive('user', $current_action); ?>">
                 Quản trị User
             </a>

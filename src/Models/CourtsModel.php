@@ -124,50 +124,92 @@ class CourtsModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function getCourts($keyword = null, $limit = 6, $offset = 0)
-{
-    // Đếm tổng số sân
-    $sqlCount = "SELECT COUNT(*) FROM courts";
-    $params = [];
+    {
+        // Đếm tổng số sân
+        $sqlCount = "SELECT COUNT(*) FROM courts";
+        $params = [];
 
-    if ($keyword) {
-        $sqlCount .= " WHERE name LIKE :keyword";
-        $params[':keyword'] = "%{$keyword}%";
-    }
+        if ($keyword) {
+            $sqlCount .= " WHERE name LIKE :keyword";
+            $params[':keyword'] = "%{$keyword}%";
+        }
 
-    $stmtCount = $this->conn->prepare($sqlCount);
-    $stmtCount->execute($params);
-    $totalRecords = $stmtCount->fetchColumn();
+        $stmtCount = $this->conn->prepare($sqlCount);
+        $stmtCount->execute($params);
+        $totalRecords = $stmtCount->fetchColumn();
 
 
-    // Lấy dữ liệu phân trang
-    $sqlData = "SELECT * FROM courts";
+        // Lấy dữ liệu phân trang
+        $sqlData = "SELECT * FROM courts";
 
-    if ($keyword) {
-        $sqlData .= " WHERE name LIKE :keyword";
-    }
+        if ($keyword) {
+            $sqlData .= " WHERE name LIKE :keyword";
+        }
 
-    $sqlData .= "
+        $sqlData .= "
         ORDER BY id DESC
         LIMIT :limit
         OFFSET :offset
     ";
 
-    $stmtData = $this->conn->prepare($sqlData);
+        $stmtData = $this->conn->prepare($sqlData);
 
-    if ($keyword) {
-        $stmtData->bindValue(':keyword', "%{$keyword}%");
+        if ($keyword) {
+            $stmtData->bindValue(':keyword', "%{$keyword}%");
+        }
+
+        $stmtData->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmtData->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+        $stmtData->execute();
+
+        $courts = $stmtData->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'data' => $courts,
+            'total' => $totalRecords
+        ];
     }
+    public function getCourtsByOwnerWithPaging($ownerId, $keyword = null, $limit = 6, $offset = 0)
+    {
+        // Đếm tổng
+        $sqlCount = "SELECT COUNT(*) FROM courts WHERE owner_id = :owner_id";
+        $params = [':owner_id' => $ownerId];
 
-    $stmtData->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-    $stmtData->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        if ($keyword) {
+            $sqlCount .= " AND name LIKE :keyword";
+            $params[':keyword'] = "%{$keyword}%";
+        }
 
-    $stmtData->execute();
+        $stmtCount = $this->conn->prepare($sqlCount);
+        $stmtCount->execute($params);
+        $totalRecords = $stmtCount->fetchColumn();
 
-    $courts = $stmtData->fetchAll(PDO::FETCH_ASSOC);
+        // Lấy data
+        $sqlData = "SELECT * FROM courts WHERE owner_id = :owner_id";
 
-    return [
-        'data' => $courts,
-        'total' => $totalRecords
-    ];
-}
+        if ($keyword) {
+            $sqlData .= " AND name LIKE :keyword";
+        }
+
+        $sqlData .= " ORDER BY id DESC LIMIT :limit OFFSET :offset";
+
+        $stmtData = $this->conn->prepare($sqlData);
+
+        $stmtData->bindValue(':owner_id', $ownerId, PDO::PARAM_INT);
+
+        if ($keyword) {
+            $stmtData->bindValue(':keyword', "%{$keyword}%");
+        }
+
+        $stmtData->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmtData->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+        $stmtData->execute();
+
+        return [
+            'data' => $stmtData->fetchAll(PDO::FETCH_ASSOC),
+            'total' => $totalRecords
+        ];
+    }
 }
