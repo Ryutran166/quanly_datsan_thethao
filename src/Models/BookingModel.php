@@ -16,7 +16,7 @@ class BookingModel {
         $stmt = $this->pdo->prepare(
             "SELECT bd.slot_id FROM bookings b 
              JOIN booking_details bd ON b.id = bd.booking_id 
-             WHERE b.court_id = ? AND b.booking_date = ? AND b.status != 'cancelled'"
+             WHERE b.court_id = ? AND b.booking_date = ? AND b.status != 'Cancelled'"
         );
         $stmt->execute([$courtId, $date]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN); // [3, 7, ...]
@@ -26,8 +26,8 @@ class BookingModel {
         $this->pdo->beginTransaction();
 
         $stmt = $this->pdo->prepare(
-            "INSERT INTO bookings (court_id, customer_name, customer_phone, booking_date, status)
-             VALUES (:court_id, :customer_name, :customer_phone, :booking_date, :status)"
+            "INSERT INTO bookings (court_id, customer_name, customer_phone, booking_date, status, user_id)
+             VALUES (:court_id, :customer_name, :customer_phone, :booking_date, :status, :user_id)"
         );
 
         $stmt->execute([
@@ -36,6 +36,7 @@ class BookingModel {
             ':customer_phone' => $data['customer_phone'] ?? null,
             ':booking_date'   => $data['booking_date'],
             ':status'         => $data['status'] ?? 'Pending',
+            ':user_id'        => $data['user_id'] ?? null,
         ]);
 
         $bookingId = $this->pdo->lastInsertId();
@@ -63,6 +64,7 @@ class BookingModel {
     $stmt = $this->pdo->prepare("
         SELECT 
             b.id            AS booking_id,
+            b.court_id,
             b.booking_date,
             b.status        AS booking_status,
             b.created_at,
@@ -103,7 +105,7 @@ public function cancelBooking(int $bookingId, int $userId): bool
     if ($hoursDiff < 12) return false; // Không đủ điều kiện hủy
 
     $stmt = $this->pdo->prepare("
-        UPDATE bookings SET status = 'cancelled'
+        UPDATE bookings SET status = 'Cancelled'
         WHERE id = ? AND user_id = ?
     ");
     $stmt->execute([$bookingId, $userId]);

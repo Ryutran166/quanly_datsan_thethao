@@ -4,323 +4,389 @@ $current_action = $_GET['action'] ?? 'index';
 
 function isActive($action, $current_action)
 {
-    // Các action liên quan đến Sân
     $court_actions = ['courts', 'index', 'add', 'edit', 'update', 'delete', 'booking'];
-    // Các action liên quan đến User
-    $user_actions = ['user', 'add_user', 'edit_user', 'update_user', 'delete_user'];
+    $user_actions  = ['user', 'add_user', 'edit_user', 'update_user', 'delete_user'];
 
     if ($action === 'courts' && in_array($current_action, $court_actions)) return 'active';
-    if ($action === 'user' && in_array($current_action, $user_actions)) return 'active';
-    
+    if ($action === 'user'   && in_array($current_action, $user_actions))  return 'active';
+    if ($action === 'my_bookings' && $current_action === 'my_bookings') return 'active';
+
     return ($action === $current_action) ? 'active' : '';
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        :root { 
-            --primary-color: #28a745;
-            --dark-color: #1a1a1a;
-            --text-light: #ffffff;
-            --bg-body: #f8f9fa;
+        /* ── Reset & base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary:      #00c07f;
+            --primary-dark: #00a06a;
+            --dark:         #0f172a;
+            --nav-bg:       #0f172a;
+            --nav-border:   rgba(255,255,255,.07);
+            --text-muted:   #94a3b8;
+            --surface:      #ffffff;
+            --page-bg:      #f1f5f9;
+            --border:       #e2e8f0;
+            --danger:       #f43f5e;
         }
 
+        html { overflow-y: scroll; }
 
-       body {
-            padding-top: 120px;
-            font-family: 'Inter', Arial, sans-serif;
-            background: #1a1a1a;
-            font-weight: 400;
-            text-rendering: optimizeLegibility;
+        body {
+            /* push content below the two-row nav (64 + 52 = 116px) */
+            padding-top: 116px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--page-bg);
+            color: var(--dark);
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- Thanh Navigation Bar --- */
-        .navbar {
-            background-color: var(--dark-color);
-            color: var(--text-light);
-            padding: 0 5%;
+        /* ════════════════════════════
+           TOP NAV  (brand + user)
+        ════════════════════════════ */
+        .nav-top {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 90%;
-            height: 70px;
+            top: 0; left: 0;
+            width: 100%;
+            height: 64px;
+            background: var(--nav-bg);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 0 28px;
+            justify-content: space-between;
             z-index: 1000;
+            border-bottom: 1px solid var(--nav-border);
         }
 
+        /* Brand */
         .nav-brand {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--primary-color);
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -.3px;
             text-decoration: none;
-        }
-        .nav-links {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100%;
-        }
-
-        .nav-links li { height: 100%; }
-
-        .nav-links li a {
             display: flex;
             align-items: center;
-            color: #ccc;
-            text-decoration: none;
-            padding: 0 20px;
-            height: 100%;
-            transition: all 0.3s;
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
+            gap: 3px;
         }
 
-        .nav-links li a:hover,
-        .nav-links li a.active {
-            color: var(--text-light);
-            background-color: #333;
-            border-bottom: 3px solid var(--primary-color);
+        .brand-sport { color: var(--primary); }
+        .brand-hub   { color: #fff; }
+
+        /* tiny green dot accent */
+        .brand-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            margin-bottom: 10px;
         }
 
-        .navbar-top {
-            height: 70px;
-            min-height: 70px;
-            width: 100%;
-            background: #1a1a1a;
-            position: fixed;
-            top: 0;
-            z-index: 1000;
+        /* ── User area ── */
+        .nav-user {
+            position: relative;
             display: flex;
             align-items: center;
         }
 
-        .sub-navbar {
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .2s;
+            user-select: none;
+        }
+
+        .user-trigger:hover { background: rgba(255,255,255,.07); }
+
+        .user-avatar {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            background: rgba(0,192,127,.18);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .user-name-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-caret {
+            color: var(--text-muted);
+            font-size: 11px;
+            transition: transform .25s;
+        }
+
+        .nav-user.open .user-caret { transform: rotate(180deg); }
+
+        /* Dropdown */
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 210px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(15,23,42,.12);
+            overflow: hidden;
             z-index: 9999;
-            position: fixed;
-            top: 70px;  
-            left: 0;
-            width: 100%;
-            background: rgba(26,26,26,0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #333;
-            z-index: 999;
         }
 
-        .nav-inner {
-            width: 100%;
-            padding: 0 25px;
+        .nav-user.open .user-dropdown { display: block; }
 
+        .dropdown-header {
+            padding: 14px 16px 10px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .dropdown-header span {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .dropdown-header small {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .dropdown-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .sub-inner {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 12px 30px;
-
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .sub-inner a {
-            color: #aaa;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-block;
-            transition: all 0.25s ease;
+            gap: 10px;
+            padding: 11px 16px;
+            font-size: 13px;
             font-weight: 500;
-        }
-
-        /* Hover */
-        .sub-inner a:hover {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
-        }
-
-        /* Active */
-        .sub-inner a.active {
-            background: #28a745;
-            color: white;
-            box-shadow: 0 4px 12px rgba(40,167,69,0.4);
-        }
-        /* LOGIN BUTTON */
-        .login-btn {
-            color: white;
-            background: #28a745;
-            padding: 8px 15px;
-            border-radius: 6px;
+            color: #475569;
             text-decoration: none;
+            transition: background .15s, color .15s;
         }
 
-
-
-        /* --- Menu User--- */
-        .user-menu {
-            position: static;
-            height: 100%;
-            display: flex;
-            align-items: center;
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
         }
 
-        .user-name {
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
+        .dropdown-item:hover {
+            background: var(--page-bg);
+            color: var(--dark);
         }
 
-        .user-name i {
-            font-size: 24px;
-            width: 24px;
-            height: 24px;
+        .dropdown-item:hover i { color: var(--primary); }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        .dropdown-item.danger { color: var(--danger); }
+        .dropdown-item.danger i { color: var(--danger); }
+        .dropdown-item.danger:hover { background: #fff1f3; }
+
+        /* Login button */
+        .btn-login {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-        }
-
-        
-        .user-name:hover { background: #333; }
-
-        .dropdown-content {
-            display: none;
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            z-index: 9999;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #eee;
-        }
-
-        .dropdown-content a {
-            color: #333;
-            padding: 12px 20px;
+            gap: 7px;
+            padding: 8px 18px;
+            background: var(--primary);
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
             text-decoration: none;
-            display: block;
-            font-size: 0.95rem;
-            transition: background 0.2s;
+            transition: background .2s, transform .15s;
+            box-shadow: 0 2px 8px rgba(0,192,127,.3);
         }
 
-        .dropdown-content a i { margin-right: 10px; width: 20px; }
-
-        .dropdown-content a:hover {
-            background-color: #f8f9fa;
-            color: var(--primary-color);
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
         }
 
-        .user-menu.show .dropdown-content { display: block; }
-
-        * {
-            box-sizing: border-box;
+        /* ════════════════════════════
+           SUB NAV  (page links)
+        ════════════════════════════ */
+        .nav-sub {
+            position: fixed;
+            top: 64px; left: 0;
+            width: 100%;
+            height: 52px;
+            background: rgba(15,23,42,.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--nav-border);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 4px;
         }
 
-        html {
-            overflow-y: scroll;
+        .sub-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: background .2s, color .2s;
         }
 
+        .sub-link i { font-size: 12px; }
+
+        .sub-link:hover {
+            background: rgba(0,192,127,.1);
+            color: var(--primary);
+        }
+
+        .sub-link.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0,192,127,.3);
+        }
+
+        /* ── Page container ── */
         .container {
             width: 100%;
-            margin: 0 auto;
             max-width: 100%;
-             padding: 0;
+            padding: 0;
         }
     </style>
 </head>
 <body>
-<!-- NAVBAR TOP -->
-<nav class="navbar-top">
-    <div class="nav-inner">
+
+<!-- ══ TOP NAV ══ -->
+<nav class="nav-top">
+
     <a href="index.php?action=home" class="nav-brand">
-        SPORT<span style="color:white">HUB</span>
+        <span class="brand-sport">SPORT</span><span class="brand-hub">HUB</span>
+        <span class="brand-dot"></span>
     </a>
 
     <?php if (isset($_SESSION['user_id'])): ?>
-        <div class="user-menu" id="user-menu-dropdown">
-            <div class="user-name">
-                <i class="fas fa-user-circle"></i>
-                <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+
+        <div class="nav-user" id="nav-user">
+
+            <div class="user-trigger">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="user-name-text">
+                    <?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?>
+                </span>
+                <i class="fas fa-chevron-down user-caret"></i>
             </div>
-            
-            <div class="dropdown-content">
+
+            <div class="user-dropdown">
+
+                <div class="dropdown-header">
+                    <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></span>
+                    <small>
+                        <?php
+                            $role = $_SESSION['user_role'] ?? '';
+                            echo match($role) {
+                                'admin' => '⚙️ Quản trị viên',
+                                'owner' => '🏟️ Chủ sân',
+                                default => '👤 Người dùng',
+                            };
+                        ?>
+                    </small>
+                </div>
 
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <a href="index.php?action=user">
+                    <a href="index.php?action=user" class="dropdown-item">
                         <i class="fas fa-users-cog"></i> Quản trị User
                     </a>
                 <?php endif; ?>
-                <a href="index.php?action=change_password">
-                    <i class="fas fa-key"></i> Đổi mật khẩu
-                </a>
 
-                <a href="index.php?action=my_bookings">
+                <a href="index.php?action=my_bookings" class="dropdown-item">
                     <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
                 </a>
 
-                <div style="border-top: 1px solid #eee;"></div>
+                <a href="index.php?action=change_password" class="dropdown-item">
+                    <i class="fas fa-key"></i> Đổi mật khẩu
+                </a>
 
-                <a href="index.php?action=logout" style="color:#dc3545;">
+                <div class="dropdown-divider"></div>
+
+                <a href="index.php?action=logout" class="dropdown-item danger">
                     <i class="fas fa-sign-out-alt"></i> Đăng xuất
                 </a>
+
             </div>
         </div>
+
     <?php else: ?>
-        <a href="index.php?action=login" class="login-btn">
+        <a href="index.php?action=login" class="btn-login">
             <i class="fas fa-sign-in-alt"></i> Đăng nhập
         </a>
     <?php endif; ?>
-    </div>
+
 </nav>
 
-<!-- SUB NAVBAR -->
-<div class="sub-navbar">
-    <div class="sub-inner">
-        <a href="index.php?action=home" class="<?= isActive('home', $current_action); ?>">
-            Trang chủ
+<!-- ══ SUB NAV ══ -->
+<nav class="nav-sub">
+    <a href="index.php?action=home"  class="sub-link <?= isActive('home', $current_action) ?>">
+        <i class="fas fa-house"></i> Trang chủ
+    </a>
+    <a href="index.php?action=index" class="sub-link <?= isActive('courts', $current_action) ?>">
+        <i class="fas fa-table-tennis-paddle-ball"></i> Danh sách sân
+    </a>
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <a href="index.php?action=my_bookings" class="sub-link <?= isActive('my_bookings', $current_action) ?>">
+            <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
         </a>
-        <a href="index.php?action=index" class="<?= isActive('courts', $current_action); ?>">
-            Danh sách sân
-        </a>
-        </a>
+    <?php endif; ?>
+</nav>
 
-     </div>
-</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navUser = document.getElementById('nav-user');
+        if (!navUser) return;
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const userMenu = document.getElementById('user-menu-dropdown');
-            if (userMenu) {
-                userMenu.addEventListener('click', function(e) {
-                    this.classList.toggle('show');
-                    e.stopPropagation();
-                });
-            }
-            document.addEventListener('click', function() {
-                if (userMenu) userMenu.classList.remove('show');
-            });
+        navUser.addEventListener('click', function (e) {
+            this.classList.toggle('open');
+            e.stopPropagation();
         });
-    </script>
-    <div class="container">
+
+        document.addEventListener('click', function () {
+            navUser.classList.remove('open');
+        });
+    });
+</script>
+
+<div class="container">

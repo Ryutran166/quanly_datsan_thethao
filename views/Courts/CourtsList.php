@@ -4,325 +4,597 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
 <title>Quản Lý Sân</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
     :root {
-        --primary: #2dce89;
-        --dark: #32325d;
-        --gray: #8898aa;
-        --light: #f8f9fe;
-        --danger: #f5365c;
+        --primary: #00c07f;
+        --primary-dark: #00a06a;
+        --primary-soft: #e6faf3;
+        --danger: #f43f5e;
+        --danger-soft: #fff1f3;
+        --dark: #0f172a;
+        --mid: #475569;
+        --muted: #94a3b8;
+        --border: #e2e8f0;
+        --surface: #ffffff;
+        --page-bg: #f1f5f9;
+        --card-shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.06);
+        --card-hover-shadow: 0 8px 32px rgba(15,23,42,.12);
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-        background: #1a1a1a !important;
+        background: var(--page-bg) !important;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--dark);
     }
 
-    .page-header {
+    /* ── Page wrapper ── */
+    .courts-wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 35px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 16px;
     }
 
-    .search-box {
-        background: white;
-        padding: 12px 18px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, .05);
+    .topbar-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -.5px;
+    }
+
+    .topbar-title span {
+        color: var(--primary);
+    }
+
+    /* ── Search & actions row ── */
+    .toolbar {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
     }
 
-    .search-box input {
-        border: none;
+    .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+        max-width: 380px;
+    }
+
+    .search-wrap .ico {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .search-wrap input[type="text"] {
+        width: 100%;
+        padding: 10px 16px 10px 40px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--dark);
+        background: var(--surface);
         outline: none;
-        width: 260px;
+        transition: border-color .2s, box-shadow .2s;
     }
 
-    .card-container {
+    .search-wrap input[type="text"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0,192,127,.12);
+    }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 22px;
+        background: var(--primary);
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .2s, transform .15s, box-shadow .2s;
+        box-shadow: 0 2px 8px rgba(0,192,127,.3);
+        white-space: nowrap;
+    }
+
+    .btn-add:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0,192,127,.35);
+    }
+
+    .btn-add:active { transform: scale(.97); }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 40px;
+        padding: 6px 16px 6px 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--mid);
+    }
+
+    .stat-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .stat-dot.green { background: var(--primary); }
+    .stat-dot.red   { background: var(--danger); }
+    .stat-dot.gray  { background: var(--muted); }
+
+    /* ── Card grid ── */
+    .card-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 25px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
     }
 
+    /* ── Court card ── */
     .court-card {
-        background: white;
-        border-radius: 16px;
+        background: var(--surface);
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 0 2rem rgba(136, 152, 170, .15);
-        transition: .3s;
+        border: 1.5px solid var(--border);
+        box-shadow: var(--card-shadow);
+        transition: transform .25s ease, box-shadow .25s ease, border-color .25s;
+        display: flex;
+        flex-direction: column;
     }
 
     .court-card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-6px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: #cbd5e1;
     }
 
-    .court-image {
+    /* image */
+    .court-img-wrap {
+        position: relative;
+        height: 196px;
+        overflow: hidden;
+    }
+
+    .court-img-wrap img {
         width: 100%;
-        height: 210px;
+        height: 100%;
         object-fit: cover;
+        display: block;
+        transition: transform .4s ease;
     }
 
-    .card-body {
-        padding: 20px;
+    .court-card:hover .court-img-wrap img {
+        transform: scale(1.04);
     }
 
-    .badge-status {
-        display: inline-block;
-        padding: 6px 14px;
+    /* status badge on image */
+    .img-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 5px 12px;
         border-radius: 30px;
         font-size: 12px;
         font-weight: 700;
-        margin-bottom: 12px;
+        letter-spacing: .3px;
+        backdrop-filter: blur(6px);
     }
 
-    .available {
-        background: #eafaf1;
-        color: var(--primary);
+    .img-badge.available {
+        background: rgba(230,250,243,.92);
+        color: #00875a;
+        border: 1px solid rgba(0,192,127,.25);
     }
 
-    .booked {
-        background: #ffe5e5;
+    .img-badge.booked {
+        background: rgba(255,241,243,.92);
+        color: #be123c;
+        border: 1px solid rgba(244,63,94,.2);
+    }
+
+    /* quick-action buttons on image (top-right) */
+    .img-actions {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: flex;
+        gap: 6px;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: opacity .25s, transform .25s;
+    }
+
+    .court-card:hover .img-actions { opacity: 1; transform: translateY(0); }
+
+    .img-btn {
+        width: 34px; height: 34px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+        font-size: 13px;
+        backdrop-filter: blur(8px);
+        transition: background .15s, transform .15s;
+    }
+
+    .img-btn:active { transform: scale(.92); }
+
+    .img-btn.edit {
+        background: rgba(255,255,255,.88);
+        color: var(--mid);
+        border: 1px solid rgba(255,255,255,.5);
+    }
+
+    .img-btn.edit:hover { background: #fff; color: var(--dark); }
+
+    .img-btn.del {
+        background: rgba(244,63,94,.15);
         color: var(--danger);
+        border: 1px solid rgba(244,63,94,.25);
     }
+
+    .img-btn.del:hover { background: rgba(244,63,94,.25); }
+
+    /* card body */
+    .card-body {
+        padding: 18px 20px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .owner-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: .3px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .owner-chip.mine { color: var(--primary); }
 
     .court-name {
-        font-size: 22px;
-        font-weight: 700;
+        font-size: 19px;
+        font-weight: 800;
         color: var(--dark);
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        line-height: 1.25;
     }
 
-    .price {
-        font-size: 24px;
+    .price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        margin-bottom: 18px;
+    }
+
+    .price-amount {
+        font-size: 22px;
         font-weight: 800;
         color: var(--primary);
+        letter-spacing: -.5px;
     }
 
-    .price small {
-        font-size: 14px;
-        color: var(--gray);
-    }
-
-    .owner-tag {
+    .price-unit {
         font-size: 13px;
-        color: #666;
-        margin-top: 6px;
+        color: var(--muted);
+        font-weight: 500;
     }
 
+    /* footer */
     .card-footer {
-        margin-top: 18px;
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-    }
-
-    .action-left {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #ddd;
-        color: #666;
-        text-decoration: none;
-    }
-
-    .btn-delete:hover {
-        color: var(--danger);
+        padding-top: 16px;
+        border-top: 1.5px solid var(--border);
+        margin-top: auto;
     }
 
     .btn-book {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 20px;
         background: var(--primary);
-        color: white;
-        padding: 10px 18px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
         border-radius: 10px;
         text-decoration: none;
-        font-weight: 600;
+        transition: background .2s, transform .15s, box-shadow .2s;
+        box-shadow: 0 2px 6px rgba(0,192,127,.25);
     }
 
-    .empty-box {
-        grid-column: 1/-1;
-        text-align: center;
-        padding: 80px;
-        background: white;
-        border-radius: 16px;
+    .btn-book:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 4px 12px rgba(0,192,127,.3);
+        transform: translateY(-1px);
     }
 
-    .courts-page .page-header {
-        margin-bottom: 25px;
-    }
+    .btn-book:active { transform: scale(.96); }
 
-    .courts-page .d-flex.justify-content-between {
-        margin-bottom: 30px;
-    }
-
-    .courts-page .card-container {
-        margin-top: 10px;
-        margin-bottom: 30px;
-    }
-
-    .pagination {
-        margin-top: 25px;
+    /* desktop edit/delete — fallback when card NOT hovered (show inline) */
+    .inline-actions {
         display: flex;
-        justify-content: center;
         gap: 8px;
     }
+
+    .action-btn {
+        width: 36px; height: 36px;
+        border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+        font-size: 13px;
+        border: 1.5px solid var(--border);
+        color: var(--mid);
+        transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .action-btn:hover { background: var(--page-bg); border-color: #cbd5e1; }
+    .action-btn.danger:hover { background: var(--danger-soft); color: var(--danger); border-color: rgba(244,63,94,.3); }
+
+    /* ── Empty state ── */
+    .empty-state {
+        grid-column: 1/-1;
+        text-align: center;
+        padding: 80px 40px;
+        background: var(--surface);
+        border-radius: 20px;
+        border: 1.5px dashed var(--border);
+    }
+
+    .empty-icon {
+        width: 64px; height: 64px;
+        background: var(--primary-soft);
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 16px;
+    }
+
+    .empty-state h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 6px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        color: var(--muted);
+    }
+
+    /* ── Pagination ── */
+    .pagi {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 36px;
+        flex-wrap: wrap;
+    }
+
+    .pagi a {
+        min-width: 38px; height: 38px;
+        padding: 0 12px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        color: var(--mid);
+        transition: background .15s, border-color .15s, color .15s;
+    }
+
+    .pagi a:hover { background: var(--page-bg); border-color: #cbd5e1; color: var(--dark); }
+    .pagi a.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 </style>
 
-<div class="container py-5 courts-page">
+<div class="courts-wrapper">
 
-    <div class="page-header">
+    <!-- Top bar -->
+    <div class="topbar">
+        <h1 class="topbar-title">Quản lý <span>sân</span></h1>
 
         <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['admin', 'owner'])): ?>
-            <!-- FIXED -->
-            <a href="index.php?action=create"
-                class="btn btn-success px-4 py-2 rounded-pill" style="background: #2dce89; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;">
-                + Thêm sân mới
+            <a href="index.php?action=create" class="btn-add">
+                <i class="fa fa-plus" style="font-size:12px;"></i>
+                Thêm sân mới
             </a>
         <?php endif; ?>
-
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <form action="index.php" method="GET" class="search-box">
-            <i class="fa fa-search text-muted"></i>
-
+    <!-- Toolbar: search -->
+    <div class="toolbar">
+        <form action="index.php" method="GET" class="search-wrap">
+            <span class="ico"><i class="fa fa-search"></i></span>
             <input type="hidden" name="action" value="index">
-
             <input type="text"
-                name="keyword"
-                placeholder="Tìm kiếm tên sân..."
-                value="<?= htmlspecialchars($keyword ?? '') ?>">
+                   name="keyword"
+                   placeholder="Tìm kiếm tên sân..."
+                   value="<?= htmlspecialchars($keyword ?? '') ?>">
         </form>
-
     </div>
 
-    <div class="card-container">
+    <!-- Stats strip -->
+    <?php if (!empty($courts)): ?>
+    <div class="stats-strip">
+        <?php
+            $total     = count($courts);
+            $available = count(array_filter($courts, fn($c) => $c['status'] == 'available'));
+            $booked    = $total - $available;
+        ?>
+        <div class="stat-pill">
+            <span class="stat-dot gray"></span>
+            <?= $total ?> sân
+        </div>
+        <div class="stat-pill">
+            <span class="stat-dot green"></span>
+            <?= $available ?> đang trống
+        </div>
+        <div class="stat-pill">
+            <span class="stat-dot red"></span>
+            <?= $booked ?> đã đặt
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Card grid -->
+    <div class="card-grid">
 
         <?php if (!empty($courts)): ?>
             <?php foreach ($courts as $court): ?>
 
+                <?php
+                    $canEdit = false;
+                    if (isset($_SESSION['user_role'])) {
+                        if ($_SESSION['user_role'] == 'admin') {
+                            $canEdit = true;
+                        } elseif ($_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id']) {
+                            $canEdit = true;
+                        }
+                    }
+                    $isAvailable = $court['status'] == 'available';
+                    $isMine      = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id'];
+                ?>
+
                 <div class="court-card">
 
-                    <img class="court-image"
-                        src="<?= !empty($court['image_url']) ? $court['image_url'] : 'https://images.unsplash.com/photo-1599474924187-334a4ae593c1?q=80&w=600' ?>">
+                    <!-- Image -->
+                    <div class="court-img-wrap">
+                        <img src="<?= !empty($court['image_url']) ? $court['image_url'] : 'https://images.unsplash.com/photo-1599474924187-334a4ae593c1?q=80&w=600' ?>"
+                             alt="<?= htmlspecialchars($court['name']) ?>">
 
+                        <span class="img-badge <?= $isAvailable ? 'available' : 'booked' ?>">
+                            <?= $isAvailable ? '● Trống' : '● Đã đặt' ?>
+                        </span>
+
+                        <?php if ($canEdit): ?>
+                        <div class="img-actions">
+                            <a href="index.php?action=edit&id=<?= $court['id'] ?>" class="img-btn edit" title="Chỉnh sửa">
+                                <i class="fa fa-pen"></i>
+                            </a>
+                            <a href="index.php?action=delete&id=<?= $court['id'] ?>"
+                               class="img-btn del" title="Xóa"
+                               onclick="return confirm('Bạn chắc chắn muốn xóa sân này?')">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Body -->
                     <div class="card-body">
 
-                        <div class="badge-status <?= $court['status'] == 'available' ? 'available' : 'booked' ?>">
-                            <?= $court['status'] == 'available' ? 'Trống' : 'Đã đặt' ?>
-                        </div>
-
-                        <div class="court-name">
-                            <?= htmlspecialchars($court['name']) ?>
-                        </div>
-
-                        <div class="price">
-                            <?= number_format($court['price']) ?>
-                            <small>VNĐ / giờ</small>
-                        </div>
-
                         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner'): ?>
-
-                            <?php if ($court['owner_id'] == $_SESSION['user_id']): ?>
-                                <div class="owner-tag">Sân của bạn</div>
-                            <?php else: ?>
-                                <div class="owner-tag">Sân của chủ khác</div>
-                            <?php endif; ?>
-
+                            <div class="owner-chip <?= $isMine ? 'mine' : '' ?>">
+                                <i class="fa fa-<?= $isMine ? 'star' : 'user' ?>" style="font-size:10px;"></i>
+                                <?= $isMine ? 'Sân của bạn' : 'Sân của chủ khác' ?>
+                            </div>
                         <?php endif; ?>
+
+                        <div class="court-name"><?= htmlspecialchars($court['name']) ?></div>
+
+                        <div class="price-row">
+                            <span class="price-amount"><?= number_format($court['price']) ?></span>
+                            <span class="price-unit">VNĐ / giờ</span>
+                        </div>
 
                         <div class="card-footer">
 
-                            <div class="action-left">
-
-                                <?php
-                                $canEdit = false;
-
-                                if (isset($_SESSION['user_role'])) {
-
-                                    if ($_SESSION['user_role'] == 'admin') {
-                                        $canEdit = true;
-                                    } elseif (
-                                        $_SESSION['user_role'] == 'owner' &&
-                                        $court['owner_id'] == $_SESSION['user_id']
-                                    ) {
-                                        $canEdit = true;
-                                    }
-                                }
-                                ?>
-
-                                <?php if ($canEdit): ?>
-
-                                    <a href="index.php?action=edit&id=<?= $court['id'] ?>"
-                                        class="btn-icon">
-                                        <i class="fa fa-pen"></i>
-                                    </a>
-
-                                    <a href="index.php?action=delete&id=<?= $court['id'] ?>"
-                                        class="btn-icon btn-delete"
-                                        onclick="return confirm('Bạn chắc chắn muốn xóa?')">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
-
-                                <?php endif; ?>
-
+                            <?php if ($canEdit): ?>
+                            <div class="inline-actions">
+                                <a href="index.php?action=edit&id=<?= $court['id'] ?>"
+                                   class="action-btn" title="Chỉnh sửa">
+                                    <i class="fa fa-pen"></i>
+                                </a>
+                                <a href="index.php?action=delete&id=<?= $court['id'] ?>"
+                                   class="action-btn danger" title="Xóa"
+                                   onclick="return confirm('Bạn chắc chắn muốn xóa sân này?')">
+                                    <i class="fa fa-trash"></i>
+                                </a>
                             </div>
+                            <?php else: ?>
+                            <div></div>
+                            <?php endif; ?>
 
-                            <a href="index.php?action=booking&id=<?= $court['id'] ?>"
-                                class="btn-book">
-                                Đặt sân
+                            <a href="index.php?action=booking&id=<?= $court['id'] ?>" class="btn-book">
+                                Đặt sân <i class="fa fa-arrow-right" style="font-size:11px;"></i>
                             </a>
 
                         </div>
-
                     </div>
-
                 </div>
 
             <?php endforeach; ?>
 
         <?php else: ?>
 
-            <div class="empty-box">
-                <p class="mt-3 text-muted">
-                    Không tìm thấy sân nào
-                </p>
+            <div class="empty-state">
+                <div class="empty-icon">🏟️</div>
+                <h3>Không tìm thấy sân nào</h3>
+                <p>Thử tìm kiếm với từ khóa khác hoặc thêm sân mới.</p>
             </div>
 
         <?php endif; ?>
 
     </div>
 
-</div>
-<div class="pagination mt-4 text-center">
-
-    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-
-        <a href="?action=index&keyword=<?= urlencode($keyword ?? '') ?>&page=<?= $i ?>"
-            style="
-            padding:10px 15px;
-            margin:0 5px;
-            border-radius:8px;
-            text-decoration:none;
-            background:<?= ($i == $currentPage) ? '#2dce89' : '#fff' ?>;
-            color:<?= ($i == $currentPage) ? '#fff' : '#333' ?>;
-            font-weight:600;
-            box-shadow:0 2px 8px rgba(0,0,0,.08);
-        ">
-            <?= $i ?>
-        </a>
-
-    <?php endfor; ?>
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+    <div class="pagi">
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?action=index&keyword=<?= urlencode($keyword ?? '') ?>&page=<?= $i ?>"
+               class="<?= ($i == $currentPage) ? 'active' : '' ?>">
+                <?= $i ?>
+            </a>
+        <?php endfor; ?>
+    </div>
+    <?php endif; ?>
 
 </div>
 
