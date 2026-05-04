@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 02, 2026 lúc 09:08 AM
+-- Thời gian đã tạo: Th5 04, 2026 lúc 10:30 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.1.25
 
@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `bookings` (
   `id` int(11) NOT NULL,
   `court_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `customer_name` varchar(255) NOT NULL,
   `customer_phone` varchar(20) DEFAULT NULL,
   `booking_date` date NOT NULL,
@@ -42,13 +43,9 @@ CREATE TABLE `bookings` (
 -- Đang đổ dữ liệu cho bảng `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `court_id`, `customer_name`, `customer_phone`, `booking_date`, `total_amount`, `status`, `created_at`) VALUES
-(1, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 08:01:25'),
-(2, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 08:36:31'),
-(3, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:14'),
-(4, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:18'),
-(5, 8, 'Koori', '0935461720', '2026-04-28', NULL, 'Confirmed', '2026-04-28 09:07:22'),
-(6, 8, 'Koori', '0935461720', '2026-04-29', NULL, 'Confirmed', '2026-04-28 09:18:32');
+INSERT INTO `bookings` (`id`, `court_id`, `user_id`, `customer_name`, `customer_phone`, `booking_date`, `total_amount`, `status`, `created_at`) VALUES
+(1, 8, 3, 'Trần Thanh Long', '0939448811', '2026-05-04', NULL, 'Confirmed', '2026-05-04 08:23:20'),
+(2, 8, 3, 'Trần Thanh Long', '0939448811', '2026-05-04', NULL, 'Confirmed', '2026-05-04 08:23:26');
 
 -- --------------------------------------------------------
 
@@ -67,12 +64,8 @@ CREATE TABLE `booking_details` (
 --
 
 INSERT INTO `booking_details` (`id`, `booking_id`, `slot_id`) VALUES
-(1, 1, 4),
-(2, 2, 5),
-(3, 3, 2),
-(4, 4, 3),
-(5, 5, 1),
-(6, 6, 2);
+(7, 1, 4),
+(8, 2, 5);
 
 -- --------------------------------------------------------
 
@@ -88,20 +81,18 @@ CREATE TABLE `courts` (
   `address` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'địa chỉ sân',
   `image_url` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `owner_id` int(11) NOT NULL
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Danh sach san cau long';
 
 --
 -- Đang đổ dữ liệu cho bảng `courts`
 --
 
-INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image_url`, `created_at`, `updated_at`, `owner_id`) VALUES
-(3, 'Sân Huỳnh Châu', 200000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 16:06:38', '2026-04-27 14:32:57', 0),
-(6, 'Sân Hoàng Huy', 300000.00, 'available', NULL, '', '2026-04-26 18:30:44', '2026-04-26 19:37:24', 0),
-(7, 'Sân An Bình', 300000.00, 'available', NULL, '', '2026-04-26 18:30:59', '2026-04-26 19:37:19', 0),
-(8, 'Sân Tây Đô', 300000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 19:11:27', '2026-04-27 14:48:50', 0),
-(15, 'Sân 442', 200000.00, 'available', NULL, '', '2026-05-02 14:06:07', '2026-05-02 14:06:07', 11);
+INSERT INTO `courts` (`id`, `name`, `price`, `status`, `address`, `image_url`, `created_at`, `updated_at`) VALUES
+(3, 'Sân Huỳnh Châu', 200000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 16:06:38', '2026-04-27 14:32:57'),
+(6, 'Sân Hoàng Huy', 300000.00, 'available', NULL, '', '2026-04-26 18:30:44', '2026-04-26 19:37:24'),
+(7, 'Sân An Bình', 300000.00, 'available', NULL, '', '2026-04-26 18:30:59', '2026-04-26 19:37:19'),
+(8, 'Sân Tây Đô', 300000.00, 'available', NULL, 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b', '2026-04-26 19:11:27', '2026-04-27 14:48:50');
 
 -- --------------------------------------------------------
 
@@ -160,7 +151,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `created_at`, `
 (7, 'Koori', 'Koori@gmail.com', '$2y$10$c7/4jbTbakkc9n6QK4Lgyuv0PjwNTFajvwPT/yzkPYrSGgesklhAS', '0935461720', '2026-04-28 07:56:44', 'customer'),
 (8, 'Kooria', 'kazel@gmail.com', '$2y$10$lETAprMEKzI5Rhd/1oGSXev9jqed/6VWi6.mMXjUn4ZE60hxHCh0C', '0935461720', '2026-04-29 15:58:58', 'admin'),
 (9, 'Kooriaa', 'aquari@gmail.com', '$2y$10$6xhk.QiZjYIFXcUoYNIcxuU5SFxSwBZpPmtUFJ.T4iLR57cdXqfom', '0935461720', '2026-04-29 18:28:21', 'customer'),
-(11, 'Ryu Tran', 'ryu@gmail.com', '$2y$10$KAxjAKhyj4WSZY96T9zC3ODMDOE9ne.75qT/mYn/HKcKahh0XCFMu', '0337797091', '2026-05-02 06:28:28', 'owner');
+(10, 'Ryu Tran', 'ryu@gmail.com', '$2y$10$Edu6.NSSaqvjyx03DqwIa.Rib.7oEpnYYMHPgDvQD7ct1usmRgBIy', '0337797091', '2026-05-04 07:45:46', 'owner');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -171,7 +162,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `created_at`, `
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `court_id` (`court_id`);
+  ADD KEY `idx_court` (`court_id`),
+  ADD KEY `idx_user` (`user_id`);
 
 --
 -- Chỉ mục cho bảng `booking_details`
@@ -208,19 +200,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `booking_details`
 --
 ALTER TABLE `booking_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `courts`
 --
 ALTER TABLE `courts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `time_slots`
@@ -232,7 +224,7 @@ ALTER TABLE `time_slots`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -242,7 +234,8 @@ ALTER TABLE `users`
 -- Các ràng buộc cho bảng `bookings`
 --
 ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`court_id`) REFERENCES `courts` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_booking_court` FOREIGN KEY (`court_id`) REFERENCES `courts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Các ràng buộc cho bảng `booking_details`

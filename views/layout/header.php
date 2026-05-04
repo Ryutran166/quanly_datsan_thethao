@@ -17,6 +17,7 @@ function isActive($action, $current_action)
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,22 +29,30 @@ function isActive($action, $current_action)
 
     <style>
         /* ── Reset & base ── */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --primary:      #00c07f;
-            --primary-dark: #00a06a;
-            --dark:         #0f172a;
-            --nav-bg:       #0f172a;
-            --nav-border:   rgba(255,255,255,.07);
-            --text-muted:   #94a3b8;
-            --surface:      #ffffff;
-            --page-bg:      #f1f5f9;
-            --border:       #e2e8f0;
-            --danger:       #f43f5e;
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        html { overflow-y: scroll; }
+        :root {
+            --primary: #00c07f;
+            --primary-dark: #00a06a;
+            --dark: #0f172a;
+            --nav-bg: #0f172a;
+            --nav-border: rgba(255, 255, 255, .07);
+            --text-muted: #94a3b8;
+            --surface: #ffffff;
+            --page-bg: #f1f5f9;
+            --border: #e2e8f0;
+            --danger: #f43f5e;
+        }
+
+        html {
+            overflow-y: scroll;
+        }
 
         body {
             /* push content below the two-row nav (64 + 52 = 116px) */
@@ -59,7 +68,8 @@ function isActive($action, $current_action)
         ════════════════════════════ */
         .nav-top {
             position: fixed;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 64px;
             background: var(--nav-bg);
@@ -82,12 +92,18 @@ function isActive($action, $current_action)
             gap: 3px;
         }
 
-        .brand-sport { color: var(--primary); }
-        .brand-hub   { color: #fff; }
+        .brand-sport {
+            color: var(--primary);
+        }
+
+        .brand-hub {
+            color: #fff;
+        }
 
         /* tiny green dot accent */
         .brand-dot {
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--primary);
             margin-bottom: 10px;
@@ -111,13 +127,18 @@ function isActive($action, $current_action)
             user-select: none;
         }
 
-        .user-trigger:hover { background: rgba(255,255,255,.07); }
+        .user-trigger:hover {
+            background: rgba(255, 255, 255, .07);
+        }
 
         .user-avatar {
-            width: 34px; height: 34px;
+            width: 34px;
+            height: 34px;
             border-radius: 10px;
-            background: rgba(0,192,127,.18);
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 192, 127, .18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--primary);
             font-size: 15px;
             flex-shrink: 0;
@@ -139,7 +160,9 @@ function isActive($action, $current_action)
             transition: transform .25s;
         }
 
-        .nav-user.open .user-caret { transform: rotate(180deg); }
+        .nav-user.open .user-caret {
+            transform: rotate(180deg);
+        }
 
         /* Dropdown */
         .user-dropdown {
@@ -151,12 +174,14 @@ function isActive($action, $current_action)
             background: var(--surface);
             border: 1.5px solid var(--border);
             border-radius: 14px;
-            box-shadow: 0 8px 30px rgba(15,23,42,.12);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, .12);
             overflow: hidden;
             z-index: 9999;
         }
 
-        .nav-user.open .user-dropdown { display: block; }
+        .nav-user.open .user-dropdown {
+            display: block;
+        }
 
         .dropdown-header {
             padding: 14px 16px 10px;
@@ -200,7 +225,9 @@ function isActive($action, $current_action)
             color: var(--dark);
         }
 
-        .dropdown-item:hover i { color: var(--primary); }
+        .dropdown-item:hover i {
+            color: var(--primary);
+        }
 
         .dropdown-divider {
             height: 1px;
@@ -208,9 +235,17 @@ function isActive($action, $current_action)
             margin: 4px 0;
         }
 
-        .dropdown-item.danger { color: var(--danger); }
-        .dropdown-item.danger i { color: var(--danger); }
-        .dropdown-item.danger:hover { background: #fff1f3; }
+        .dropdown-item.danger {
+            color: var(--danger);
+        }
+
+        .dropdown-item.danger i {
+            color: var(--danger);
+        }
+
+        .dropdown-item.danger:hover {
+            background: #fff1f3;
+        }
 
         /* Login button */
         .btn-login {
@@ -226,7 +261,7 @@ function isActive($action, $current_action)
             border-radius: 10px;
             text-decoration: none;
             transition: background .2s, transform .15s;
-            box-shadow: 0 2px 8px rgba(0,192,127,.3);
+            box-shadow: 0 2px 8px rgba(0, 192, 127, .3);
         }
 
         .btn-login:hover {
@@ -239,10 +274,11 @@ function isActive($action, $current_action)
         ════════════════════════════ */
         .nav-sub {
             position: fixed;
-            top: 64px; left: 0;
+            top: 64px;
+            left: 0;
             width: 100%;
             height: 52px;
-            background: rgba(15,23,42,.92);
+            background: rgba(15, 23, 42, .92);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--nav-border);
@@ -266,17 +302,19 @@ function isActive($action, $current_action)
             transition: background .2s, color .2s;
         }
 
-        .sub-link i { font-size: 12px; }
+        .sub-link i {
+            font-size: 12px;
+        }
 
         .sub-link:hover {
-            background: rgba(0,192,127,.1);
+            background: rgba(0, 192, 127, .1);
             color: var(--primary);
         }
 
         .sub-link.active {
             background: var(--primary);
             color: #fff;
-            box-shadow: 0 2px 8px rgba(0,192,127,.3);
+            box-shadow: 0 2px 8px rgba(0, 192, 127, .3);
         }
 
         /* ── Page container ── */
@@ -287,110 +325,105 @@ function isActive($action, $current_action)
         }
     </style>
 </head>
+
 <body>
 
-<!-- ══ TOP NAV ══ -->
-<nav class="nav-top">
+    <!-- ══ TOP NAV ══ -->
+    <nav class="nav-top">
 
-    <a href="index.php?action=home" class="nav-brand">
-        <span class="brand-sport">SPORT</span><span class="brand-hub">HUB</span>
-        <span class="brand-dot"></span>
-    </a>
+        <a href="index.php?action=home" class="nav-brand">
+            <span class="brand-sport">SPORT</span><span class="brand-hub">HUB</span>
+            <span class="brand-dot"></span>
+        </a>
 
-    <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (isset($_SESSION['user_id'])): ?>
 
-        <div class="nav-user" id="nav-user">
+            <div class="nav-user" id="nav-user">
 
-            <div class="user-trigger">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
+                <div class="user-trigger">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="user-name-text">
+                        <?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?>
+                    </span>
+                    <i class="fas fa-chevron-down user-caret"></i>
                 </div>
-                <span class="user-name-text">
-                    <?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?>
-                </span>
-                <i class="fas fa-chevron-down user-caret"></i>
-            </div>
 
-            <div class="user-dropdown">
+                <div class="user-dropdown">
 
-                <div class="dropdown-header">
-                    <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></span>
-                    <small>
-                        <?php
+                    <div class="dropdown-header">
+                        <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></span>
+                        <small>
+                            <?php
                             $role = $_SESSION['user_role'] ?? '';
-                            echo match($role) {
+                            echo match ($role) {
                                 'admin' => '⚙️ Quản trị viên',
                                 'owner' => '🏟️ Chủ sân',
                                 default => '👤 Người dùng',
                             };
-                        ?>
-                    </small>
-                </div>
-
-                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-
-                    <a href="index.php?action=admin_bookings" class="dropdown-item">
-                        <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
+                            ?>
+                        </small>
+                    </div>
+                    <a href="index.php?action=change_password" class="dropdown-item">
+                        <i class="fas fa-key"></i> Đổi mật khẩu
                     </a>
-                <?php endif; ?>
 
-                <a href="index.php?action=my_bookings" class="dropdown-item">
-                    <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
-                </a>
+                    <div class="dropdown-divider"></div>
 
-                <a href="index.php?action=change_password" class="dropdown-item">
-                    <i class="fas fa-key"></i> Đổi mật khẩu
-                </a>
+                    <a href="index.php?action=logout" class="dropdown-item danger">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </a>
 
-                <div class="dropdown-divider"></div>
-
-                <a href="index.php?action=logout" class="dropdown-item danger">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </a>
-
+                </div>
             </div>
-        </div>
 
-    <?php else: ?>
-        <a href="index.php?action=login" class="btn-login">
-            <i class="fas fa-sign-in-alt"></i> Đăng nhập
-        </a>
-    <?php endif; ?>
-
-</nav>
-
-<!-- ══ SUB NAV ══ -->
-<nav class="nav-sub">
-    <a href="index.php?action=home"  class="sub-link <?= isActive('home', $current_action) ?>">
-        <i class="fas fa-house"></i> Trang chủ
-    </a>
-    <a href="index.php?action=index" class="sub-link <?= isActive('courts', $current_action) ?>">
-        <i class="fas fa-table-tennis-paddle-ball"></i> Danh sách sân
-    </a>
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="index.php?action=my_bookings" class="sub-link <?= isActive('my_bookings', $current_action) ?>">
-            <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
-        </a>
-        <a href="index.php?action=user" class="sub-link <?= isActive('user', $current_action); ?>">
-            Quản trị User
-        </a>
+        <?php else: ?>
+            <a href="index.php?action=login" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
         <?php endif; ?>
-</nav>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const navUser = document.getElementById('nav-user');
-        if (!navUser) return;
+    </nav>
 
-        navUser.addEventListener('click', function (e) {
-            this.classList.toggle('open');
-            e.stopPropagation();
+    <!-- ══ SUB NAV ══ -->
+    <nav class="nav-sub">
+        <a href="index.php?action=home" class="sub-link <?= isActive('home', $current_action) ?>">
+            <i class="fas fa-house"></i> Trang chủ
+        </a>
+        <a href="index.php?action=index" class="sub-link <?= isActive('courts', $current_action) ?>">
+            <i class="fas fa-table-tennis-paddle-ball"></i> Danh sách sân
+        </a>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <a href="index.php?action=my_bookings" class="sub-link <?= isActive('my_bookings', $current_action) ?>">
+                <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
+            </a>
+            <a href="index.php?action=user" class="sub-link <?= isActive('user', $current_action); ?>">
+                Quản trị User
+            </a>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+
+            <a href="index.php?action=admin_bookings" class="sub-link <?= isActive('admin_bookings', $current_action); ?>">
+                <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
+            </a>
+        <?php endif; ?>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navUser = document.getElementById('nav-user');
+            if (!navUser) return;
+
+            navUser.addEventListener('click', function(e) {
+                this.classList.toggle('open');
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', function() {
+                navUser.classList.remove('open');
+            });
         });
+    </script>
 
-        document.addEventListener('click', function () {
-            navUser.classList.remove('open');
-        });
-    });
-</script>
-
-<div class="container">
+    <div class="container">

@@ -118,7 +118,6 @@ switch ($action) {
     case 'add_user':
         $controller->add();
         break;
-
     case 'do_add_user':
         $controller->store();
         break;
