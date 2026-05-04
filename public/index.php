@@ -23,7 +23,9 @@ $protected_actions = [
     'add_user',
     'edit_user',
     'update_user',
-    'delete_user'
+    'delete_user',
+    'change_password',
+    'do_change_password'
 ];
 
 if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
@@ -36,7 +38,9 @@ $admin_only_actions = [
     'edit_user',
     'update_user',
     'delete_user',
-    'do_add_user'
+    'do_add_user',
+    'change_password',
+    'do_change_password'
 ];
 
 if (in_array($action, $admin_only_actions)) {
@@ -63,6 +67,8 @@ switch ($action) {
     case 'edit_user':
     case 'update_user':
     case 'delete_user':
+    case 'do_change_password':
+    case 'change_password':
         $controller = new UserController();
         break;
 
@@ -95,7 +101,13 @@ switch ($action) {
         $controller->logout();
         break;
 
-case 'user':
+    case 'change_password':
+        $controller->showChangePasswordForm();
+        break;
+    case 'do_change_password':
+        $controller->handleChangePassword();
+        break;
+    case 'user':
         $controller->index();
         break;
 
@@ -153,7 +165,7 @@ case 'user':
         break;
 
     case 'my_bookings':
-        $controller->my_bookings(   );
+        $controller->my_bookings();
         break;
 
     case 'cancel_booking':
@@ -167,7 +179,7 @@ case 'user':
         break;
 
     case 'index':
-        $controller->index(); 
+        $controller->index();
         break;
 
     default:

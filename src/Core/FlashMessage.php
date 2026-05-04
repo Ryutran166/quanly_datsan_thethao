@@ -1,16 +1,14 @@
 <?php
 // src/Core/FlashMessage.php
-namespace HauNp1\Bai01QuanlySv\Core;
+namespace Nhom2\QuanlyDatsanThethao\Core;
 
 class FlashMessage
 {
     /**
      * Đặt một flash message mới.
-     * @param string $key - Key để định danh message (ví dụ:
-'form_error', 'user_action')
+     * @param string $key - Key để định danh message (ví dụ:'form_error', 'user_action')
      * @param string $message - Nội dung message
-     * @param string $type - Loại message ('success' hoặc
-'error')
+     * @param string $type - Loại message ('success' hoặc 'error')
      */
     public static function set($key, $message, $type = 'success')
     {

@@ -22,7 +22,6 @@ class ComposerAutoloaderInit1a40656700f642cc7e9f02421e3dd9eb
             return self::$loader;
         }
 
-
         spl_autoload_register(array('ComposerAutoloaderInit1a40656700f642cc7e9f02421e3dd9eb', 'loadClassLoader'), true, true);
         self::$loader = $loader = new \Composer\Autoload\ClassLoader(\dirname(__DIR__));
         spl_autoload_unregister(array('ComposerAutoloaderInit1a40656700f642cc7e9f02421e3dd9eb', 'loadClassLoader'));
