@@ -6,6 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Nhom2\QuanlyDatsanThethao\Controllers\CourtsController;
 use Nhom2\QuanlyDatsanThethao\Controllers\UserController;
+use Nhom2\QuanlyDatsanThethao\Controllers\Admin\AdminController;
 
 $action = $_GET['action'] ?? 'home';
 
@@ -40,7 +41,10 @@ $admin_only_actions = [
     'delete_user',
     'do_add_user',
     'change_password',
-    'do_change_password'
+    'do_change_password',
+    'admin_bookings',
+    'admin_cancel_booking',
+    'admin_confirm_booking'
 ];
 
 if (in_array($action, $admin_only_actions)) {
@@ -129,6 +133,22 @@ switch ($action) {
 
     case 'delete_user':
         $controller->delete();
+        break;
+
+    // ADMIN BOOKINGS
+    case 'admin_bookings':
+        $adminController = new AdminController();
+        $adminController->bookings();
+        break;
+
+    case 'admin_cancel_booking':
+        $adminController = new AdminController();
+        $adminController->cancelBooking();
+        break;
+
+    case 'admin_confirm_booking':
+        $adminController = new AdminController();
+        $adminController->confirmBooking();
         break;
 
 

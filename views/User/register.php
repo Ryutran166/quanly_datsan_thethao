@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
-
+<!-- $2y$10$GwS2UuWN2nVuciJTK6TFCuOe.Hg9Iw3dR86RQP0edmolN.tDLcfrK -->
 <head>
     <meta charset="UTF-8">
     <title>Đăng ký</title>

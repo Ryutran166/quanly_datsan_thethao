@@ -328,7 +328,10 @@ function isActive($action, $current_action)
                 </div>
 
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                   
+
+                    <a href="index.php?action=admin_bookings" class="dropdown-item">
+                        <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
+                    </a>
                 <?php endif; ?>
 
                 <a href="index.php?action=my_bookings" class="dropdown-item">
@@ -368,12 +371,11 @@ function isActive($action, $current_action)
         <a href="index.php?action=my_bookings" class="sub-link <?= isActive('my_bookings', $current_action) ?>">
             <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
         </a>
-        <a href="index.php?action=user" class="<?= isActive('user', $current_action); ?>">
+        <a href="index.php?action=user" class="sub-link <?= isActive('user', $current_action); ?>">
             Quản trị User
         </a>
-
-     </div>
-</div>
+        <?php endif; ?>
+</nav>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
