@@ -212,7 +212,7 @@
 
         <div class="divider"><span>Don't have an account?</span></div>
 
-        <a href="index.php?action=register" class="btn-secondary">Sign up</a>
+        <a href="index.php?action=register" class="btn-secondary">Sign up</a>   
         <a href="index.php?action=home" class="back-home">← Quay lại trang chủ</a>
     </div>
 

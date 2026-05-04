@@ -331,6 +331,9 @@ function isActive($action, $current_action)
                     <a href="index.php?action=user" class="dropdown-item">
                         <i class="fas fa-users-cog"></i> Quản trị User
                     </a>
+                    <a href="index.php?action=admin_bookings" class="dropdown-item">
+                        <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
+                    </a>
                 <?php endif; ?>
 
                 <a href="index.php?action=my_bookings" class="dropdown-item">
