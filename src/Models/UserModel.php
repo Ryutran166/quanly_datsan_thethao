@@ -240,6 +240,26 @@ class UserModel
     }
 
     /**
+     * HÀM MỚI: Cập nhật mật khẩu cho người dùng
+     */
+    public function updatePassword($id, $newPassword)
+    {
+        // Băm mật khẩu mới trước khi lưu
+        $passwordHash = password_hash(
+            $newPassword,
+
+            PASSWORD_DEFAULT
+        );
+
+        $stmt = $this->conn->prepare(
+            "UPDATE users SET password = :password WHERE id = :id"
+        );
+        $stmt->bindParam(':password', $passwordHash);
+
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
+    /**
      * Xóa user
      */
     public function deleteUser($id)
