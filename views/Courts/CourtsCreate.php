@@ -7,10 +7,15 @@
         --primary-navy: #0a2540;
     }
 
-    body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; }
+    body {
+        background-color: var(--bg-body);
+        font-family: 'Inter', sans-serif;
+    }
 
-    .breadcrumb-item + .breadcrumb-item::before { content: ">"; }
-    
+    .breadcrumb-item+.breadcrumb-item::before {
+        content: ">";
+    }
+
     .form-section-title {
         font-size: 1.1rem;
         font-weight: 700;
@@ -36,7 +41,8 @@
         margin-bottom: 8px;
     }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         border: 1px solid #dee2e6;
         border-radius: 10px;
         padding: 12px;
@@ -59,7 +65,9 @@
         transition: border-color 0.3s;
     }
 
-    .upload-zone:hover { border-color: #5e72e4; }
+    .upload-zone:hover {
+        border-color: #5e72e4;
+    }
 
     .btn-save {
         background-color: var(--primary-navy);
@@ -87,7 +95,8 @@
         <h2 style="font-weight: 800; color: var(--primary-navy);">Thêm sân mới</h2>
     </div>
 
-    <form action="index.php?action=add" method="POST" enctype="multipart/form-data">
+    <form action="index.php?action=add" method="POST"
+        enctype="multipart/form-data">
         <div class="row g-4">
             <div class="col-lg-8">
                 <div class="custom-card h-100">
@@ -135,13 +144,13 @@
             <div class="col-lg-4">
                 <div class="custom-card mb-4">
                     <h5 class="fw-bold mb-4" style="color: var(--primary-navy);">Ảnh sân</h5>
-                    
-                    <div class="upload-zone mb-3" onclick="document.getElementById('imgInp').click()">
+
+                    <div class="upload-zone mb-3" onclick="document.getElementById('image').click()">
                         <i class="fa fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                         <h6 class="fw-bold">Drag & Drop images here</h6>
                         <p class="text-muted small">Support PNG, JPG up to 10MB</p>
                         <button type="button" class="btn btn-sm btn-dark px-4 rounded-pill">Browse Files</button>
-                        <input type="text" name="image_url" class="form-control" placeholder="Nhập link ảnh sân">
+                        <input type="file" id="image" name="image">
                     </div>
                 </div>
 

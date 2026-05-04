@@ -91,13 +91,32 @@ class CourtsController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $ownerId = $_SESSION['user_id'];
+            $image = null;
 
+            // ✅ Xử lý upload ảnh
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+
+                $uploadDir = '/public/upload/img_courts/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                $fileName = time() . '_' . basename($_FILES['image']['name']);
+                $targetPath = $uploadDir . $fileName;
+
+                // Di chuyển file
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                    $image = $fileName;
+                }
+            }
+
+            // ✅ Lưu vào DB
             $this->courtsModel->addCourts([
-                'name'       => $_POST['name'],
-                'price'      => $_POST['price'],
-                'status'     => 'available',
-                'image_url'  => $_POST['image_url'],
-                'owner_id'   => $ownerId
+                'name'     => $_POST['name'],
+                'price'    => $_POST['price'],
+                'status'   => 'available',
+                'image'    => $image,
+                'owner_id' => $ownerId
             ]);
         }
 
@@ -136,27 +155,51 @@ class CourtsController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            $id = $_POST['id'];
-            $court = $this->courtsModel->getCourtById($id);
+            $id = $_POST['id'] ?? null;
+            $name = $_POST['name'] ?? '';
+            $price = $_POST['price'] ?? '';
+            $status = $_POST['status'] ?? 'available';
 
-            if (
-                $_SESSION['user_role'] == 'owner' &&
-                $court['owner_id'] != $_SESSION['user_id']
-            ) {
-                die("Không có quyền cập nhật.");
+            $oldImage = $_POST['old_image'] ?? null;
+            $image = $oldImage; // mặc định giữ ảnh cũ
+
+            // ✅ Upload ảnh mới nếu có
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+
+                $targetDir = "/public/upload/img_courts/";
+
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0777, true);
+                }
+
+                $filename = time() . '_' . basename($_FILES['image']['name']);
+                $targetFile = $targetDir . $filename;
+
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+
+                    $image = $filename;
+
+                    // ✅ Xóa ảnh cũ
+                    if ($oldImage && file_exists($targetDir . $oldImage)) {
+                        unlink($targetDir . $oldImage);
+                    }
+                } else {
+                    die("Upload ảnh thất bại");
+                }
             }
 
-            $data = [
-                'name' => $_POST['name'],
-                'price' => $_POST['price'],
-                'status' => $_POST['status'],
-                'image_url' => $_POST['image_url']
-            ];
+            if ($id && !empty($name) && !empty($price)) {
 
-            $this->courtsModel->updateCourt($id, $data);
+                $this->courtsModel->updateCourt($id, [
+                    'name'   => $name,
+                    'price'  => $price,
+                    'status' => $status,
+                    'image'  => $image
+                ]);
+            }
         }
 
-        header("Location:index.php");
+        header("Location:index.php?action=courts");
         exit();
     }
     /* =============================
@@ -343,5 +386,34 @@ class CourtsController
             header("Location: index.php?action=my_bookings&error=cannot_cancel");
         }
         exit();
+    }
+
+    // HÀM HELPER ĐỂ XỬ LÝ UPLOAD
+    private function handleUpload($file)
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            return ['error' => 'Lỗi upload file.'];
+        }
+        $targetDir = PROJECT_ROOT . "/public/upload/img_courts/";
+
+        $fileName = uniqid() . '-' . basename($file["name"]);
+        $targetFile = $targetDir . $fileName;
+        $imageFileType = strtolower(pathinfo(
+            $targetFile,
+
+            PATHINFO_EXTENSION
+        ));
+
+        // Kiểm tra định dạng file
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!in_array($imageFileType, $allowedTypes)) {
+            return ['error' => 'Chỉ cho phép upload file ảnh (JPG, JPEG, PNG, GIF).'];
+        }
+        // Di chuyển file
+        if (move_uploaded_file($file["tmp_name"], $targetFile)) {
+            return ['filename' => $fileName];
+        } else {
+            return ['error' => 'Đã có lỗi xảy ra khi upload file.'];
+        }
     }
 }

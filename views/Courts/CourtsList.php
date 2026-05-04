@@ -19,11 +19,15 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         --border: #e2e8f0;
         --surface: #ffffff;
         --page-bg: #f1f5f9;
-        --card-shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.06);
-        --card-hover-shadow: 0 8px 32px rgba(15,23,42,.12);
+        --card-shadow: 0 1px 3px rgba(15, 23, 42, .06), 0 4px 16px rgba(15, 23, 42, .06);
+        --card-hover-shadow: 0 8px 32px rgba(15, 23, 42, .12);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
     body {
         background: var(--page-bg) !important;
@@ -100,7 +104,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
     .search-wrap input[type="text"]:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(0,192,127,.12);
+        box-shadow: 0 0 0 3px rgba(0, 192, 127, .12);
     }
 
     .btn-add {
@@ -118,17 +122,19 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         cursor: pointer;
         text-decoration: none;
         transition: background .2s, transform .15s, box-shadow .2s;
-        box-shadow: 0 2px 8px rgba(0,192,127,.3);
+        box-shadow: 0 2px 8px rgba(0, 192, 127, .3);
         white-space: nowrap;
     }
 
     .btn-add:hover {
         background: var(--primary-dark);
         transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(0,192,127,.35);
+        box-shadow: 0 4px 14px rgba(0, 192, 127, .35);
     }
 
-    .btn-add:active { transform: scale(.97); }
+    .btn-add:active {
+        transform: scale(.97);
+    }
 
     /* ── Stats strip ── */
     .stats-strip {
@@ -152,14 +158,23 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .stat-dot {
-        width: 10px; height: 10px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         flex-shrink: 0;
     }
 
-    .stat-dot.green { background: var(--primary); }
-    .stat-dot.red   { background: var(--danger); }
-    .stat-dot.gray  { background: var(--muted); }
+    .stat-dot.green {
+        background: var(--primary);
+    }
+
+    .stat-dot.red {
+        background: var(--danger);
+    }
+
+    .stat-dot.gray {
+        background: var(--muted);
+    }
 
     /* ── Card grid ── */
     .card-grid {
@@ -219,15 +234,15 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .img-badge.available {
-        background: rgba(230,250,243,.92);
+        background: rgba(230, 250, 243, .92);
         color: #00875a;
-        border: 1px solid rgba(0,192,127,.25);
+        border: 1px solid rgba(0, 192, 127, .25);
     }
 
     .img-badge.booked {
-        background: rgba(255,241,243,.92);
+        background: rgba(255, 241, 243, .92);
         color: #be123c;
-        border: 1px solid rgba(244,63,94,.2);
+        border: 1px solid rgba(244, 63, 94, .2);
     }
 
     /* quick-action buttons on image (top-right) */
@@ -242,35 +257,48 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         transition: opacity .25s, transform .25s;
     }
 
-    .court-card:hover .img-actions { opacity: 1; transform: translateY(0); }
+    .court-card:hover .img-actions {
+        opacity: 1;
+        transform: translateY(0);
+    }
 
     .img-btn {
-        width: 34px; height: 34px;
+        width: 34px;
+        height: 34px;
         border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
         font-size: 13px;
         backdrop-filter: blur(8px);
         transition: background .15s, transform .15s;
     }
 
-    .img-btn:active { transform: scale(.92); }
+    .img-btn:active {
+        transform: scale(.92);
+    }
 
     .img-btn.edit {
-        background: rgba(255,255,255,.88);
+        background: rgba(255, 255, 255, .88);
         color: var(--mid);
-        border: 1px solid rgba(255,255,255,.5);
+        border: 1px solid rgba(255, 255, 255, .5);
     }
 
-    .img-btn.edit:hover { background: #fff; color: var(--dark); }
+    .img-btn.edit:hover {
+        background: #fff;
+        color: var(--dark);
+    }
 
     .img-btn.del {
-        background: rgba(244,63,94,.15);
+        background: rgba(244, 63, 94, .15);
         color: var(--danger);
-        border: 1px solid rgba(244,63,94,.25);
+        border: 1px solid rgba(244, 63, 94, .25);
     }
 
-    .img-btn.del:hover { background: rgba(244,63,94,.25); }
+    .img-btn.del:hover {
+        background: rgba(244, 63, 94, .25);
+    }
 
     /* card body */
     .card-body {
@@ -292,7 +320,9 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         margin-bottom: 6px;
     }
 
-    .owner-chip.mine { color: var(--primary); }
+    .owner-chip.mine {
+        color: var(--primary);
+    }
 
     .court-name {
         font-size: 19px;
@@ -345,16 +375,18 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         border-radius: 10px;
         text-decoration: none;
         transition: background .2s, transform .15s, box-shadow .2s;
-        box-shadow: 0 2px 6px rgba(0,192,127,.25);
+        box-shadow: 0 2px 6px rgba(0, 192, 127, .25);
     }
 
     .btn-book:hover {
         background: var(--primary-dark);
-        box-shadow: 0 4px 12px rgba(0,192,127,.3);
+        box-shadow: 0 4px 12px rgba(0, 192, 127, .3);
         transform: translateY(-1px);
     }
 
-    .btn-book:active { transform: scale(.96); }
+    .btn-book:active {
+        transform: scale(.96);
+    }
 
     /* desktop edit/delete — fallback when card NOT hovered (show inline) */
     .inline-actions {
@@ -363,9 +395,12 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .action-btn {
-        width: 36px; height: 36px;
+        width: 36px;
+        height: 36px;
         border-radius: 9px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
         font-size: 13px;
         border: 1.5px solid var(--border);
@@ -373,8 +408,16 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         transition: background .15s, color .15s, border-color .15s;
     }
 
-    .action-btn:hover { background: var(--page-bg); border-color: #cbd5e1; }
-    .action-btn.danger:hover { background: var(--danger-soft); color: var(--danger); border-color: rgba(244,63,94,.3); }
+    .action-btn:hover {
+        background: var(--page-bg);
+        border-color: #cbd5e1;
+    }
+
+    .action-btn.danger:hover {
+        background: var(--danger-soft);
+        color: var(--danger);
+        border-color: rgba(244, 63, 94, .3);
+    }
 
     /* ── Empty state ── */
     .empty-state {
@@ -387,10 +430,13 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .empty-icon {
-        width: 64px; height: 64px;
+        width: 64px;
+        height: 64px;
         background: var(--primary-soft);
         border-radius: 18px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 28px;
         margin: 0 auto 16px;
     }
@@ -417,9 +463,12 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .pagi a {
-        min-width: 38px; height: 38px;
+        min-width: 38px;
+        height: 38px;
         padding: 0 12px;
-        display: inline-flex; align-items: center; justify-content: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 10px;
         text-decoration: none;
         font-size: 14px;
@@ -430,8 +479,17 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         transition: background .15s, border-color .15s, color .15s;
     }
 
-    .pagi a:hover { background: var(--page-bg); border-color: #cbd5e1; color: var(--dark); }
-    .pagi a.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .pagi a:hover {
+        background: var(--page-bg);
+        border-color: #cbd5e1;
+        color: var(--dark);
+    }
+
+    .pagi a.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
 </style>
 
 <div class="courts-wrapper">
@@ -454,33 +512,33 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
             <span class="ico"><i class="fa fa-search"></i></span>
             <input type="hidden" name="action" value="index">
             <input type="text"
-                   name="keyword"
-                   placeholder="Tìm kiếm tên sân..."
-                   value="<?= htmlspecialchars($keyword ?? '') ?>">
+                name="keyword"
+                placeholder="Tìm kiếm tên sân..."
+                value="<?= htmlspecialchars($keyword ?? '') ?>">
         </form>
     </div>
 
     <!-- Stats strip -->
     <?php if (!empty($courts)): ?>
-    <div class="stats-strip">
-        <?php
+        <div class="stats-strip">
+            <?php
             $total     = count($courts);
             $available = count(array_filter($courts, fn($c) => $c['status'] == 'available'));
             $booked    = $total - $available;
-        ?>
-        <div class="stat-pill">
-            <span class="stat-dot gray"></span>
-            <?= $total ?> sân
+            ?>
+            <div class="stat-pill">
+                <span class="stat-dot gray"></span>
+                <?= $total ?> sân
+            </div>
+            <div class="stat-pill">
+                <span class="stat-dot green"></span>
+                <?= $available ?> đang trống
+            </div>
+            <div class="stat-pill">
+                <span class="stat-dot red"></span>
+                <?= $booked ?> đã đặt
+            </div>
         </div>
-        <div class="stat-pill">
-            <span class="stat-dot green"></span>
-            <?= $available ?> đang trống
-        </div>
-        <div class="stat-pill">
-            <span class="stat-dot red"></span>
-            <?= $booked ?> đã đặt
-        </div>
-    </div>
     <?php endif; ?>
 
     <!-- Card grid -->
@@ -490,30 +548,34 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
             <?php foreach ($courts as $court): ?>
 
                 <?php
-                    $canEdit = false;
-                    if (isset($_SESSION['user_role'])) {
-                        if ($_SESSION['user_role'] == 'admin') {
-                            $canEdit = true;
-                        } elseif ($_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id']) {
-                            $canEdit = true;
-                        }
+                $canEdit = false;
+                if (isset($_SESSION['user_role'])) {
+                    if ($_SESSION['user_role'] == 'admin') {
+                        $canEdit = true;
+                    } elseif ($_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id']) {
+                        $canEdit = true;
                     }
-                    $isAvailable = $court['status'] == 'available';
-                    $isMine      = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id'];
+                }
+                $isAvailable = $court['status'] == 'available';
+                $isMine      = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id'];
                 ?>
 
                 <div class="court-card">
 
                     <!-- Image -->
                     <div class="court-img-wrap">
-                        <img src="<?= !empty($court['image_url']) ? $court['image_url'] : 'https://images.unsplash.com/photo-1599474924187-334a4ae593c1?q=80&w=600' ?>"
-                             alt="<?= htmlspecialchars($court['name']) ?>">
-
-                        <span class="img-badge <?= $isAvailable ? 'available' : 'booked' ?>">
+                        <?php if (!empty($court['image'])): ?>
+                            <img src="/quanly_datsan_thethao/public/upload/img_courts/<?= htmlspecialchars($court['image']) ?>"
+                                alt="Court Image">
+                        <?php else: ?>
+                            <img src="/quanly_datsan_thethao/public/upload/img_courts/default.png"
+                                alt="Default Image">
+                        <?php endif; ?>
+                        <!-- <span class="img-badge <?= $isAvailable ? 'available' : 'booked' ?>">
                             <?= $isAvailable ? '● Trống' : '● Đã đặt' ?>
-                        </span>
+                        </span> -->
 
-                        <?php if ($canEdit): ?>
+                        <!-- <?php if ($canEdit): ?>
                         <div class="img-actions">
                             <a href="index.php?action=edit&id=<?= $court['id'] ?>" class="img-btn edit" title="Chỉnh sửa">
                                 <i class="fa fa-pen"></i>
@@ -524,7 +586,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                                 <i class="fa fa-trash"></i>
                             </a>
                         </div>
-                        <?php endif; ?>
+                        <?php endif; ?> -->
                     </div>
 
                     <!-- Body -->
@@ -547,19 +609,19 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         <div class="card-footer">
 
                             <?php if ($canEdit): ?>
-                            <div class="inline-actions">
-                                <a href="index.php?action=edit&id=<?= $court['id'] ?>"
-                                   class="action-btn" title="Chỉnh sửa">
-                                    <i class="fa fa-pen"></i>
-                                </a>
-                                <a href="index.php?action=delete&id=<?= $court['id'] ?>"
-                                   class="action-btn danger" title="Xóa"
-                                   onclick="return confirm('Bạn chắc chắn muốn xóa sân này?')">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </div>
+                                <div class="inline-actions">
+                                    <a href="index.php?action=edit&id=<?= $court['id'] ?>"
+                                        class="action-btn" title="Chỉnh sửa">
+                                        <i class="fa fa-pen"></i>
+                                    </a>
+                                    <a href="index.php?action=delete&id=<?= $court['id'] ?>"
+                                        class="action-btn danger" title="Xóa"
+                                        onclick="return confirm('Bạn chắc chắn muốn xóa sân này?')">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
                             <?php else: ?>
-                            <div></div>
+                                <div></div>
                             <?php endif; ?>
 
                             <a href="index.php?action=booking&id=<?= $court['id'] ?>" class="btn-book">
@@ -586,14 +648,14 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
-    <div class="pagi">
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?action=index&keyword=<?= urlencode($keyword ?? '') ?>&page=<?= $i ?>"
-               class="<?= ($i == $currentPage) ? 'active' : '' ?>">
-                <?= $i ?>
-            </a>
-        <?php endfor; ?>
-    </div>
+        <div class="pagi">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="?action=index&keyword=<?= urlencode($keyword ?? '') ?>&page=<?= $i ?>"
+                    class="<?= ($i == $currentPage) ? 'active' : '' ?>">
+                    <?= $i ?>
+                </a>
+            <?php endfor; ?>
+        </div>
     <?php endif; ?>
 
 </div>
