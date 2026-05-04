@@ -1,59 +1,320 @@
 <?php
-// Hàm badge trạng thái
 function statusBadge(string $status, string $date): string {
-    if ($status === 'cancelled') 
-        return '<span style="background:#fee2e2;color:#b91c1c;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;">Đã hủy</span>';
+    $status = strtolower($status);
+    if ($status === 'cancelled')
+        return '<span class="status-badge cancelled">Đã hủy</span>';
     if (strtotime($date) < strtotime('today'))
-        return '<span style="background:#f3f4f6;color:#6b7280;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;">Đã xong</span>';
-    return '<span style="background:#dcfce7;color:#15803d;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;">Đã xác nhận</span>';
+        return '<span class="status-badge done">Đã xong</span>';
+    return '<span class="status-badge confirmed">Đã xác nhận</span>';
 }
 ?>
 
-<div style="max-width:900px; margin:0 auto; padding:24px 20px; font-family:'Inter',sans-serif;">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary:      #00c07f;
+        --primary-dark: #00a06a;
+        --primary-soft: #e6faf3;
+        --danger:       #f43f5e;
+        --danger-soft:  #fff1f3;
+        --dark:         #0f172a;
+        --mid:          #475569;
+        --muted:        #94a3b8;
+        --border:       #e2e8f0;
+        --surface:      #ffffff;
+        --page-bg:      #f1f5f9;
+    }
+
+    .mb-page {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ── Page header ── */
+    .mb-header { margin-bottom: 28px; }
+    .mb-header h2 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -.5px;
+        margin: 0 0 4px;
+    }
+    .mb-header p { font-size: 14px; color: var(--muted); margin: 0; font-weight: 500; }
+
+    /* ── Alerts ── */
+    .mb-alert {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .mb-alert.success { background: var(--primary-soft); color: #065f46; border: 1.5px solid rgba(0,192,127,.25); }
+    .mb-alert.error   { background: var(--danger-soft);  color: #be123c; border: 1.5px solid rgba(244,63,94,.2); }
+
+    /* ── Tabs ── */
+    .mb-tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        padding: 5px;
+        width: fit-content;
+    }
+
+    .mb-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-decoration: none;
+        transition: background .18s, color .18s;
+        white-space: nowrap;
+    }
+
+    .mb-tab:hover { color: var(--dark); background: var(--page-bg); }
+
+    .mb-tab.active {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,192,127,.3);
+    }
+
+    .tab-count {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 20px;
+        background: rgba(255,255,255,.25);
+        color: inherit;
+    }
+
+    .mb-tab:not(.active) .tab-count {
+        background: var(--page-bg);
+        color: var(--mid);
+    }
+
+    /* ── Status badges ── */
+    .status-badge {
+        display: inline-block;
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .2px;
+    }
+    .status-badge.confirmed { background: var(--primary-soft); color: #065f46; }
+    .status-badge.done      { background: var(--page-bg); color: var(--mid); }
+    .status-badge.cancelled { background: var(--danger-soft); color: #be123c; }
+
+    /* ── Booking list ── */
+    .booking-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .booking-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 18px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        transition: box-shadow .2s, border-color .2s;
+    }
+
+    .booking-card:hover {
+        box-shadow: 0 4px 20px rgba(15,23,42,.08);
+        border-color: #cbd5e1;
+    }
+
+    /* court image */
+    .booking-img {
+        width: 82px;
+        height: 82px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: var(--page-bg);
+    }
+
+    /* info block */
+    .booking-info { flex: 1; min-width: 0; }
+
+    .booking-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+
+    .booking-name {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--dark);
+    }
+
+    .booking-meta {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: var(--mid);
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .booking-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .booking-meta i { color: var(--primary); font-size: 12px; }
+
+    .booking-created {
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* action buttons */
+    .booking-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .btn-rebook {
+        padding: 8px 18px;
+        background: var(--page-bg);
+        color: var(--mid);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: background .15s, color .15s, border-color .15s;
+        white-space: nowrap;
+    }
+    .btn-rebook:hover { background: var(--border); color: var(--dark); }
+
+    .btn-cancel {
+        padding: 8px 18px;
+        background: var(--danger-soft);
+        color: var(--danger);
+        border: 1.5px solid rgba(244,63,94,.2);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: background .15s;
+        white-space: nowrap;
+    }
+    .btn-cancel:hover { background: #fecdd3; }
+
+    /* ── Empty state ── */
+    .mb-empty {
+        text-align: center;
+        padding: 70px 30px;
+        background: var(--surface);
+        border: 1.5px dashed var(--border);
+        border-radius: 20px;
+    }
+
+    .empty-icon {
+        width: 60px; height: 60px;
+        background: var(--page-bg);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 26px;
+        margin: 0 auto 16px;
+    }
+
+    .mb-empty h3 { font-size: 17px; font-weight: 700; color: var(--dark); margin: 0 0 6px; }
+    .mb-empty p  { font-size: 13px; color: var(--muted); margin: 0 0 20px; }
+
+    .btn-go-book {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 22px;
+        background: var(--primary);
+        color: #fff;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 10px;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0,192,127,.3);
+        transition: background .2s, transform .15s;
+    }
+    .btn-go-book:hover { background: var(--primary-dark); transform: translateY(-1px); }
+</style>
+
+<div class="mb-page">
 
     <!-- Header -->
-    <div style="margin-bottom:28px;">
-        <h2 style="font-size:1.4rem; font-weight:700; margin:0 0 4px;">Lịch sử đặt sân</h2>
-        <p style="color:#888; font-size:0.9rem; margin:0;">Quản lý các lịch đặt sân của bạn</p>
+    <div class="mb-header">
+        <h2>Lịch sử đặt sân</h2>
+        <p>Quản lý các lịch đặt sân của bạn</p>
     </div>
 
-    <!-- Thông báo -->
+    <!-- Alerts -->
     <?php if (!empty($_GET['success']) && $_GET['success'] === 'cancelled'): ?>
-        <div style="background:#dcfce7; border-left:4px solid #16a34a; padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:0.9rem; color:#15803d;">
-            ✅ Hủy lịch thành công. Tiền sẽ được hoàn trong 1–3 ngày làm việc.
+        <div class="mb-alert success">
+            <i class="fas fa-check-circle"></i>
+            Hủy lịch thành công. Tiền sẽ được hoàn trong 1–3 ngày làm việc.
         </div>
     <?php endif; ?>
 
     <?php if (!empty($_GET['error']) && $_GET['error'] === 'cannot_cancel'): ?>
-        <div style="background:#fee2e2; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:0.9rem; color:#b91c1c;">
-            ⚠️ Không thể hủy. Lịch đặt còn dưới 12 tiếng hoặc không tồn tại.
+        <div class="mb-alert error">
+            <i class="fas fa-exclamation-triangle"></i>
+            Không thể hủy. Lịch đặt còn dưới 12 tiếng hoặc không tồn tại.
         </div>
     <?php endif; ?>
 
     <!-- Tabs -->
-    <div style="display:flex; gap:8px; margin-bottom:24px; border-bottom:1px solid #eee; padding-bottom:0;">
-        <?php
-        $tabs = [
-            'upcoming'  => ['label' => 'Sắp tới',  'count' => count($upcoming)],
-            'past'      => ['label' => 'Đã xong',  'count' => count($past)],
-            'cancelled' => ['label' => 'Đã hủy',   'count' => count($cancelled)],
-        ];
-        $activeTab = $_GET['tab'] ?? 'upcoming';
-        foreach ($tabs as $key => $tab):
-        ?>
+    <?php
+    $tabs = [
+        'upcoming'  => ['label' => 'Sắp tới',  'icon' => 'fa-clock',         'count' => count($upcoming)],
+        'past'      => ['label' => 'Đã xong',  'icon' => 'fa-check',         'count' => count($past)],
+        'cancelled' => ['label' => 'Đã hủy',   'icon' => 'fa-xmark',         'count' => count($cancelled)],
+    ];
+    $activeTab = $_GET['tab'] ?? 'upcoming';
+    ?>
+
+    <div class="mb-tabs">
+        <?php foreach ($tabs as $key => $tab): ?>
             <a href="index.php?action=my_bookings&tab=<?= $key ?>"
-               style="padding:10px 18px; font-size:0.9rem; font-weight:500; text-decoration:none; border-bottom:2px solid <?= $activeTab === $key ? '#198754' : 'transparent' ?>; color:<?= $activeTab === $key ? '#198754' : '#888' ?>; margin-bottom:-1px; display:flex; align-items:center; gap:6px;">
+               class="mb-tab <?= $activeTab === $key ? 'active' : '' ?>">
+                <i class="fas <?= $tab['icon'] ?>" style="font-size:12px;"></i>
                 <?= $tab['label'] ?>
                 <?php if ($tab['count'] > 0): ?>
-                    <span style="background:<?= $activeTab === $key ? '#198754' : '#e5e7eb' ?>;color:<?= $activeTab === $key ? '#fff' : '#6b7280' ?>;font-size:11px;padding:1px 7px;border-radius:20px;">
-                        <?= $tab['count'] ?>
-                    </span>
+                    <span class="tab-count"><?= $tab['count'] ?></span>
                 <?php endif; ?>
             </a>
         <?php endforeach; ?>
     </div>
 
-    <!-- Danh sách booking -->
+    <!-- Booking list -->
     <?php
     $displayList = match($activeTab) {
         'past'      => $past,
@@ -63,75 +324,81 @@ function statusBadge(string $status, string $date): string {
     ?>
 
     <?php if (empty($displayList)): ?>
-        <div style="text-align:center; padding:60px 20px; color:#aaa;">
-            <i class="fas fa-calendar-times" style="font-size:2.5rem; margin-bottom:16px; display:block;"></i>
-            <p style="font-size:0.95rem; margin:0;">Không có lịch đặt nào.</p>
+
+        <div class="mb-empty">
+            <div class="empty-icon">📅</div>
+            <h3>Không có lịch đặt nào</h3>
+            <p>
+                <?= match($activeTab) {
+                    'past'      => 'Bạn chưa có lịch đặt đã hoàn thành.',
+                    'cancelled' => 'Bạn chưa có lịch đặt nào bị hủy.',
+                    default     => 'Bạn chưa có lịch đặt sân sắp tới.',
+                } ?>
+            </p>
             <?php if ($activeTab === 'upcoming'): ?>
-                <a href="index.php?action=courts"
-                   style="display:inline-block; margin-top:16px; padding:10px 24px; background:#198754; color:#fff; border-radius:8px; text-decoration:none; font-size:0.9rem; font-weight:500;">
-                    Đặt sân ngay
+                <a href="index.php?action=index" class="btn-go-book">
+                    <i class="fas fa-plus" style="font-size:12px;"></i> Đặt sân ngay
                 </a>
             <?php endif; ?>
         </div>
 
     <?php else: ?>
-        <div style="display:flex; flex-direction:column; gap:14px;">
-        <?php foreach ($displayList as $b): ?>
-            <?php
-            $canCancel = $b['booking_status'] === 'confirmed'
-                      && strtotime($b['booking_date'] . ' ' . $b['start_time']) - time() > 12 * 3600;
+
+        <div class="booking-list">
+            <?php foreach ($displayList as $b):
+                $canCancel = $b['booking_status'] === 'confirmed'
+                          && strtotime($b['booking_date'] . ' ' . $b['start_time']) - time() > 12 * 3600;
             ?>
-            <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:20px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+            <div class="booking-card">
 
-                <!-- Ảnh sân -->
-                <img src="<?= htmlspecialchars($b['image_url'] ?? 'assets/images/default-court.jpg') ?>"
-                     alt="court"
-                     style="width:80px; height:80px; border-radius:10px; object-fit:cover; flex-shrink:0; background:#f3f4f6;">
+                <img class="booking-img"
+                     src="<?= htmlspecialchars($b['image_url'] ?? 'assets/images/default-court.jpg') ?>"
+                     alt="<?= htmlspecialchars($b['court_name']) ?>">
 
-                <!-- Thông tin -->
-                <div style="flex:1; min-width:0;">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap;">
-                        <strong style="font-size:1rem;"><?= htmlspecialchars($b['court_name']) ?></strong>
+                <div class="booking-info">
+                    <div class="booking-top">
+                        <span class="booking-name"><?= htmlspecialchars($b['court_name']) ?></span>
                         <?= statusBadge($b['booking_status'], $b['booking_date']) ?>
                     </div>
 
-                    <div style="display:flex; gap:20px; flex-wrap:wrap; font-size:0.85rem; color:#666;">
+                    <div class="booking-meta">
                         <span>
-                            <i class="fas fa-calendar" style="color:#198754; margin-right:4px;"></i>
+                            <i class="fas fa-calendar"></i>
                             <?= date('d/m/Y', strtotime($b['booking_date'])) ?>
                         </span>
                         <span>
-                            <i class="fas fa-clock" style="color:#198754; margin-right:4px;"></i>
+                            <i class="fas fa-clock"></i>
                             <?= substr($b['start_time'],0,5) ?> – <?= substr($b['end_time'],0,5) ?>
                         </span>
                         <span>
-                            <i class="fas fa-tag" style="color:#198754; margin-right:4px;"></i>
+                            <i class="fas fa-tag"></i>
                             <?= number_format($b['price']) ?> VNĐ
                         </span>
                     </div>
 
-                    <div style="font-size:0.78rem; color:#bbb; margin-top:6px;">
-                        Đặt lúc: <?= date('H:i d/m/Y', strtotime($b['created_at'])) ?>
+                    <div class="booking-created">
+                        Đặt lúc <?= date('H:i · d/m/Y', strtotime($b['created_at'])) ?>
                     </div>
                 </div>
 
-                <!-- Nút hành động -->
-                <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0;">
+                <div class="booking-actions">
                     <a href="index.php?action=booking&id=<?= (int)$b['court_id'] ?>"
-                       style="padding:8px 16px; background:#f3f4f6; color:#444; border-radius:8px; text-decoration:none; font-size:0.85rem; font-weight:500; text-align:center;">
-                        Đặt lại
+                       class="btn-rebook">
+                        <i class="fas fa-rotate-right" style="font-size:11px;margin-right:4px;"></i>Đặt lại
                     </a>
                     <?php if ($canCancel): ?>
                         <a href="index.php?action=cancel_booking&id=<?= (int)$b['booking_id'] ?>"
-                           onclick="return confirm('Bạn chắc chắn muốn hủy lịch này?')"
-                           style="padding:8px 16px; background:#fee2e2; color:#b91c1c; border-radius:8px; text-decoration:none; font-size:0.85rem; font-weight:500; text-align:center;">
-                            Hủy lịch
+                           class="btn-cancel"
+                           onclick="return confirm('Bạn chắc chắn muốn hủy lịch này?')">
+                            <i class="fas fa-xmark" style="font-size:11px;margin-right:4px;"></i>Hủy lịch
                         </a>
                     <?php endif; ?>
                 </div>
+
             </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
         </div>
+
     <?php endif; ?>
 
 </div>

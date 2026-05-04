@@ -1,142 +1,433 @@
 <?php if (!empty($_GET['error'])): ?>
-    <div class="alert alert-danger" style="margin: 15px 20px;">
-        <?php if ($_GET['error'] === 'slot_taken'): ?>
-            ⚠️ Khung giờ này vừa được đặt bởi người khác. Vui lòng chọn giờ khác.
-        <?php else: ?>
-            ⚠️ Đã xảy ra lỗi. Vui lòng thử lại.
-        <?php endif; ?>
-    </div>
+<div class="booking-alert booking-alert--error">
+    <i class="fas fa-exclamation-triangle"></i>
+    <?php if ($_GET['error'] === 'slot_taken'): ?>
+        Khung giờ này vừa được đặt bởi người khác. Vui lòng chọn giờ khác.
+    <?php else: ?>
+        Đã xảy ra lỗi. Vui lòng thử lại.
+    <?php endif; ?>
+</div>
 <?php endif; ?>
 
 <?php if (!empty($_GET['success'])): ?>
-    <div class="alert alert-success" style="margin: 15px 20px;">
-        ✅ Đặt sân thành công!
-    </div>
+<div class="booking-alert booking-alert--success">
+    <i class="fas fa-check-circle"></i> Đặt sân thành công!
+</div>
 <?php endif; ?>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary:      #00c07f;
+        --primary-dark: #00a06a;
+        --primary-soft: #e6faf3;
+        --danger:       #f43f5e;
+        --danger-soft:  #fff1f3;
+        --dark:         #0f172a;
+        --mid:          #475569;
+        --muted:        #94a3b8;
+        --border:       #e2e8f0;
+        --surface:      #ffffff;
+        --page-bg:      #f1f5f9;
+    }
+
+    .booking-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 36px 24px 60px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ── Alerts ── */
+    .booking-alert {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 18px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 auto 20px;
+        max-width: 1100px;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+    .booking-alert--error   { background: var(--danger-soft); color: #be123c; border: 1.5px solid rgba(244,63,94,.2); }
+    .booking-alert--success { background: var(--primary-soft); color: #065f46; border: 1.5px solid rgba(0,192,127,.25); }
+
+    /* ── Layout ── */
+    .booking-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @media (max-width: 820px) {
+        .booking-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── Shared card ── */
+    .bk-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+    }
+
+    /* ── Section title ── */
+    .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 14px;
+    }
+
+    /* ── Schedule header ── */
+    .schedule-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 22px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .court-title   { font-size: 20px; font-weight: 800; color: var(--dark); margin: 0 0 4px; }
+    .court-subtitle { font-size: 13px; color: var(--muted); margin: 0; font-weight: 500; }
+
+    /* Date picker */
+    .date-input {
+        padding: 9px 13px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dark);
+        background: var(--page-bg);
+        outline: none;
+        cursor: pointer;
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .date-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,192,127,.1); }
+
+    /* ── Legend ── */
+    .legend {
+        display: flex;
+        gap: 18px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+    }
+    .legend-dot {
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .legend-dot.free    { background: #fff; border: 1.5px solid var(--border); }
+    .legend-dot.chosen  { background: var(--primary); }
+    .legend-dot.taken   { background: #e2e8f0; }
+
+    /* ── Slot grid ── */
+    .slot-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 28px;
+    }
+
+    @media (max-width: 560px) {
+        .slot-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ── Slot button ── */
+    .slot-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 13px 6px;
+        min-height: 76px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        cursor: pointer;
+        transition: background .18s, border-color .18s, transform .15s;
+        font-family: inherit;
+    }
+
+    .slot-btn:not(:disabled):hover {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+        transform: translateY(-2px);
+    }
+
+    .slot-btn.selected {
+        background: var(--primary);
+        border-color: var(--primary-dark);
+    }
+
+    .slot-btn:disabled {
+        background: var(--page-bg);
+        border-color: #e9ecef;
+        cursor: not-allowed;
+        opacity: .7;
+    }
+
+    .slot-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--primary);
+        transition: background .18s;
+    }
+
+    .slot-btn.selected  .slot-dot  { background: rgba(255,255,255,.7); }
+    .slot-btn:disabled  .slot-dot  { background: #cbd5e1; }
+
+    .slot-time {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--dark);
+        transition: color .18s;
+    }
+
+    .slot-btn.selected  .slot-time  { color: #fff; }
+    .slot-btn:disabled  .slot-time  { color: var(--muted); }
+
+    .slot-end {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted);
+        transition: color .18s;
+    }
+
+    .slot-btn.selected  .slot-end   { color: rgba(255,255,255,.75); }
+    .slot-btn:disabled  .slot-end   { color: #cbd5e1; }
+
+    /* ── Divider between session groups ── */
+    .session-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 4px 0 20px;
+    }
+
+    /* ═══════════════════════════════
+       SUMMARY PANEL
+    ═══════════════════════════════ */
+    .summary-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark);
+        margin: 0 0 22px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+    }
+
+    .info-row:last-of-type { border-bottom: none; }
+
+    .info-label { color: var(--muted); font-weight: 500; }
+    .info-value { font-weight: 700; color: var(--dark); text-align: right; }
+    .info-value.highlight { color: var(--primary); }
+
+    /* Total box */
+    .total-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--primary-soft);
+        border: 1.5px solid rgba(0,192,127,.2);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 20px 0;
+    }
+
+    .total-label { font-size: 14px; font-weight: 700; color: var(--dark); }
+    .total-amount { font-size: 22px; font-weight: 800; color: var(--primary); letter-spacing: -.5px; }
+
+    /* Confirm button */
+    .btn-confirm {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 13px;
+        background: var(--primary);
+        color: #fff;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background .2s, transform .15s, box-shadow .2s;
+        box-shadow: 0 3px 10px rgba(0,192,127,.3);
+    }
+
+    .btn-confirm:not(:disabled):hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 16px rgba(0,192,127,.35);
+    }
+
+    .btn-confirm:disabled {
+        background: #e2e8f0;
+        color: var(--muted);
+        box-shadow: none;
+        cursor: not-allowed;
+    }
+
+    /* Policy note */
+    .policy-note {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-top: 16px;
+        padding: 13px 15px;
+        background: #fff8f0;
+        border: 1.5px solid rgba(253,126,20,.2);
+        border-radius: 12px;
+        font-size: 12px;
+        color: #92400e;
+        line-height: 1.55;
+    }
+
+    .policy-note i { color: #f59e0b; margin-top: 1px; flex-shrink: 0; }
+</style>
+
+<div class="booking-page">
 
 <form action="index.php?action=confirm_booking" method="POST">
 
-    <!-- ✅ Hidden fields để gửi dữ liệu -->
     <input type="hidden" name="court_id"     value="<?= (int)$court['id'] ?>">
     <input type="hidden" name="booking_date" value="<?= htmlspecialchars($date) ?>">
     <input type="hidden" name="slot_id"      id="selected_slot_id" value="">
 
-    <div class="booking-container" style="display:flex; gap:20px; padding:20px; font-family:'Inter',sans-serif;">
+    <div class="booking-layout">
 
-        <!-- ===== BẢNG CHỌN GIỜ ===== -->
-       <!-- ===== BẢNG CHỌN GIỜ ===== -->
-<div class="schedule-section" style="flex:2; background:#fff; padding:24px; border-radius:12px; border:1px solid #eee; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+        <!-- ══ LEFT: Slot picker ══ -->
+        <div class="bk-card">
 
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
-        <div>
-            <p style="margin:0; font-size:15px; font-weight:600;"><?= htmlspecialchars($court['name']) ?></p>
-            <p style="margin:0; font-size:13px; color:#888;">Chọn khung giờ phù hợp</p>
+            <div class="schedule-header">
+                <div>
+                    <h2 class="court-title"><?= htmlspecialchars($court['name']) ?></h2>
+                    <p class="court-subtitle">Chọn khung giờ phù hợp</p>
+                </div>
+
+                <input type="date"
+                       name="display_date"
+                       value="<?= htmlspecialchars($date) ?>"
+                       class="date-input"
+                       min="<?= date('Y-m-d') ?>"
+                       onchange="window.location.href='index.php?action=booking&id=<?= (int)$court['id'] ?>&date='+this.value">
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot free"></span>   Còn trống</div>
+                <div class="legend-item"><span class="legend-dot chosen"></span> Đang chọn</div>
+                <div class="legend-item"><span class="legend-dot taken"></span>  Đã đặt</div>
+            </div>
+
+            <!-- Morning -->
+            <p class="section-label">☀ Buổi sáng</p>
+            <div class="slot-grid">
+                <?php foreach ($timeSlots as $slot):
+                    if ($slot['start_time'] >= '12:00:00') continue;
+                    $isBooked = in_array($slot['id'], $bookedSlots);
+                ?>
+                <button type="button"
+                        class="slot-btn<?= $isBooked ? '' : ' slot-available' ?>"
+                        <?= $isBooked ? 'disabled' : "data-slot-id=\"{$slot['id']}\" data-time=\"" . substr($slot['start_time'],0,5) . " - " . substr($slot['end_time'],0,5) . "\" onclick=\"selectSlot(this)\"" ?>>
+                    <span class="slot-dot"></span>
+                    <span class="slot-time"><?= substr($slot['start_time'],0,5) ?></span>
+                    <span class="slot-end">– <?= substr($slot['end_time'],0,5) ?></span>
+                </button>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="session-divider"></div>
+
+            <!-- Afternoon -->
+            <p class="section-label">🌤 Buổi chiều</p>
+            <div class="slot-grid">
+                <?php foreach ($timeSlots as $slot):
+                    if ($slot['start_time'] < '12:00:00') continue;
+                    $isBooked = in_array($slot['id'], $bookedSlots);
+                ?>
+                <button type="button"
+                        class="slot-btn<?= $isBooked ? '' : ' slot-available' ?>"
+                        <?= $isBooked ? 'disabled' : "data-slot-id=\"{$slot['id']}\" data-time=\"" . substr($slot['start_time'],0,5) . " - " . substr($slot['end_time'],0,5) . "\" onclick=\"selectSlot(this)\"" ?>>
+                    <span class="slot-dot"></span>
+                    <span class="slot-time"><?= substr($slot['start_time'],0,5) ?></span>
+                    <span class="slot-end">– <?= substr($slot['end_time'],0,5) ?></span>
+                </button>
+                <?php endforeach; ?>
+            </div>
+
         </div>
-        <input type="date" name="display_date" value="<?= htmlspecialchars($date) ?>"
-               class="form-control" style="width:160px; font-size:13px;"
-               min="<?= date('Y-m-d') ?>"
-               onchange="window.location.href='index.php?action=booking&id=<?= (int)$court['id'] ?>&date='+this.value">
-    </div>
 
-    <!-- Legend -->
-    <div style="display:flex; gap:16px; font-size:12px; color:#888; margin-bottom:20px;">
-        <span style="display:flex; align-items:center; gap:5px;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#fff;border:1px solid #ccc;display:inline-block;"></span> Trống
-        </span>
-        <span style="display:flex; align-items:center; gap:5px;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#198754;display:inline-block;"></span> Đang chọn
-        </span>
-        <span style="display:flex; align-items:center; gap:5px;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#e9ecef;display:inline-block;"></span> Đã đặt
-        </span>
-    </div>
+        <!-- ══ RIGHT: Summary ══ -->
+        <div class="bk-card">
 
-    <!-- Nhóm: Buổi sáng -->
-    <p style="font-size:11px; font-weight:600; color:#aaa; letter-spacing:0.07em; text-transform:uppercase; margin:0 0 10px;">Buổi sáng</p>
-    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:24px;">
-        <?php foreach ($timeSlots as $slot):
-            if ($slot['start_time'] >= '12:00:00') continue;
-            $isBooked = in_array($slot['id'], $bookedSlots);
-        ?>
-        <button type="button"
-            class="<?= $isBooked ? 'slot-booked' : 'slot-available' ?>"
-            style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                   padding:12px 6px;border-radius:8px;border:1px solid <?= $isBooked ? '#e9ecef' : '#ddd' ?>;
-                   background:<?= $isBooked ? '#f8f9fa' : '#fff' ?>;
-                   cursor:<?= $isBooked ? 'not-allowed' : 'pointer' ?>;
-                   min-height:72px; gap:4px; transition:all 0.15s;"
-            <?= !$isBooked ? "data-slot-id=\"{$slot['id']}\" data-time=\"" . substr($slot['start_time'],0,5) . " - " . substr($slot['end_time'],0,5) . "\" onclick=\"selectSlot(this)\"" : "disabled" ?>>
-            <span style="width:6px;height:6px;border-radius:50%;background:<?= $isBooked ? '#ccc' : '#198754' ?>;display:block;"></span>
-            <span style="font-size:14px;font-weight:600;color:<?= $isBooked ? '#adb5bd' : '#212529' ?>;"><?= substr($slot['start_time'],0,5) ?></span>
-            <span style="font-size:11px;color:<?= $isBooked ? '#ccc' : '#888' ?>;">– <?= substr($slot['end_time'],0,5) ?></span>
-        </button>
-        <?php endforeach; ?>
-    </div>
+            <h3 class="summary-title">Thông tin đặt sân</h3>
 
-    <!-- Nhóm: Buổi chiều -->
-    <p style="font-size:11px; font-weight:600; color:#aaa; letter-spacing:0.07em; text-transform:uppercase; margin:0 0 10px;">Buổi chiều</p>
-    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px;">
-        <?php foreach ($timeSlots as $slot):
-            if ($slot['start_time'] < '12:00:00') continue;
-            $isBooked = in_array($slot['id'], $bookedSlots);
-        ?>
-        <button type="button"
-            class="<?= $isBooked ? 'slot-booked' : 'slot-available' ?>"
-            style="display:flex;flex-direction:column;align-items:center;justify-content:center;
-                   padding:12px 6px;border-radius:8px;border:1px solid <?= $isBooked ? '#e9ecef' : '#ddd' ?>;
-                   background:<?= $isBooked ? '#f8f9fa' : '#fff' ?>;
-                   cursor:<?= $isBooked ? 'not-allowed' : 'pointer' ?>;
-                   min-height:72px; gap:4px; transition:all 0.15s;"
-            <?= !$isBooked ? "data-slot-id=\"{$slot['id']}\" data-time=\"" . substr($slot['start_time'],0,5) . " - " . substr($slot['end_time'],0,5) . "\" onclick=\"selectSlot(this)\"" : "disabled" ?>>
-            <span style="width:6px;height:6px;border-radius:50%;background:<?= $isBooked ? '#ccc' : '#198754' ?>;display:block;"></span>
-            <span style="font-size:14px;font-weight:600;color:<?= $isBooked ? '#adb5bd' : '#212529' ?>;"><?= substr($slot['start_time'],0,5) ?></span>
-            <span style="font-size:11px;color:<?= $isBooked ? '#ccc' : '#888' ?>;">– <?= substr($slot['end_time'],0,5) ?></span>
-        </button>
-        <?php endforeach; ?>
-    </div>
-</div>
-
-        <!-- ===== SUMMARY ===== -->
-        <div class="summary-section" style="flex:1; background:#fff; padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.05); border:1px solid #eee;">
-            <h3 style="font-weight:700; font-size:1.3rem; margin-bottom:20px;">Thông tin đặt sân</h3>
-
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                <span class="text-muted">Tên sân</span>
-                <strong><?= htmlspecialchars($court['name']) ?></strong>
+            <div class="info-row">
+                <span class="info-label">Tên sân</span>
+                <span class="info-value"><?= htmlspecialchars($court['name']) ?></span>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                <span class="text-muted">Ngày đặt</span>
-                <strong><?= date('d/m/Y', strtotime($date)) ?></strong>
+            <div class="info-row">
+                <span class="info-label">Ngày đặt</span>
+                <span class="info-value"><?= date('d/m/Y', strtotime($date)) ?></span>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                <span class="text-muted">Giờ đã chọn</span>
-                <strong id="display-time" class="text-success">Chưa chọn</strong>
+            <div class="info-row">
+                <span class="info-label">Giờ chơi</span>
+                <span class="info-value highlight" id="display-time">Chưa chọn</span>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                <span class="text-muted">Đơn giá</span>
-                <strong><?= number_format($court['price']) ?> VNĐ/giờ</strong>
+            <div class="info-row">
+                <span class="info-label">Đơn giá</span>
+                <span class="info-value"><?= number_format($court['price']) ?> VNĐ/giờ</span>
             </div>
 
-            <hr style="margin:20px 0;">
-
-            <div style="background:#f0f9ff; padding:18px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:600;">Tổng cộng</span>
-                <strong id="display-total" style="color:#198754; font-size:1.3rem;">0 VNĐ</strong>
+            <div class="total-box">
+                <span class="total-label">Tổng cộng</span>
+                <span class="total-amount" id="display-total">— VNĐ</span>
             </div>
 
-            <button type="submit" id="btn-confirm" disabled
-        class="btn btn-success"
-        style="width:100%; margin-top:1rem; padding:12px 0; font-weight:bold;  font-size:1.05rem; border-radius:10px; background: blue; color: white; outline:none;border:none;">
-    Xác nhận đặt sân
-</button>
+            <button type="submit" id="btn-confirm" class="btn-confirm" disabled>
+                <i class="fas fa-check"></i> Xác nhận đặt sân
+            </button>
 
-            <div style="margin-top:20px; font-size:0.85rem; color:#6c757d; background:#fff8f0; padding:14px; border-radius:8px; border-left:4px solid #fd7e14;">
-                <i class="fa fa-info-circle me-2"></i>
-                Chính sách: Bạn có thể hủy lịch trước 12 tiếng để được hoàn tiền.
+            <div class="policy-note">
+                <i class="fas fa-info-circle"></i>
+                <span>Bạn có thể hủy lịch trước <strong>12 tiếng</strong> để được hoàn tiền đầy đủ.</span>
             </div>
+
         </div>
+
     </div>
+
 </form>
+</div>
 
 <script>
 const PRICE = <?= (int)$court['price'] ?>;
@@ -144,23 +435,15 @@ let selectedBtn = null;
 
 function selectSlot(btn) {
     if (selectedBtn) {
-        selectedBtn.style.background = '#fff';
-        selectedBtn.style.borderColor = '#ddd';
-        selectedBtn.style.color = '#212529';
-        selectedBtn.querySelectorAll('span')[0].style.background = '#198754'; // dot
-        selectedBtn.querySelectorAll('span')[1].style.color = '#212529';
-        selectedBtn.querySelectorAll('span')[2].style.color = '#888';
+        selectedBtn.classList.remove('selected');
     }
-    btn.style.background = '#198754';
-    btn.style.borderColor = '#157347';
-    btn.querySelectorAll('span')[0].style.background = '#fff';
-    btn.querySelectorAll('span')[1].style.color = '#fff';
-    btn.querySelectorAll('span')[2].style.color = '#c8f0e3';
+
+    btn.classList.add('selected');
     selectedBtn = btn;
 
-    document.getElementById('selected_slot_id').value = btn.getAttribute('data-slot-id');
-    document.getElementById('display-time').innerText  = btn.getAttribute('data-time');
+    document.getElementById('selected_slot_id').value = btn.dataset.slotId;
+    document.getElementById('display-time').innerText  = btn.dataset.time;
     document.getElementById('display-total').innerText = PRICE.toLocaleString('vi-VN') + ' VNĐ';
-    document.getElementById('btn-confirm').disabled = false;
+    document.getElementById('btn-confirm').disabled    = false;
 }
 </script>

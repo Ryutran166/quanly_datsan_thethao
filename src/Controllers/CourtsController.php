@@ -266,7 +266,8 @@ class CourtsController
             'booking_date'   => $date,
             'customer_name'  => $user['name'] ?? 'Khách hàng',
             'customer_phone' => $user['phone'] ?? null,
-            'status'         => 'confirmed',
+            'status'         => 'Confirmed',
+            'user_id'        => $userId,
         ]);
 
         header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&slot_id=$slotId");
@@ -306,7 +307,7 @@ class CourtsController
         $upcoming  = array_filter(
             $bookings,
             fn($b) =>
-            $b['booking_status'] === 'confirmed' && strtotime($b['booking_date']) >= strtotime('today')
+            strtolower($b['booking_status']) === 'confirmed' && strtotime($b['booking_date']) >= strtotime('today')
         );
         $past      = array_filter(
             $bookings,
@@ -316,7 +317,7 @@ class CourtsController
         $cancelled = array_filter(
             $bookings,
             fn($b) =>
-            $b['booking_status'] === 'cancelled'
+            strtolower($b['booking_status']) === 'cancelled'
         );
 
         require_once PROJECT_ROOT . '/views/layout/header.php';
