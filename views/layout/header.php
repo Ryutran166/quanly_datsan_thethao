@@ -268,9 +268,7 @@ function isActive($action, $current_action)
             <div class="dropdown-content">
 
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <a href="index.php?action=user">
-                        <i class="fas fa-users-cog"></i> Quản trị User
-                    </a>
+                   
                 <?php endif; ?>
                 <a href="index.php?action=change_password">
                     <i class="fas fa-key"></i> Đổi mật khẩu
@@ -304,6 +302,8 @@ function isActive($action, $current_action)
         <a href="index.php?action=index" class="<?= isActive('courts', $current_action); ?>">
             Danh sách sân
         </a>
+        <a href="index.php?action=user" class="<?= isActive('user', $current_action); ?>">
+            Quản trị User
         </a>
 
      </div>
