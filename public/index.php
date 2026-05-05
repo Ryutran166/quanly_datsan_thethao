@@ -17,7 +17,7 @@ $protected_actions = [
     'edit',
     'update',
     'delete',
-    'confirm_booking',
+    // 'confirm_booking',
     'my_bookings',
     'cancel_booking',
     'user',
@@ -177,6 +177,13 @@ switch ($action) {
 
     case 'confirm_booking':
         $controller->confirm_booking();
+        break;
+    case 'check_booking':
+        $controller->check_booking();
+        break;
+
+    case 'guest_form':
+        $controller->guest_form();
         break;
 
     case 'booking_success':
