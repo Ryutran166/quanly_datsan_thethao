@@ -247,20 +247,20 @@ class CourtsController
             exit();
         }
 
-        // Danh sách khung giờ cố định
+        // Danh sách khung giờ cố định\
+        $timeSlots = [
+            ['id' => 1,  'start_time' => '06:00:00', 'end_time' => '07:00:00'],
+            ['id' => 2,  'start_time' => '07:00:00', 'end_time' => '08:00:00'],
+            ['id' => 3,  'start_time' => '08:00:00', 'end_time' => '09:00:00'],
+            ['id' => 4,  'start_time' => '09:00:00', 'end_time' => '10:00:00'],
+            ['id' => 5,  'start_time' => '10:00:00', 'end_time' => '11:00:00'],
+            ['id' => 6,  'start_time' => '14:00:00', 'end_time' => '15:00:00'],
+            ['id' => 7,  'start_time' => '15:00:00', 'end_time' => '16:00:00'],
+            ['id' => 8,  'start_time' => '16:00:00', 'end_time' => '17:00:00'],
+            ['id' => 9,  'start_time' => '17:00:00', 'end_time' => '18:00:00'],
+            ['id' => 10, 'start_time' => '18:00:00', 'end_time' => '19:00:00'],
+        ];
 
-        $timeSlots = [];
-
-        for ($i = 0; $i < 24; $i++) {
-            $start = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
-            $end   = str_pad(($i + 1) % 24, 2, '0', STR_PAD_LEFT) . ':00';
-
-            $timeSlots[] = [
-                'id' => $i + 1,
-                'start_time' => $start,
-                'end_time' => $end
-            ];
-        }
 
         $bookedSlots = $this->bookingModel->getBookedSlots($id, $date);
 
@@ -358,15 +358,12 @@ class CourtsController
         //  Nếu đã login → submit thẳng bằng POST
         if (isset($_SESSION['user_id'])) {
 
-            // dùng session tạm để giữ data
-            $_SESSION['booking_temp'] = [
-                'court_id' => $courtId,
-                'slot_id'  => $slotId,
-                'date'     => $date
-            ];
+            $_POST['court_id']     = $courtId;
+            $_POST['slot_id']      = $slotId;
+            $_POST['booking_date'] = $date;
 
-            header("Location: index.php?action=confirm_booking");
-            exit();
+            $this->confirm_booking(); // gọi trực tiếp
+            return;
         }
 
         //  chưa login → sang form nhập
