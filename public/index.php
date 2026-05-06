@@ -7,6 +7,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Nhom2\QuanlyDatsanThethao\Controllers\CourtsController;
 use Nhom2\QuanlyDatsanThethao\Controllers\UserController;
 use Nhom2\QuanlyDatsanThethao\Controllers\Admin\AdminController;
+use Nhom2\QuanlyDatsanThethao\Controllers\PageController;
 
 $action = $_GET['action'] ?? 'home';
 
@@ -26,7 +27,8 @@ $protected_actions = [
     'update_user',
     'delete_user',
     'change_password',
-    'do_change_password'
+    'do_change_password',
+
 ];
 
 if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
@@ -75,6 +77,10 @@ switch ($action) {
     case 'change_password':
         $controller = new UserController();
         break;
+    case 'contact':
+    case 'submit_contact':
+        $controller = new PageController();
+        break;
 
     // COURTS
     default:
@@ -84,6 +90,13 @@ switch ($action) {
 
 
 switch ($action) {
+    case 'contact':
+        $controller->showContactForm();
+        break;
+
+    case 'submit_contact':
+        $controller->submitContact();
+        break;
 
     case 'login':
         $controller->showLoginForm();

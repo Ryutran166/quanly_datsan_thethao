@@ -410,6 +410,11 @@ function isActive($action, $current_action)
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
         <?php endif; ?>
+                <?php if (isset($_SESSION['user_id'])): ?>
+            <a href="index.php?action=contact" class="sub-link <?= isActive('contact', $current_action) ?>">
+                Liên hệ 
+            </a>
+        <?php endif; ?>
     </nav>
 
     <script>
