@@ -79,6 +79,10 @@
                 <input type="number" name="price"
                     value="<?= $court['price'] ?>" required>
 
+                <label>Địa chỉ sân</label>
+                <input  type ="text" name="address" 
+                    value="<?=$court['address']?>" required>
+
                 <label>Trạng thái</label>
                 <select name="status">
                     <option value="available" <?= $court['status'] == 'available' ? 'selected' : '' ?>>Available</option>

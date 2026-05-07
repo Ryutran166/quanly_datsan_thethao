@@ -116,6 +116,7 @@ class CourtsController
                 'price'    => $_POST['price'],
                 'status'   => 'available',
                 'image'    => $image,
+                'address'  => $_POST['address'],
                 'owner_id' => $ownerId
             ]);
         }
@@ -158,6 +159,7 @@ class CourtsController
             $id = $_POST['id'] ?? null;
             $name = $_POST['name'] ?? '';
             $price = $_POST['price'] ?? '';
+            $address =  $_POST['address'];
             $status = $_POST['status'] ?? 'available';
 
             $oldImage = $_POST['old_image'] ?? null;
@@ -194,7 +196,8 @@ class CourtsController
                     'name'   => $name,
                     'price'  => $price,
                     'status' => $status,
-                    'image'  => $image
+                    'image'  => $image,
+                    'address' => $address
                 ]);
             }
         }
@@ -472,4 +475,32 @@ class CourtsController
             return ['error' => 'Đã có lỗi xảy ra khi upload file.'];
         }
     }
+
+    public function courtDetail()
+{
+    if (!isset($_GET['id'])) {
+        echo json_encode([
+            'success' => false
+        ]);
+        exit;
+    }
+
+    $id = (int) $_GET['id'];
+
+    $courtModel = new CourtsModel();
+
+    $court = $courtModel->getCourtById($id);
+
+    if (!$court) {
+        echo json_encode([
+            'success' => false
+        ]);
+        exit;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'court' => $court
+    ]);
+}
 }

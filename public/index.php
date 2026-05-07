@@ -195,6 +195,10 @@ switch ($action) {
         $controller->check_booking();
         break;
 
+    case 'court_detail':
+        $controller->courtDetail();
+        break;
+
     case 'guest_form':
         $controller->guest_form();
         break;

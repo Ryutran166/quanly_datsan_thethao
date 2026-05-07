@@ -42,9 +42,9 @@ class CourtsModel
     {
         $stmt = $this->conn->prepare("
         INSERT INTO courts
-        (name, price, status, image, owner_id)
+        (name, price, status, image, owner_id,address)
         VALUES
-        (:name, :price, :status, :image, :owner_id)
+        (:name, :price, :status, :image, :owner_id,:address)
     ");
 
         $stmt->bindValue(':name', $data['name']);
@@ -52,6 +52,7 @@ class CourtsModel
         $stmt->bindValue(':status', $data['status'] ?? 'available');
         $stmt->bindValue(':image', $data['image'] ?? null);
         $stmt->bindValue(':owner_id', $data['owner_id']);
+        $stmt->bindValue(':address', $data['address']);
 
         return $stmt->execute();
     }
@@ -78,6 +79,7 @@ class CourtsModel
         SET name = :name,
             price = :price,
             status = :status,
+            address =:address,
             image = :image
         WHERE id = :id
     ");
@@ -87,6 +89,7 @@ class CourtsModel
         $price = $data['price'];
         $status = $data['status'] ?? 'available';
         $image = $data['image'] ?? null;
+        $address = htmlspecialchars(strip_tags($data['address']));
 
         // Bind
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -94,6 +97,7 @@ class CourtsModel
         $stmt->bindParam(':price', $price);
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':image', $image);
+        $stmt->bindParam(':address',$address);
 
         return $stmt->execute();
     }

@@ -490,6 +490,108 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         border-color: var(--primary);
         color: #fff;
     }
+
+
+    .court-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .5);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition: .3s;
+
+        z-index: 9999;
+    }
+
+    .court-modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .court-modal-content {
+        width: 90%;
+        max-width: 700px;
+
+        background: white;
+
+        border-radius: 20px;
+
+        overflow: hidden;
+
+        position: relative;
+    }
+
+    .modal-image-wrap {
+        height: 320px;
+    }
+
+    .modal-image-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+
+        width: 40px;
+        height: 40px;
+
+        border: none;
+        border-radius: 50%;
+
+        font-size: 24px;
+
+        cursor: pointer;
+    }
+
+    .court-modal-content {
+        transform: scale(.9);
+        transition: .3s;
+    }
+
+    .court-modal.show .court-modal-content {
+        transform: scale(1);
+    }
+
+    #modalStatus {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #e6faf3;
+        color: #00a06a;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .modal-address {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        margin: 14px 0 18px;
+
+        color: var(--mid);
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .modal-address i {
+        color: var(--primary);
+    }
 </style>
 
 <div class="courts-wrapper">
@@ -560,7 +662,8 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 $isMine      = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id'];
                 ?>
 
-                <div class="court-card">
+                <div class="court-card"
+                    data-id="<?= $court['id'] ?>">
 
                     <!-- Image -->
                     <div class="court-img-wrap">
@@ -658,7 +761,137 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         </div>
     <?php endif; ?>
 
+    <div class="court-modal" id="courtModal">
+
+        <div class="court-modal-content">
+
+            <button class="modal-close" id="closeModal">
+                &times;
+            </button>
+
+            <div class="modal-image-wrap">
+                <img id="modalImage">
+            </div>
+
+            <div class="modal-body">
+
+                <h2 id="modalName"></h2>
+
+                <div class="modal-price">
+                    <span id="modalPrice"></span>
+                    <small>VNĐ / giờ</small>
+                </div>
+                <div class="modal-address">
+                    <i class="fa fa-location-dot"></i>
+                    <span id="modalAddress"></span>
+                </div>
+                <p>
+                    <strong>Trạng thái:</strong>
+                    <span id="modalStatus"></span>
+                </p>
+
+
+
+                <a href="#" class="btn-book" id="modalBookingBtn">
+                    Đặt sân
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 </div>
+
+
+<script>
+    const modal = document.getElementById('courtModal');
+
+    // Click card
+    document.querySelectorAll('.court-card').forEach(card => {
+
+        card.addEventListener('click', async function(e) {
+
+            // Không mở popup khi click nút/link
+            if (e.target.closest('a')) return;
+
+            const id = this.dataset.id;
+
+            try {
+
+                const response = await fetch(
+                    `index.php?action=court_detail&id=${id}`
+                );
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    alert('Không lấy được dữ liệu sân');
+                    return;
+                }
+
+                const court = data.court;
+
+                // Gán dữ liệu popup
+                document.getElementById('modalName').innerText =
+                    court.name;
+
+                document.getElementById('modalPrice').innerText =
+                    Number(court.price).toLocaleString();
+                    
+                document.getElementById('modalAddress').innerText =
+                    court.address || 'Chưa cập nhật địa chỉ';
+
+                document.getElementById('modalStatus').innerText =
+                    court.status;
+
+                document.getElementById('modalImage').src =
+                    court.image ?
+                    `/quanly_datsan_thethao/public/upload/img_courts/${court.image}` :
+                    `/quanly_datsan_thethao/public/upload/img_courts/default.png`;
+
+                document.getElementById('modalBookingBtn').href =
+                    `index.php?action=booking&id=${court.id}`;
+
+                // Hiện popup
+                modal.classList.add('show');
+
+            } catch (err) {
+
+                console.log(err);
+                alert('Có lỗi xảy ra');
+
+            }
+
+        });
+
+    });
+
+    // Close button
+    const closeBtn = document.getElementById('closeModal');
+
+    if (closeBtn) {
+
+        closeBtn.addEventListener('click', () => {
+
+            modal.classList.remove('show');
+
+        });
+
+    }
+
+    // Click nền để đóng
+    modal.addEventListener('click', function(e) {
+
+        if (e.target === modal) {
+
+            modal.classList.remove('show');
+
+        }
+
+    });
+</script>
+
 
 <?php
 require_once PROJECT_ROOT . '/views/layout/footer.php';
