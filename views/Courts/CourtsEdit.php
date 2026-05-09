@@ -101,7 +101,7 @@
 
             </form>
 
-            <a href="index.php">← Quay về danh sách</a>
+            <a href="index.php?action=index">← Quay về danh sách</a>
         </div>
     </div>
 

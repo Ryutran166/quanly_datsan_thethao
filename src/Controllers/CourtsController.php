@@ -121,7 +121,7 @@ class CourtsController
             ]);
         }
 
-        header("Location:index.php?action=courts");
+        header("Location:index.php?action=index");
         exit();
     }
 
@@ -202,7 +202,7 @@ class CourtsController
             }
         }
 
-        header("Location:index.php?action=courts");
+        header("Location:index.php?action=index");
         exit();
     }
     /* =============================

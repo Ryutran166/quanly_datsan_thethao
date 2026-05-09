@@ -1,166 +1,516 @@
 <?php require_once PROJECT_ROOT . '/views/layout/header.php'; ?>
 
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
     :root {
-        --bg-body: #f8f9fe;
-        --card-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
-        --primary-navy: #0a2540;
+        --navy:     #0d1b2a;
+        --navy-mid: #1a2e44;
+        --green:    #00c853;
+        --green-dk: #00a846;
+        --bg:       #eef2f7;
+        --card-bg:  #ffffff;
+        --label:    #64748b;
+        --border:   #dde3ee;
+        --shadow:   0 4px 24px rgba(13,27,42,.08);
+        --radius:   16px;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-        background-color: var(--bg-body);
-        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        font-family: 'Sora', sans-serif;
+        color: var(--navy);
     }
 
-    .breadcrumb-item+.breadcrumb-item::before {
-        content: ">";
+    /* ── Page wrapper ── */
+    .page-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
     }
 
-    .form-section-title {
-        font-size: 1.1rem;
+    /* ── Page header ── */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 36px;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--navy);
+    }
+
+    .page-header h1 span { color: var(--green); }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--navy);
+        color: #fff;
+        font-size: .85rem;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: background .2s;
+    }
+
+    .btn-back:hover { background: var(--navy-mid); color: #fff; }
+
+    /* ── Grid ── */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    /* ── Card ── */
+    .card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 32px;
+    }
+
+    .card-title {
+        font-size: 1rem;
         font-weight: 700;
-        color: var(--primary-navy);
+        color: var(--navy);
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 25px;
+        margin-bottom: 28px;
     }
 
-    .custom-card {
-        background: #ffffff;
-        border: none;
-        border-radius: 15px;
-        box-shadow: var(--card-shadow);
-        padding: 30px;
+    .card-title .icon-wrap {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #eef9f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--green);
+        font-size: 1rem;
     }
 
-    .form-label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #525f7f;
+    /* ── Form rows ── */
+    .row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .field { display: flex; flex-direction: column; }
+
+    .field + .field,
+    .row-2 + .row-2,
+    .row-2 + .field,
+    .field + .row-2 { margin-top: 20px; }
+
+    label.lbl {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--label);
+        letter-spacing: .04em;
+        text-transform: uppercase;
         margin-bottom: 8px;
     }
 
     .form-control,
     .form-select {
-        border: 1px solid #dee2e6;
+        border: 1.5px solid var(--border);
         border-radius: 10px;
-        padding: 12px;
-        transition: all 0.2s;
+        padding: 13px 16px;
+        font-family: 'Sora', sans-serif;
+        font-size: .9rem;
+        color: var(--navy);
+        background: #fafbfd;
+        transition: border-color .2s, box-shadow .2s;
+        outline: none;
+        width: 100%;
     }
 
-    .form-control:focus {
-        border-color: #5e72e4;
-        box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.1);
+    .form-control:focus, .form-select:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(0,200,83,.12);
+        background: #fff;
     }
 
-    /* Media Upload Area */
+    textarea.form-control { resize: vertical; min-height: 130px; }
+
+    /* Price input group */
+    .input-group {
+        display: flex;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fafbfd;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .input-group:focus-within {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(0,200,83,.12);
+    }
+
+    .input-group-text {
+        background: #f1f5f9;
+        border: none;
+        padding: 13px 14px;
+        font-size: .85rem;
+        font-weight: 700;
+        color: var(--label);
+    }
+
+    .input-group .form-control {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    /* ── Right column ── */
+    .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Upload zone ── */
     .upload-zone {
-        border: 2px dashed #e9ecef;
-        border-radius: 15px;
-        padding: 40px 20px;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 38px 20px;
         text-align: center;
-        background-color: #fcfdfe;
+        background: #fafbfd;
         cursor: pointer;
-        transition: border-color 0.3s;
+        transition: border-color .25s, background .25s;
+        position: relative;
     }
 
     .upload-zone:hover {
-        border-color: #5e72e4;
+        border-color: var(--green);
+        background: #f0fef4;
     }
 
-    .btn-save {
-        background-color: var(--primary-navy);
-        color: white;
-        border: none;
-        padding: 14px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        margin-top: 20px;
+    .upload-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
     }
 
-    .spec-item {
-        font-size: 0.8rem;
-        color: #8898aa;
+    .upload-zone .upload-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #eef9f1;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 5px;
+        justify-content: center;
+        margin: 0 auto 14px;
+        color: var(--green);
+        font-size: 1.4rem;
+    }
+
+    .upload-zone h6 {
+        font-size: .95rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 6px;
+    }
+
+    .upload-zone p {
+        font-size: .78rem;
+        color: var(--label);
+    }
+
+    .upload-zone .btn-browse {
+        display: inline-block;
+        margin-top: 14px;
+        background: var(--navy);
+        color: #fff;
+        padding: 8px 22px;
+        border-radius: 50px;
+        font-size: .8rem;
+        font-weight: 700;
+        pointer-events: none;
+    }
+
+    /* Image preview */
+    #preview-wrap {
+        display: none;
+        margin-top: 14px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    #preview-wrap img {
+        width: 100%;
+        max-height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    /* ── Save button ── */
+    .btn-save {
+        width: 100%;
+        padding: 15px;
+        background: var(--green);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Sora', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s, transform .15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        letter-spacing: .02em;
+    }
+
+    .btn-save:hover {
+        background: var(--green-dk);
+        transform: translateY(-1px);
+    }
+
+    /* ── Status badge selector ── */
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 0;
+    }
+
+    .status-opt input { display: none; }
+
+    .status-opt label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 6px;
+        cursor: pointer;
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--label);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        transition: all .2s;
+        background: #fafbfd;
+    }
+
+    .status-opt label .dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        display: block;
+    }
+
+    .status-opt input:checked + label {
+        border-color: var(--navy);
+        background: var(--navy);
+        color: #fff;
+    }
+
+    .dot-available { background: var(--green); }
+    .dot-booked    { background: #f59e0b; }
+    .dot-maint     { background: #ef4444; }
+
+    /* ── Summary hint card ── */
+    .hint-card {
+        background: var(--navy);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        color: #94adc4;
+        font-size: .8rem;
+        line-height: 1.7;
+    }
+
+    .hint-card strong { color: #fff; font-weight: 700; display: block; margin-bottom: 10px; font-size: .9rem; }
+
+    .hint-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    .hint-item i { color: var(--green); width: 16px; text-align: center; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+        .form-grid { grid-template-columns: 1fr; }
     }
 </style>
 
-<div class="container py-5">
-    <div class="mb-5">
-        <h2 style="font-weight: 800; color: var(--primary-navy);">Thêm sân mới</h2>
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1>Thêm <span>sân mới</span></h1>
+        <a href="index.php?action=index" class="btn-back">
+            <i class="fa fa-arrow-left"></i> Về trang trước
+        </a>
     </div>
 
-    <form action="index.php?action=add" method="POST"
-        enctype="multipart/form-data">
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="custom-card h-100">
-                    <div class="form-section-title">
-                        <div class="bg-light p-2 rounded-circle text-success"><i class="fa fa-info-circle"></i></div>
-                        Basic Information
-                    </div>
+    <form action="index.php?action=add" method="POST" enctype="multipart/form-data">
+        <div class="form-grid">
 
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Tên Sân</label>
-                            <input type="text" name="name" class="form-control" placeholder="e.g. Center Court 01" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Loại Sân</label>
-                            <select name="type" class="form-select">
-                                <option value="Football">Football</option>
-                                <option value="Badminton">Badminton</option>
-                                <option value="Tennis">Tennis</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Giá theo giờ</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light">$</span>
-                                <input type="number" name="price" class="form-control" placeholder="0.00" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Trạng thái</label>
-                            <select name="status" class="form-select">
-                                <option value="available">Available</option>
-                                <option value="booked">Booked</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
-                        <div class="col-12 mt-4">
-                            <label class="form-label">Mô tả</label>
-                            <textarea name="description" class="form-control" rows="4" placeholder="Detail the court surface, lighting, and any specific rules..."></textarea>
+            <!-- ── LEFT: Basic info ── -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-wrap"><i class="fa fa-info-circle"></i></div>
+                    Thông tin cơ bản
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label class="lbl">Tên Sân</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Center Court 01" required>
+                    </div>
+                    <div class="field">
+                        <label class="lbl">Loại Sân</label>
+                        <select name="type" class="form-select">
+                            <option value="Football">⚽ Football</option>
+                            <option value="Badminton">🏸 Badminton</option>
+                            <option value="Tennis">🎾 Tennis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label class="lbl">Giá theo giờ (VNĐ)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₫</span>
+                            <input type="number" name="price" class="form-control" placeholder="300,000" required>
                         </div>
                     </div>
+                    <div class="field">
+                        <!-- spacer, status moved below -->
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="lbl">Trạng thái</label>
+                    <div class="status-grid">
+                        <div class="status-opt">
+                            <input type="radio" name="status" id="s_avail" value="available" checked>
+                            <label for="s_avail">
+                                <span class="dot dot-available"></span>
+                                Available
+                            </label>
+                        </div>
+                        <div class="status-opt">
+                            <input type="radio" name="status" id="s_booked" value="booked">
+                            <label for="s_booked">
+                                <span class="dot dot-booked"></span>
+                                Booked
+                            </label>
+                        </div>
+                        <div class="status-opt">
+                            <input type="radio" name="status" id="s_maint" value="maintenance">
+                            <label for="s_maint">
+                                <span class="dot dot-maint"></span>
+                                Maintenance
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="lbl">Địa chỉ</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-map-marker-alt"></i></span>
+                        <input type="text" name="address" class="form-control" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="lbl">Mô tả</label>
+                    <textarea name="description" class="form-control" placeholder="Mô tả bề mặt sân, hệ thống chiếu sáng và các quy định..."></textarea>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="custom-card mb-4">
-                    <h5 class="fw-bold mb-4" style="color: var(--primary-navy);">Ảnh sân</h5>
+            <!-- ── RIGHT: Image + Save ── -->
+            <div class="right-col">
 
-                    <div class="upload-zone mb-3" onclick="document.getElementById('image').click()">
-                        <i class="fa fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                        <h6 class="fw-bold">Drag & Drop images here</h6>
-                        <p class="text-muted small">Support PNG, JPG up to 10MB</p>
-                        <button type="button" class="btn btn-sm btn-dark px-4 rounded-pill">Browse Files</button>
-                        <input type="file" id="image" name="image">
+                <!-- Image upload -->
+                <div class="card">
+                    <div class="card-title">
+                        <div class="icon-wrap"><i class="fa fa-image"></i></div>
+                        Ảnh sân
+                    </div>
+
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="image" name="image" accept="image/*">
+                        <div class="upload-icon"><i class="fa fa-cloud-upload-alt"></i></div>
+                        <h6>Kéo & thả ảnh vào đây</h6>
+                        <p>Hỗ trợ PNG, JPG tối đa 10MB</p>
+                        <span class="btn-browse">Chọn tệp</span>
+
+                        <div id="preview-wrap">
+                            <img id="preview-img" src="" alt="Preview">
+                        </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-save shadow-sm">
-                    Save Court Details
+                <!-- Tips card -->
+                <div class="hint-card">
+                    <strong><i class="fa fa-lightbulb" style="color:var(--green);margin-right:8px"></i>Lưu ý</strong>
+                    <div class="hint-item"><i class="fa fa-check"></i> Ảnh sắc nét giúp tăng lượt đặt sân</div>
+                    <div class="hint-item"><i class="fa fa-check"></i> Đặt giá hợp lý theo khu vực</div>
+                    <div class="hint-item"><i class="fa fa-check"></i> Mô tả rõ tiện ích và quy định sân</div>
+                </div>
+
+                <!-- Save -->
+                <button type="submit" class="btn-save">
+                    <i class="fa fa-save"></i> Lưu thông tin sân
                 </button>
-                <a href="index.php?action=index" class="btn btn-link w-100 text-muted mt-2 text-decoration-none small">Về trang trước</a>
             </div>
+
         </div>
     </form>
 </div>
+
+<script>
+    // Image preview
+    document.getElementById('image').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const wrap = document.getElementById('preview-wrap');
+            const img  = document.getElementById('preview-img');
+            img.src = e.target.result;
+            wrap.style.display = 'block';
+            document.querySelector('.upload-zone .upload-icon').style.display = 'none';
+            document.querySelector('.upload-zone h6').style.display = 'none';
+            document.querySelector('.upload-zone p').style.display = 'none';
+            document.querySelector('.btn-browse').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Drag & drop highlight
+    const zone = document.getElementById('uploadZone');
+    ['dragover','dragenter'].forEach(e => zone.addEventListener(e, ev => {
+        ev.preventDefault(); zone.style.borderColor = 'var(--green)'; zone.style.background = '#f0fef4';
+    }));
+    ['dragleave','drop'].forEach(e => zone.addEventListener(e, () => {
+        zone.style.borderColor = ''; zone.style.background = '';
+    }));
+</script>
 
 <?php require_once PROJECT_ROOT . '/views/layout/footer.php'; ?>
