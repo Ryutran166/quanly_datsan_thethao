@@ -78,7 +78,7 @@
     <form action="index.php?action=confirm_booking" method="POST" class="booking-form">
         <!-- Các input ẩn giữ nguyên -->
         <input type="hidden" name="court_id" value="<?= $courtId ?>">
-        <input type="hidden" name="slot_id" value="<?= $slotId ?>">
+        <input type="hidden" name="slot_id" value="<?= htmlspecialchars($slotIds) ?>">
         <input type="hidden" name="booking_date" value="<?= $date ?>">
 
         <div class="form-group">

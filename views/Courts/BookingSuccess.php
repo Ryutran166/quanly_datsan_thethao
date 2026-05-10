@@ -21,11 +21,44 @@
                 <span style="color:#888;">Ngày</span>
                 <strong><?= date('d/m/Y', strtotime($date)) ?></strong>
             </div>
-            <?php if ($slot): ?>
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:0.9rem;">
-                <span style="color:#888;">Giờ</span>
-                <strong><?= substr($slot['start_time'],0,5) ?> – <?= substr($slot['end_time'],0,5) ?></strong>
-            </div>
+            <?php if (!empty($slots)): ?>
+                <div style="padding:10px 0; border-bottom:1px solid #eee; font-size:0.9rem;">
+
+                    <div style="margin-bottom:10px; color:#888;">
+                        Khung giờ đã đặt
+                    </div>
+
+                    <?php foreach ($slots as $slot): ?>
+                        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:8px 12px;
+            margin-bottom:8px;
+            background:#fff;
+            border:1px solid #e5e7eb;
+            border-radius:8px;
+        ">
+                            <span style="color:#444;">
+                                <?= substr($slot['start_time'], 0, 5) ?>
+                                -
+                                <?= substr($slot['end_time'], 0, 5) ?>
+                            </span>
+
+                            <span style="
+                background:#d1fae5;
+                color:#059669;
+                padding:4px 10px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:600;
+            ">
+                                Đã xác nhận
+                            </span>
+                        </div>
+                    <?php endforeach; ?>
+
+                </div>
             <?php endif; ?>
             <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:0.9rem;">
                 <span style="color:#888;">Tổng tiền</span>
@@ -36,11 +69,11 @@
         <!-- Nút hành động -->
         <div style="display:flex; flex-direction:column; gap:10px;">
             <a href="index.php?action=booking&id=<?= (int)$court['id'] ?>"
-               style="display:block; padding:12px; background:#198754; color:#fff; border-radius:10px; text-decoration:none; font-weight:600; font-size:0.95rem;">
+                style="display:block; padding:12px; background:#198754; color:#fff; border-radius:10px; text-decoration:none; font-weight:600; font-size:0.95rem;">
                 Đặt thêm khung giờ khác
             </a>
             <a href="index.php"
-               style="display:block; padding:12px; background:#f3f4f6; color:#444; border-radius:10px; text-decoration:none; font-weight:500; font-size:0.95rem;">
+                style="display:block; padding:12px; background:#f3f4f6; color:#444; border-radius:10px; text-decoration:none; font-weight:500; font-size:0.95rem;">
                 Về trang chủ
             </a>
         </div>

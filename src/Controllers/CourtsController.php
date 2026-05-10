@@ -308,59 +308,74 @@ class CourtsController
             exit();
         }
 
-        $courtId  = (int) ($_POST['court_id']  ?? 0);
-        $slotId   = (int) ($_POST['slot_id']   ?? 0);
-        $date     = $_POST['booking_date'] ?? '';
+        $courtId = (int) ($_POST['court_id'] ?? 0);
+        $date    = $_POST['booking_date'] ?? '';
 
-        if (!$courtId || !$slotId || !$date) {
+        // nhận nhiều slot
+        $slotIds = !empty($_POST['slot_id'])
+            ? array_map('intval', explode(',', $_POST['slot_id']))
+            : [];
+
+        if (!$courtId || empty($slotIds) || !$date) {
             header("Location: index.php?error=missing_data");
             exit();
         }
 
-        // check trùng slot
+        // kiểm tra slot đã đặt
         $alreadyBooked = $this->bookingModel->getBookedSlots($courtId, $date);
-        if (in_array($slotId, $alreadyBooked)) {
-            header("Location: index.php?action=booking&id=$courtId&date=$date&error=slot_taken");
-            exit();
+
+        foreach ($slotIds as $slotId) {
+
+            if (in_array((int)$slotId, $alreadyBooked)) {
+
+                header("Location: index.php?action=booking&id=$courtId&date=$date&error=slot_taken");
+                exit();
+            }
         }
 
         // =========================
-        // LOGIN 
+        // USER
         // =========================
 
         $userId = $_SESSION['user_id'] ?? null;
 
         if ($userId) {
+
             $user = $this->userModel->getUserById($userId);
+
             $customerName  = $user['name'];
             $customerPhone = $user['phone'];
         } else {
+
             $customerName  = $_POST['customer_name'] ?? '';
             $customerPhone = $_POST['customer_phone'] ?? '';
         }
 
         // =========================
-        // LƯU DB
+        // INSERT NHIỀU SLOT
         // =========================
 
-        $this->bookingModel->createBooking([
-            'court_id'       => $courtId,
-            'slot_id'        => $slotId,
-            'booking_date'   => $date,
-            'customer_name'  => $customerName,
-            'customer_phone' => $customerPhone,
-            'status'         => 'Confirmed',
-            'user_id'        => $userId, // null nếu guest
-        ]);
+        foreach ($slotIds as $slotId) {
 
-        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&slot_id=$slotId");
+            $this->bookingModel->createBooking([
+                'court_id'       => $courtId,
+                'slot_id'        => (int)$slotId,
+                'booking_date'   => $date,
+                'customer_name'  => $customerName,
+                'customer_phone' => $customerPhone,
+                'status'         => 'Confirmed',
+                'user_id'        => $userId,
+            ]);
+        }
+
+        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date");
         exit();
     }
 
     public function guest_form()
     {
         $courtId = $_GET['court_id'] ?? 0;
-        $slotId  = $_GET['slot_id'] ?? 0;
+        $slotIds  = $_GET['slot_id'] ?? 0;
         $date    = $_GET['date'] ?? '';
 
         require_once PROJECT_ROOT . '/views/layout/header.php';
@@ -371,40 +386,51 @@ class CourtsController
     public function check_booking()
     {
         $courtId = $_POST['court_id'] ?? 0;
-        $slotId  = $_POST['slot_id'] ?? 0;
+        $slotIds = trim($_POST['slot_id'] ?? '');
         $date    = $_POST['booking_date'] ?? '';
 
-        if (!$courtId || !$slotId || !$date) {
+        if (!$courtId || $slotIds === '' || !$date) {
+
             header("Location: index.php?error=missing_data");
             exit();
         }
 
-        //  Nếu đã login → submit thẳng bằng POST
+        // Nếu đã login
         if (isset($_SESSION['user_id'])) {
 
             $_POST['court_id']     = $courtId;
-            $_POST['slot_id']      = $slotId;
+            $_POST['slot_id']     = $slotIds;
             $_POST['booking_date'] = $date;
 
-            $this->confirm_booking(); // gọi trực tiếp
+            $this->confirm_booking();
             return;
         }
 
-        //  chưa login → sang form nhập
+        // Guest
         header("Location: index.php?action=guest_form"
-            . "&court_id=$courtId&slot_id=$slotId&date=$date");
+            . "&court_id=$courtId&slot_id=$slotIds&date=$date");
+        var_dump($_POST);
         exit();
     }
-
-
     public function booking_success()
     {
         $courtId = (int) ($_GET['court_id'] ?? 0);
-        $slotId  = (int) ($_GET['slot_id']  ?? 0);
+        $slotIds  = (int) ($_GET['slot_id']  ?? 0);
         $date    =        $_GET['date']      ?? '';
 
         $court = $this->courtsModel->getCourtById($courtId);
-        $slot  = $this->bookingModel->getSlotById($slotId);
+        $slotIds = explode(',', $_GET['slot_id'] ?? '');
+
+        $slots = [];
+
+        foreach ($slotIds as $slotId) {
+
+            $slotData = $this->bookingModel->getSlotById((int)$slotId);
+
+            if ($slotData) {
+                $slots[] = $slotData;
+            }
+        }
 
         if (!$court) {
             header("Location: index.php");

@@ -387,93 +387,96 @@
     }
 
     /* Giao diện Bảng lịch trình mới */
-.booking-table-container {
-    width: 100%;
-    overflow-x: auto; /* Cuộn ngang trên mobile */
-    background: var(--surface);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-}
+    .booking-table-container {
+        width: 100%;
+        overflow-x: auto;
+        /* Cuộn ngang trên mobile */
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+    }
 
-.booking-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px; /* Đảm bảo bảng không bị quá hẹp */
-}
+    .booking-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+        /* Đảm bảo bảng không bị quá hẹp */
+    }
 
-.booking-table th, .booking-table td {
-    border: 1px solid #f0f2f5;
-    padding: 12px 8px;
-    text-align: center;
-}
+    .booking-table th,
+    .booking-table td {
+        border: 1px solid #f0f2f5;
+        padding: 12px 8px;
+        text-align: center;
+    }
 
-.booking-table thead th {
-    background: #f8fafc;
-    color: var(--mid);
-    font-size: 13px;
-    font-weight: 700;
-}
+    .booking-table thead th {
+        background: #f8fafc;
+        color: var(--mid);
+        font-size: 13px;
+        font-weight: 700;
+    }
 
-.court-col {
-    width: 150px;
-    background: #f8fafc;
-    text-align: left !important;
-    padding-left: 20px !important;
-}
+    .court-col {
+        width: 150px;
+        background: #f8fafc;
+        text-align: left !important;
+        padding-left: 20px !important;
+    }
 
-.court-name {
-    font-weight: 700;
-    color: var(--dark);
-    display: block;
-}
+    .court-name {
+        font-weight: 700;
+        color: var(--dark);
+        display: block;
+    }
 
-.court-type {
-    font-size: 10px;
-    text-transform: uppercase;
-    color: var(--primary);
-    font-weight: 800;
-}
+    .court-type {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: var(--primary);
+        font-weight: 800;
+    }
 
-/* Các ô slot trong bảng */
-.cell-slot {
-    width: 100px;
-    height: 50px;
-    padding: 4px !important;
-}
+    /* Các ô slot trong bảng */
+    .cell-slot {
+        width: 100px;
+        height: 50px;
+        padding: 4px !important;
+    }
 
-.slot-item {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .slot-item {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.slot-item:hover:not(.booked) {
-    border-color: var(--primary);
-    background: var(--primary-soft);
-}
+    .slot-item:hover:not(.booked) {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+    }
 
-.slot-item.booked {
-    background: #e2e8f0;
-    cursor: not-allowed;
-    border: none;
-}
+    .slot-item.booked {
+        background: #e2e8f0;
+        cursor: not-allowed;
+        border: none;
+    }
 
-.slot-item.booked i {
-    color: #94a3b8;
-    font-size: 12px;
-}
+    .slot-item.booked i {
+        color: #94a3b8;
+        font-size: 12px;
+    }
 
-.slot-item.selected {
-    background: var(--primary) !important;
-    border-color: var(--primary-dark) !important;
-}
+    .slot-item.selected {
+        background: var(--primary) !important;
+        border-color: var(--primary-dark) !important;
+    }
 </style>
 
 <div class="booking-page">
@@ -482,7 +485,7 @@
 
         <input type="hidden" name="court_id" value="<?= (int)$court['id'] ?>">
         <input type="hidden" name="booking_date" value="<?= htmlspecialchars($date) ?>">
-        <input type="hidden" name="slot_id" id="selected_slot_id" value="">
+        <input type="hidden" name="slot_id" id="selected_slot_ids" value="">
 
         <div class="booking-layout">
 
@@ -510,53 +513,53 @@
                     <div class="legend-item"><span class="legend-dot taken"></span> Đã đặt</div>
                 </div>
 
-               <div class="booking-table-container">
-    <table class="booking-table">
+                <div class="booking-table-container">
+                    <table class="booking-table">
 
-        <!-- HEADER -->
-        <thead>
-            <tr>
-                <th class="court-col">Sân / Giờ</th>
-                <?php foreach ($timeSlots as $slot): ?>
-                    <th><?= substr($slot['start_time'], 0, 5) ?></th>
-                <?php endforeach; ?>
-            </tr>
-        </thead>
+                        <!-- HEADER -->
+                        <thead>
+                            <tr>
+                                <th class="court-col">Sân / Giờ</th>
+                                <?php foreach ($timeSlots as $slot): ?>
+                                    <th><?= substr($slot['start_time'], 0, 5) ?></th>
+                                <?php endforeach; ?>
+                            </tr>
+                        </thead>
 
-        <!-- BODY -->
-        <tbody>
-            <tr>
-                <!-- TÊN SÂN -->
-                <td class="court-col">
-                    <span class="court-name"><?= htmlspecialchars($court['name']) ?></span>
-                    <span class="court-type">Sân thể thao</span>
-                </td>
+                        <!-- BODY -->
+                        <tbody>
+                            <tr>
+                                <!-- TÊN SÂN -->
+                                <td class="court-col">
+                                    <span class="court-name"><?= htmlspecialchars($court['name']) ?></span>
+                                    <span class="court-type">Sân thể thao</span>
+                                </td>
 
-                <!-- SLOT -->
-                <?php foreach ($timeSlots as $slot):
-                    $isBooked = in_array($slot['id'], $bookedSlots);
-                ?>
-                    <td class="cell-slot">
-                        <div class="slot-item <?= $isBooked ? 'booked' : '' ?>"
-                            <?= $isBooked ? '' : "onclick=\"selectSlot(this)\"" ?>
-                            data-slot-id="<?= $slot['id'] ?>"
-                            data-time="<?= substr($slot['start_time'], 0, 5) ?> - <?= substr($slot['end_time'], 0, 5) ?>">
+                                <!-- SLOT -->
+                                <?php foreach ($timeSlots as $slot):
+                                    $isBooked = in_array($slot['id'], $bookedSlots);
+                                ?>
+                                    <td class="cell-slot">
+                                        <div class="slot-item <?= $isBooked ? 'booked' : '' ?>"
+                                            <?= $isBooked ? '' : "onclick=\"selectSlot(this)\"" ?>
+                                            data-slot-id="<?= $slot['id'] ?>"
+                                            data-time="<?= substr($slot['start_time'], 0, 5) ?> - <?= substr($slot['end_time'], 0, 5) ?>">
 
-                            <?php if ($isBooked): ?>
-                                <i class="fas fa-times"></i>
-                            <?php else: ?>
-                                <i class="fas fa-check"></i>
-                            <?php endif; ?>
+                                            <?php if ($isBooked): ?>
+                                                <i class="fas fa-times"></i>
+                                            <?php else: ?>
+                                                <i class="fas fa-check"></i>
+                                            <?php endif; ?>
 
-                        </div>
-                    </td>
-                <?php endforeach; ?>
+                                        </div>
+                                    </td>
+                                <?php endforeach; ?>
 
-            </tr>
-        </tbody>
+                            </tr>
+                        </tbody>
 
-    </table>
-</div>
+                    </table>
+                </div>
 
             </div>
 
@@ -605,19 +608,55 @@
 
 <script>
     const PRICE = <?= (int)$court['price'] ?>;
-    let selectedBtn = null;
+
+    let selectedSlots = [];
 
     function selectSlot(btn) {
-        if (selectedBtn) {
-            selectedBtn.classList.remove('selected');
+
+        const slotId = btn.dataset.slotId;
+        const slotTime = btn.dataset.time;
+
+        // Nếu đã chọn -> bỏ chọn
+        if (selectedSlots.find(slot => slot.id === slotId)) {
+
+            selectedSlots = selectedSlots.filter(slot => slot.id !== slotId);
+
+            btn.classList.remove('selected');
+
+        } else {
+
+            // Thêm slot mới
+            selectedSlots.push({
+                id: slotId,
+                time: slotTime
+            });
+
+            btn.classList.add('selected');
         }
 
-        btn.classList.add('selected');
-        selectedBtn = btn;
+        // Cập nhật hidden input
+        document.getElementById('selected_slot_ids').value =
+            selectedSlots.map(slot => slot.id).join(',');
 
-        document.getElementById('selected_slot_id').value = btn.dataset.slotId;
-        document.getElementById('display-time').innerText = btn.dataset.time;
-        document.getElementById('display-total').innerText = PRICE.toLocaleString('vi-VN') + ' VNĐ';
-        document.getElementById('btn-confirm').disabled = false;
+        // Hiển thị thời gian
+        if (selectedSlots.length > 0) {
+
+            document.getElementById('display-time').innerText =
+                selectedSlots.map(slot => slot.time).join(', ');
+
+        } else {
+
+            document.getElementById('display-time').innerText = 'Chưa chọn';
+        }
+
+        // Tổng tiền
+        const total = PRICE * selectedSlots.length;
+
+        document.getElementById('display-total').innerText =
+            total.toLocaleString('vi-VN') + ' VNĐ';
+
+        // Disable nút nếu chưa chọn slot
+        document.getElementById('btn-confirm').disabled =
+            selectedSlots.length === 0;
     }
 </script>
