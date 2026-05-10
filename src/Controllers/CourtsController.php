@@ -355,20 +355,31 @@ class CourtsController
         // INSERT NHIỀU SLOT
         // =========================
 
+        $paymentMethod = $_POST['payment_method'] ?? 'cash';
+        $paymentMethod = in_array($paymentMethod, ['cash', 'qr'], true) ? $paymentMethod : 'cash';
+
+        // Used for redirect to success page
+        $paymentMethodRedirect = $paymentMethod;
+
+
+
         foreach ($slotIds as $slotId) {
 
             $this->bookingModel->createBooking([
-                'court_id'       => $courtId,
-                'slot_id'        => (int)$slotId,
-                'booking_date'   => $date,
-                'customer_name'  => $customerName,
-                'customer_phone' => $customerPhone,
-                'status'         => 'Confirmed',
-                'user_id'        => $userId,
+                'court_id'          => $courtId,
+                'slot_id'           => (int)$slotId,
+                'booking_date'      => $date,
+                'customer_name'     => $customerName,
+                'customer_phone'    => $customerPhone,
+                'status'            => 'Confirmed',
+                'user_id'           => $userId,
+                'payment_method'    => $paymentMethod,
             ]);
+
         }
 
-        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date");
+        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&payment_method=" . urlencode($paymentMethodRedirect));
+
         exit();
     }
 
@@ -415,11 +426,14 @@ class CourtsController
     public function booking_success()
     {
         $courtId = (int) ($_GET['court_id'] ?? 0);
-        $slotIds  = (int) ($_GET['slot_id']  ?? 0);
-        $date    =        $_GET['date']      ?? '';
+        $date    = $_GET['date'] ?? '';
+        $paymentMethod = $_GET['payment_method'] ?? 'cash';
+
 
         $court = $this->courtsModel->getCourtById($courtId);
-        $slotIds = explode(',', $_GET['slot_id'] ?? '');
+        $slotIdsRaw = $_GET['slot_id'] ?? '';
+        $slotIds = array_filter(array_map('intval', explode(',', (string)$slotIdsRaw)));
+
 
         $slots = [];
 

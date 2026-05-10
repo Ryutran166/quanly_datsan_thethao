@@ -36,8 +36,10 @@ CREATE TABLE `bookings` (
   `booking_date` date NOT NULL,
   `total_amount` decimal(10,2) DEFAULT NULL,
   `status` enum('Pending','Confirmed','Cancelled','Locked') DEFAULT 'Pending',
+  `payment_method` enum('cash','qr') DEFAULT 'cash',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 --
 -- Đang đổ dữ liệu cho bảng `bookings`

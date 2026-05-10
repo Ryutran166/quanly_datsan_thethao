@@ -60,10 +60,20 @@
 
                 </div>
             <?php endif; ?>
+            <?php $pm = $_GET['payment_method'] ?? 'cash'; ?>
             <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:0.9rem;">
                 <span style="color:#888;">Tổng tiền</span>
                 <strong style="color:#059669;"><?= number_format($court['price']) ?> VNĐ</strong>
             </div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:0.9rem;">
+                <span style="color:#888;">Phương thức thanh toán</span>
+                <strong style="color:#111;">
+                    <?= ($pm === 'qr') ? 'Chuyển khoản bằng QR' : 'Thanh toán trực tiếp'; ?>
+                </strong>
+            </div>
+
+
+
         </div>
 
         <!-- Nút hành động -->

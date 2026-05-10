@@ -26,18 +26,19 @@ class BookingModel {
         $this->pdo->beginTransaction();
 
         $stmt = $this->pdo->prepare(
-            "INSERT INTO bookings (court_id, customer_name, customer_phone, booking_date, status, user_id)
-             VALUES (:court_id, :customer_name, :customer_phone, :booking_date, :status, :user_id)"
+            "INSERT INTO bookings (court_id, customer_name, customer_phone, booking_date, status, user_id, payment_method)
+             VALUES (:court_id, :customer_name, :customer_phone, :booking_date, :status, :user_id, :payment_method)"
         );
-
         $stmt->execute([
-            ':court_id'       => $data['court_id'],
-            ':customer_name'  => $data['customer_name'] ?? 'Khách hàng',
-            ':customer_phone' => $data['customer_phone'] ?? null,
-            ':booking_date'   => $data['booking_date'],
-            ':status'         => $data['status'] ?? 'Pending',
-            ':user_id'        => $data['user_id'] ?? null,
+            ':court_id'          => $data['court_id'],
+            ':customer_name'     => $data['customer_name'] ?? 'Khách hàng',
+            ':customer_phone'    => $data['customer_phone'] ?? null,
+            ':booking_date'      => $data['booking_date'],
+            ':status'            => $data['status'] ?? 'Pending',
+            ':user_id'           => $data['user_id'] ?? null,
+            ':payment_method'   => $data['payment_method'] ?? 'cash',
         ]);
+
 
         $bookingId = $this->pdo->lastInsertId();
 
@@ -67,6 +68,8 @@ class BookingModel {
             b.court_id,
             b.booking_date,
             b.status        AS booking_status,
+            b.payment_method,
+
             b.created_at,
             c.name          AS court_name,
             c.price,

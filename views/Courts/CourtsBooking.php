@@ -486,6 +486,8 @@
         <input type="hidden" name="court_id" value="<?= (int)$court['id'] ?>">
         <input type="hidden" name="booking_date" value="<?= htmlspecialchars($date) ?>">
         <input type="hidden" name="slot_id" id="selected_slot_ids" value="">
+        <input type="hidden" name="payment_method" id="payment_method" value="cash">
+
 
         <div class="booking-layout">
 
@@ -590,9 +592,35 @@
                     <span class="total-amount" id="display-total">— VNĐ</span>
                 </div>
 
+                <!-- Payment method -->
+                <div style="margin-top:14px;">
+                    <div class="section-label" style="margin:0 0 10px;">Phương thức thanh toán</div>
+
+                    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; background:var(--surface); cursor:pointer; margin-bottom:10px;">
+                        <input type="radio" name="payment_method_radio" value="cash" checked style="width:18px; height:18px; accent-color: var(--primary);">
+                        <span style="font-weight:800; color:var(--dark);">Thanh toán trực tiếp</span>
+                    </label>
+
+                    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; background:var(--surface); cursor:pointer;">
+                        <input type="radio" name="payment_method_radio" value="qr" style="width:18px; height:18px; accent-color: var(--primary);">
+                        <span style="font-weight:800; color:var(--dark);">Chuyển khoản bằng QR</span>
+                    </label>
+
+                    <div id="qr-box" style="display:none; margin-top:12px; padding:14px; border:1.5px dashed rgba(0,192,127,.35); border-radius:12px; background:#f6fffb;">
+                        <div style="font-weight:800; color:#065f46; margin-bottom:8px;">Quét mã để chuyển khoản</div>
+                        <div style="width:180px; height:180px; margin:0 auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">
+                            QR will be here
+                        </div>
+                        <div style="text-align:center; margin-top:10px; color:#64748b; font-size:12px; font-weight:700;">
+                            (Demo UI) Dùng QR thật nếu bạn cung cấp nội dung thanh toán.
+                        </div>
+                    </div>
+                </div>
+
                 <button type="submit" id="btn-confirm" class="btn-confirm" disabled>
                     <i class="fas fa-check"></i> Xác nhận đặt sân
                 </button>
+
 
                 <div class="policy-note">
                     <i class="fas fa-info-circle"></i>
@@ -659,4 +687,25 @@
         document.getElementById('btn-confirm').disabled =
             selectedSlots.length === 0;
     }
+    // Payment toggle
+    const paymentMethodInput = document.getElementById('payment_method');
+    const qrBox = document.getElementById('qr-box');
+
+    function syncPaymentUI(method) {
+        paymentMethodInput.value = method;
+        if (method === 'qr') {
+            qrBox.style.display = 'block';
+        } else {
+            qrBox.style.display = 'none';
+        }
+    }
+
+    document.querySelectorAll('input[name="payment_method_radio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            syncPaymentUI(e.target.value);
+        });
+    });
+
+    // init
+    syncPaymentUI(paymentMethodInput.value);
 </script>
