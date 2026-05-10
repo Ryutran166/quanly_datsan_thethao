@@ -26,6 +26,17 @@ try {
         $pdo->exec("ALTER TABLE bookings ADD COLUMN payment_method ENUM('cash','qr') DEFAULT 'cash' AFTER status");
     }
 
+    // Thêm cột admin_confirmed_at và owner_confirmed_at cho bookings nếu chưa có
+    $stmt = $pdo->query("SHOW COLUMNS FROM bookings LIKE 'admin_confirmed_at'");
+    if ($stmt->rowCount() === 0) {
+        $pdo->exec("ALTER TABLE bookings ADD COLUMN admin_confirmed_at DATETIME NULL AFTER status");
+    }
+
+    $stmt = $pdo->query("SHOW COLUMNS FROM bookings LIKE 'owner_confirmed_at'");
+    if ($stmt->rowCount() === 0) {
+        $pdo->exec("ALTER TABLE bookings ADD COLUMN owner_confirmed_at DATETIME NULL AFTER admin_confirmed_at");
+    }
+
     echo "Đã cập nhật schema database thành công!\n";
 } catch (Exception $e) {
     echo "Lỗi: " . $e->getMessage() . "\n";

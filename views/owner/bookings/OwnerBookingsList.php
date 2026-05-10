@@ -28,7 +28,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* ── Header ── */
     .ab-header {
         display: flex;
         align-items: baseline;
@@ -58,7 +57,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         border-radius: 20px;
     }
 
-    /* ── Alerts ── */
     .ab-alert {
         display: flex;
         align-items: center;
@@ -72,7 +70,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     .ab-alert.success { background: var(--primary-soft); color: #065f46; border: 1.5px solid rgba(0,192,127,.25); }
     .ab-alert.error   { background: var(--danger-soft);  color: #be123c; border: 1.5px solid rgba(244,63,94,.2); }
 
-    /* ── Tabs ── */
     .ab-tabs {
         display: flex;
         gap: 4px;
@@ -100,7 +97,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .ab-tab:hover { color: var(--dark); background: var(--page-bg); }
-
     .ab-tab.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(0,192,127,.3); }
 
     .tab-count {
@@ -113,7 +109,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
     .ab-tab:not(.active) .tab-count { background: var(--page-bg); color: var(--mid); }
 
-    /* ── Status badges ── */
     .s-badge {
         display: inline-block;
         padding: 4px 11px;
@@ -127,7 +122,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     .s-badge.confirmed { background: var(--primary-soft); color: #065f46; }
     .s-badge.cancelled { background: var(--danger-soft);  color: #be123c; }
 
-    /* ── Card list ── */
     .ab-list { display: flex; flex-direction: column; gap: 14px; }
 
     .ab-card {
@@ -146,7 +140,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         border-color: #cbd5e1;
     }
 
-    /* left accent bar by status */
     .ab-card.pending   { border-left: 4px solid var(--warning); }
     .ab-card.confirmed { border-left: 4px solid var(--primary); }
     .ab-card.cancelled { border-left: 4px solid var(--danger); opacity: .8; }
@@ -167,7 +160,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         color: var(--dark);
     }
 
-    /* meta grid */
     .ab-meta {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -193,7 +185,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         margin-top: 4px;
     }
 
-    /* actions */
     .ab-actions {
         display: flex;
         flex-direction: column;
@@ -220,31 +211,26 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         box-shadow: 0 2px 6px rgba(0,192,127,.25);
         white-space: nowrap;
     }
-
     .btn-ok:hover { background: var(--primary-dark); transform: translateY(-1px); }
 
-    .btn-ko {
+    .btn-disabled {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
         padding: 8px 16px;
-        background: var(--danger-soft);
-        color: var(--danger);
-        border: 1.5px solid rgba(244,63,94,.2);
+        background: var(--page-bg);
+        color: var(--mid);
+        border: 1.5px dashed var(--border);
         border-radius: 10px;
         font-family: inherit;
         font-size: 13px;
         font-weight: 700;
         text-decoration: none;
-        cursor: pointer;
-        transition: background .15s;
+        cursor: default;
         white-space: nowrap;
     }
 
-    .btn-ko:hover { background: #fecdd3; }
-
-    /* ── Empty state ── */
     .ab-empty {
         text-align: center;
         padding: 70px 30px;
@@ -254,10 +240,13 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     }
 
     .ab-empty-icon {
-        width: 60px; height: 60px;
+        width: 60px;
+        height: 60px;
         background: var(--page-bg);
         border-radius: 16px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 26px;
         margin: 0 auto 16px;
     }
@@ -267,28 +256,25 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 </style>
 
 <div class="ab-page">
-
     <?php
         $pending = $pending ?? [];
         $confirmed = $confirmed ?? [];
         $cancelled = $cancelled ?? [];
     ?>
 
-    <!-- Header -->
     <div class="ab-header">
-
         <h1>Quản lý <span>đặt sân</span></h1>
         <?php
-        $totalAll = count($pending) + count($confirmed) + count($cancelled);
+            $totalAll = count($pending) + count($confirmed) + count($cancelled);
         ?>
         <span class="total-chip"><?= $totalAll ?> booking</span>
     </div>
 
-    <!-- Alerts -->
+
     <?php if (!empty($_GET['success'])): ?>
         <div class="ab-alert success">
             <i class="fas fa-check-circle"></i>
-            <?= $_GET['success'] === 'confirmed' ? 'Đã xác nhận booking thành công!' : 'Đã hủy booking thành công!' ?>
+            Đã xác nhận booking thành công!
         </div>
     <?php endif; ?>
 
@@ -299,21 +285,19 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         </div>
     <?php endif; ?>
 
-    <!-- Tabs -->
     <?php
-    $tabs = [
-        'all'       => ['label' => 'Tất cả',        'icon' => 'fa-list',         'count' => $totalAll],
-        'pending'   => ['label' => 'Chờ xác nhận',  'icon' => 'fa-hourglass-half','count' => count($pending)],
-        'confirmed' => ['label' => 'Đã xác nhận',   'icon' => 'fa-check',        'count' => count($confirmed)],
-        'cancelled' => ['label' => 'Đã hủy',         'icon' => 'fa-xmark',        'count' => count($cancelled)],
-    ];
-    $activeTab = $_GET['tab'] ?? 'all';
+        $tabs = [
+            'all'       => ['label' => 'Tất cả',        'icon' => 'fa-list',          'count' => $totalAll],
+            'pending'  => ['label' => 'Chờ xác nhận', 'icon' => 'fa-hourglass-half','count' => count($pending)],
+            'confirmed'=> ['label' => 'Đã xác nhận',  'icon' => 'fa-check',         'count' => count($confirmed)],
+            'cancelled'=> ['label' => 'Đã hủy',       'icon' => 'fa-xmark',         'count' => count($cancelled)],
+        ];
+        $activeTab = $_GET['tab'] ?? 'all';
     ?>
 
     <div class="ab-tabs">
         <?php foreach ($tabs as $key => $tab): ?>
-            <a href="?action=admin_bookings&tab=<?= $key ?>"
-               class="ab-tab <?= $activeTab === $key ? 'active' : '' ?>">
+            <a href="?action=owner_bookings&tab=<?= $key ?>" class="ab-tab <?= $activeTab === $key ? 'active' : '' ?>">
                 <i class="fas <?= $tab['icon'] ?>" style="font-size:11px;"></i>
                 <?= $tab['label'] ?>
                 <?php if ($tab['count'] > 0): ?>
@@ -323,103 +307,85 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
         <?php endforeach; ?>
     </div>
 
-    <!-- List -->
     <?php
-    $displayList = match($activeTab) {
-        'pending'   => $pending,
-        'confirmed' => $confirmed,
-        'cancelled' => $cancelled,
-        default     => array_merge($pending, $confirmed, $cancelled),
-    };
+        $displayList = match($activeTab) {
+            'pending'   => $pending,
+            'confirmed' => $confirmed,
+            'cancelled' => $cancelled,
+            default     => array_merge($pending, $confirmed, $cancelled),
+        };
     ?>
 
     <?php if (empty($displayList)): ?>
-
         <div class="ab-empty">
-            <div class="ab-empty-icon">📋</div>
+            <div class="ab-empty-icon">📌</div>
             <h3>Không có booking nào</h3>
             <p>Danh mục này hiện chưa có dữ liệu.</p>
         </div>
-
     <?php else: ?>
-
         <div class="ab-list">
-            <?php foreach ($displayList as $b):
-                $statusKey = strtolower($b['status']);
-            ?>
-            <div class="ab-card <?= $statusKey ?>">
+            <?php foreach ($displayList as $b): ?>
+                <?php $statusKey = strtolower($b['status']); ?>
+                <div class="ab-card <?= $statusKey ?>">
+                    <div class="ab-info">
+                        <div class="ab-top">
+                            <span class="ab-court-name"><?= htmlspecialchars($b['court_name']) ?></span>
+                            <span class="s-badge <?= $statusKey ?>">
+                                <?= match($statusKey) {
+                                    'pending' => '⏳ Chờ xác nhận',
+                                    'confirmed' => '✓ Đã xác nhận',
+                                    'cancelled' => '✕ Đã hủy',
+                                    default => $b['status']
+                                } ?>
+                            </span>
+                        </div>
 
-                <div class="ab-info">
+                        <div class="ab-meta">
+                            <div class="ab-meta-item">
+                                <i class="fas fa-user"></i>
+                                <?= htmlspecialchars($b['customer_name']) ?>
+                            </div>
+                            <div class="ab-meta-item">
+                                <i class="fas fa-phone"></i>
+                                <?= htmlspecialchars($b['customer_phone'] ?: '—') ?>
+                            </div>
+                            <div class="ab-meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <?= date('d/m/Y', strtotime($b['booking_date'])) ?>
+                            </div>
+                            <div class="ab-meta-item">
+                                <i class="fas fa-clock"></i>
+                                <?= substr($b['start_time'],0,5) ?> – <?= substr($b['end_time'],0,5) ?>
+                            </div>
+                            <div class="ab-meta-item">
+                                <i class="fas fa-tag"></i>
+                                <?= number_format($b['price']) ?> VNĐ
+                            </div>
+                        </div>
 
-                    <div class="ab-top">
-                        <span class="ab-court-name"><?= htmlspecialchars($b['court_name']) ?></span>
-                        <span class="s-badge <?= $statusKey ?>">
-                            <?= match($statusKey) {
-                                'pending'   => '⏳ Chờ xác nhận',
-                                'confirmed' => '✓ Đã xác nhận',
-                                'cancelled' => '✕ Đã hủy',
-                                default     => $b['status'],
-                            } ?>
-                        </span>
+                        <div class="ab-id"># Booking ID: <?= (int)$b['id'] ?></div>
                     </div>
 
-                    <div class="ab-meta">
-                        <div class="ab-meta-item">
-                            <i class="fas fa-user"></i>
-                            <?= htmlspecialchars($b['customer_name']) ?>
-                        </div>
-                        <div class="ab-meta-item">
-                            <i class="fas fa-phone"></i>
-                            <?= htmlspecialchars($b['customer_phone'] ?: '—') ?>
-                        </div>
-                        <div class="ab-meta-item">
-                            <i class="fas fa-calendar"></i>
-                            <?= date('d/m/Y', strtotime($b['booking_date'])) ?>
-                        </div>
-                        <div class="ab-meta-item">
-                            <i class="fas fa-clock"></i>
-                            <?= substr($b['start_time'],0,5) ?> – <?= substr($b['end_time'],0,5) ?>
-                        </div>
-                        <div class="ab-meta-item">
-                            <i class="fas fa-tag"></i>
-                            <?= number_format($b['price']) ?> VNĐ
-                        </div>
+                    <div class="ab-actions">
+                        <?php
+                            $ownerConfirmed = !empty($b['owner_confirmed_at']);
+                            if (!$ownerConfirmed && strtolower($b['status']) !== 'cancelled'):
+                        ?>
+                            <a href="?action=owner_confirm_booking&id=<?= (int)$b['id'] ?>" class="btn-ok" onclick="return confirm('Xác nhận booking này?')">
+                                <i class="fas fa-check" style="font-size:11px;"></i> Xác nhận
+                            </a>
+                        <?php else: ?>
+                            <span class="btn-disabled"><i class="fas fa-check" style="font-size:11px;"></i> Đã xác nhận</span>
+                        <?php endif; ?>
                     </div>
-
-                    <div class="ab-id"># Booking ID: <?= (int)$b['id'] ?></div>
-
                 </div>
-
-                <div class="ab-actions">
-                    <?php if ($statusKey === 'pending'): ?>
-
-                        <a href="?action=admin_confirm_booking&id=<?= (int)$b['id'] ?>"
-                           class="btn-ok"
-                           onclick="return confirm('Xác nhận booking này?')">
-                            <i class="fas fa-check" style="font-size:11px;"></i> Xác nhận
-                        </a>
-                        <a href="?action=admin_cancel_booking&id=<?= (int)$b['id'] ?>"
-                           class="btn-ko"
-                           onclick="return confirm('Hủy booking này?')">
-                            <i class="fas fa-xmark" style="font-size:11px;"></i> Hủy
-                        </a>
-                    <?php elseif ($statusKey === 'confirmed'): ?>
-                        <a href="?action=admin_cancel_booking&id=<?= (int)$b['id'] ?>"
-                           class="btn-ko"
-                           onclick="return confirm('Hủy booking này?')">
-                            <i class="fas fa-xmark" style="font-size:11px;"></i> Hủy
-                        </a>
-                    <?php endif; ?>
-                </div>
-
-            </div>
             <?php endforeach; ?>
         </div>
-
     <?php endif; ?>
-
 </div>
 
 <?php
 require_once PROJECT_ROOT . '/views/layout/footer.php';
 ?>
+
+

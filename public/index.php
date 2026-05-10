@@ -35,22 +35,25 @@ if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
     header("Location:index.php?action=login");
     exit();
 }
-$admin_only_actions = [
-    'user',
-    'add_user',
-    'edit_user',
-    'update_user',
-    'delete_user',
-    'do_add_user',
-    'change_password',
-    'do_change_password',
-    'admin_bookings',
-    'admin_cancel_booking',
-    'admin_confirm_booking'
+$role_only_actions = [
+    // Admin
+    'user','add_user','edit_user','update_user','delete_user','do_add_user','change_password','do_change_password',
+    'admin_bookings','admin_cancel_booking','admin_confirm_booking',
+
+    // Owner
+    'owner_bookings','owner_confirm_booking',
 ];
 
-if (in_array($action, $admin_only_actions)) {
-    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+if (in_array($action, $role_only_actions)) {
+    $role = strtolower(trim($_SESSION['user_role'] ?? ''));
+
+    $allowed = match ($action) {
+        'admin_bookings', 'admin_cancel_booking', 'admin_confirm_booking' => ['admin'],
+        'owner_bookings', 'owner_confirm_booking' => ['owner'],
+        default => ['admin'], // các action user/quản trị còn lại chỉ admin
+    };
+
+    if (!in_array($role, $allowed, true)) {
         header("Location:index.php");
         exit();
     }
@@ -162,6 +165,20 @@ switch ($action) {
         $adminController = new AdminController();
         $adminController->confirmBooking();
         break;
+
+    // OWNER BOOKINGS
+    case 'owner_bookings':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->bookings();
+        break;
+
+    case 'owner_confirm_booking':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->confirmBooking();
+        break;
+
+
+
 
 
     case 'create':

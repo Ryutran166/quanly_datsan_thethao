@@ -356,7 +356,7 @@ function isActive($action, $current_action)
                         <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'User') ?></span>
                         <small>
                             <?php
-                            $role = $_SESSION['user_role'] ?? '';
+                            $role = strtolower(trim($_SESSION['user_role'] ?? ''));
                             echo match ($role) {
                                 'admin' => '⚙️ Quản trị viên',
                                 'owner' => '🏟️ Chủ sân',
@@ -405,8 +405,13 @@ function isActive($action, $current_action)
             </a>
         <?php endif; ?>
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-
             <a href="index.php?action=admin_bookings" class="sub-link <?= isActive('admin_bookings', $current_action); ?>">
+                <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
+            </a>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'owner'): ?>
+            <a href="index.php?action=owner_bookings" class="sub-link <?= isActive('owner_bookings', $current_action); ?>">
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
         <?php endif; ?>

@@ -371,7 +371,8 @@ class CourtsController
                 'booking_date'      => $date,
                 'customer_name'     => $customerName,
                 'customer_phone'    => $customerPhone,
-                'status'            => 'Confirmed',
+                'status'            => 'Pending',
+
                 'user_id'           => $userId,
                 'payment_method'    => $paymentMethod,
             ]);

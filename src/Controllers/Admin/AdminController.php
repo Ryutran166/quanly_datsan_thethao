@@ -55,13 +55,16 @@ class AdminController extends BaseController
             exit();
         }
 
-        // Cập nhật trạng thái thành confirmed
+        // Admin bấm xác nhận thì chuyển ngay sang Confirmed (theo yêu cầu)
         $pdo = Database::getInstance()->getConnection();
-        $stmt = $pdo->prepare("UPDATE bookings SET status = 'Confirmed' WHERE id = ?");
+
+        $updateSql = "UPDATE bookings SET admin_confirmed_at = NOW(), status = 'Confirmed' WHERE id = ?";
+        $stmt = $pdo->prepare($updateSql);
         $stmt->execute([$bookingId]);
 
         header("Location: index.php?action=admin_bookings&success=confirmed");
         exit();
+
     }
 
     // Helper: Lấy tất cả bookings
