@@ -123,7 +123,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 <textarea name="message" required></textarea>
             </div>
 
-            <button type="submit">Gửi liên hệ</button>
+            <button type="submit">Gửi</button>
         </form>
 
         

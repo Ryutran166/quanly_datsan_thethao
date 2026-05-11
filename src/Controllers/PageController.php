@@ -30,28 +30,26 @@ class PageController
             $message = $_POST['message'] ?? '';
             if (
                 empty($name) || empty($email) || empty($message)
-
                 || !filter_var($email, FILTER_VALIDATE_EMAIL)
             ) {
-
-                FlashMessage::set('contact_form', 'Vui lòng điền
-
-đầy đủ và đúng định dạng thông tin.', 'error');
+                FlashMessage::set(
+                    'contact_form',
+                    'Vui lòng điền đầy đủ và đúng định dạng thông tin.',
+                    'error'
+                );
             } else {
-                if ($this->contactModel->saveContact(
-                    $name,
-
-                    $email,
-                    $message
-                )) {
-
-                    FlashMessage::set('contact_form', 'Tin nhắn
-
-của bạn đã được gửi thành công!', 'success');
+                if ($this->contactModel->saveContact($name, $email, $message)) {
+                    FlashMessage::set(
+                        'contact_form',
+                        'Tin nhắn của bạn đã được gửi thành công!',
+                        'success'
+                    );
                 } else {
-                    FlashMessage::set('contact_form', 'Đã có lỗi
-
-xảy ra. Vui lòng thử lại.', 'error');
+                    FlashMessage::set(
+                        'contact_form',
+                        'Đã có lỗi xảy ra. Vui lòng thử lại.',
+                        'error'
+                    );
                 }
             }
         }
@@ -61,4 +59,16 @@ xảy ra. Vui lòng thử lại.', 'error');
 
         exit();
     }
+
+    /**
+     * Trang dành cho admin: xem danh sách tin nhắn
+     */
+    public function adminContacts()
+    {
+        $contacts = $this->contactModel->getAllContacts();
+        require_once PROJECT_ROOT . '/views/layout/header.php';
+        require_once PROJECT_ROOT . '/views/admin/contacts/ContactsList.php';
+        require_once PROJECT_ROOT . '/views/layout/footer.php';
+    }
 }
+

@@ -82,6 +82,7 @@ switch ($action) {
         break;
     case 'contact':
     case 'submit_contact':
+    case 'contact_admin':
         $controller = new PageController();
         break;
 
@@ -91,10 +92,14 @@ switch ($action) {
         break;
 }
 
-
 switch ($action) {
     case 'contact':
-        $controller->showContactForm();
+        $role = strtolower(trim($_SESSION['user_role'] ?? ''));
+        if ($role === 'admin') {
+            $controller->adminContacts();
+        } else {
+            $controller->showContactForm();
+        }
         break;
 
     case 'submit_contact':
