@@ -13,6 +13,16 @@ class CourtsModel
         $this->conn = Database::getInstance()->getConnection();
     }
 
+    public function getOwnerPhoneById(int $ownerId): ?string
+    {
+        $stmt = $this->conn->prepare("SELECT phone FROM users WHERE id = :id LIMIT 1");
+        $stmt->bindParam(':id', $ownerId, PDO::PARAM_INT);
+        $stmt->execute();
+        $phone = $stmt->fetchColumn();
+        return $phone !== false ? (string)$phone : null;
+    }
+
+
 
     // Lấy tất cả sân và tìm kiếm theo tên
     public function getAllCourts($keyword = null)

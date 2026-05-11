@@ -7,6 +7,7 @@ use Nhom2\QuanlyDatsanThethao\Models\CourtsModel;
 use Nhom2\QuanlyDatsanThethao\Models\BookingModel;
 use Nhom2\QuanlyDatsanThethao\Models\UserModel;
 use Nhom2\QuanlyDatsanThethao\Database;
+use Nhom2\QuanlyDatsanThethao\Core\FlashMessage;
 
 class CourtsController
 {
@@ -240,13 +241,15 @@ class CourtsController
         }
 
         if (!$id) {
-            header("Location: index.php?error=invalid_court_id");
+            FlashMessage::set('booking_error', 'ID sân không hợp lệ.', 'error');
+            header("Location: index.php");
             exit();
         }
 
         $court = $this->courtsModel->getCourtById($id);
         if (!$court) {
-            header("Location: index.php?error=court_not_found");
+            FlashMessage::set('booking_error', 'Không tìm thấy sân.', 'error');
+            header("Location: index.php");
             exit();
         }
 
@@ -317,7 +320,9 @@ class CourtsController
             : [];
 
         if (!$courtId || empty($slotIds) || !$date) {
-            header("Location: index.php?error=missing_data");
+
+            FlashMessage::set('booking_error', 'Thiếu thông tin để đặt sân.', 'error');
+            header("Location: index.php");
             exit();
         }
 
@@ -328,7 +333,8 @@ class CourtsController
 
             if (in_array((int)$slotId, $alreadyBooked)) {
 
-                header("Location: index.php?action=booking&id=$courtId&date=$date&error=slot_taken");
+                FlashMessage::set('booking_error', 'Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác.', 'error');
+                header("Location: index.php?action=booking&id=$courtId&date=$date");
                 exit();
             }
         }
@@ -379,6 +385,7 @@ class CourtsController
 
         }
 
+        FlashMessage::set('booking_success', 'Đặt sân thành công!', 'success');
         header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&payment_method=" . urlencode($paymentMethodRedirect));
 
         exit();
@@ -403,7 +410,8 @@ class CourtsController
 
         if (!$courtId || $slotIds === '' || !$date) {
 
-            header("Location: index.php?error=missing_data");
+            FlashMessage::set('booking_error', 'Thiếu thông tin để đặt sân.', 'error');
+            header("Location: index.php");
             exit();
         }
 
@@ -553,7 +561,13 @@ class CourtsController
 
         $court = $courtModel->getCourtById($id);
 
+        // thêm số điện thoại chủ sân theo owner_id (lấy từ users.phone)
+        if (!empty($court['owner_id'])) {
+            $court['owner_phone'] = $courtModel->getOwnerPhoneById((int)$court['owner_id']);
+        }
+
         if (!$court) {
+
             echo json_encode([
                 'success' => false
             ]);

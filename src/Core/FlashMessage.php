@@ -12,13 +12,14 @@ class FlashMessage
      */
     public static function set($key, $message, $type = 'success')
     {
-
         if (!isset($_SESSION['flash_messages'])) {
             $_SESSION['flash_messages'] = [];
         }
-        $_SESSION['flash_messages'][$key] = ['message' =>
 
-        $message, 'type' => $type];
+        $_SESSION['flash_messages'][$key] = [
+            'message' => $message,
+            'type'    => $type,
+        ];
     }
     /**
      * Hiển thị tất cả các flash messages và xóa chúng khỏi session.

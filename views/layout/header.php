@@ -37,6 +37,30 @@ function isActive($action, $current_action)
             padding: 0;
         }
 
+        /* Flash message */
+        .flash-message {
+            margin: 0 auto 16px;
+            width: 100%;
+            max-width: 980px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .flash-message.flash-success {
+            background: rgba(0, 192, 127, .12);
+            border: 1.5px solid rgba(0, 192, 127, .25);
+            color: #065f46;
+        }
+
+        .flash-message.flash-error {
+            background: rgba(244, 63, 94, .10);
+            border: 1.5px solid rgba(244, 63, 94, .22);
+            color: #be123c;
+        }
+
+
         :root {
             --primary: #00c07f;
             --primary-dark: #00a06a;
@@ -401,7 +425,7 @@ function isActive($action, $current_action)
         <?php endif; ?>
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
             <a href="index.php?action=user" class="sub-link <?= isActive('user', $current_action); ?>">
-                Quản trị User
+                Quản lý User
             </a>
         <?php endif; ?>
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
@@ -437,5 +461,12 @@ function isActive($action, $current_action)
             });
         });
     </script>
+
+    <?php
+        // Flash messages (hiển thị sau redirect)
+        if (class_exists('Nhom2\\QuanlyDatsanThethao\\Core\\FlashMessage')) {
+            \Nhom2\QuanlyDatsanThethao\Core\FlashMessage::display();
+        }
+    ?>
 
     <div class="container">

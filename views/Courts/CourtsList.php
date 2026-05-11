@@ -785,16 +785,21 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                     <i class="fa fa-location-dot"></i>
                     <span id="modalAddress"></span>
                 </div>
+
+                <div class="modal-address">
+                    <i class="fa fa-phone"></i>
+                    <span id="modalOwnerPhone"></span>
+                </div>
+
                 <p>
                     <strong>Trạng thái:</strong>
                     <span id="modalStatus"></span>
                 </p>
 
-
-
                 <a href="#" class="btn-book" id="modalBookingBtn">
                     Đặt sân
                 </a>
+
 
             </div>
 
@@ -844,6 +849,13 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
                 document.getElementById('modalStatus').innerText =
                     court.status;
+
+                const phone = court.owner_phone || court.owner && court.owner.phone || court.phone;
+                const modalPhoneEl = document.getElementById('modalOwnerPhone');
+                if (modalPhoneEl) {
+                    modalPhoneEl.innerText = phone || 'Chưa cập nhật số điện thoại';
+                }
+
 
                 document.getElementById('modalImage').src =
                     court.image ?
