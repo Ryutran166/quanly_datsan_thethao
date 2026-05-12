@@ -41,15 +41,15 @@ $role_only_actions = [
     'admin_bookings','admin_cancel_booking','admin_confirm_booking',
 
     // Owner
-    'owner_bookings','owner_confirm_booking',
+    'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
 ];
-
 if (in_array($action, $role_only_actions)) {
     $role = strtolower(trim($_SESSION['user_role'] ?? ''));
 
     $allowed = match ($action) {
         'admin_bookings', 'admin_cancel_booking', 'admin_confirm_booking' => ['admin'],
-        'owner_bookings', 'owner_confirm_booking' => ['owner'],
+        'owner_bookings', 'owner_confirm_booking', 'owner_qr_settings', 'owner_qr_settings_update' => ['owner'],
+        'get_owner_qr_content' => ['owner'],
         default => ['admin'], // các action user/quản trị còn lại chỉ admin
     };
 
@@ -182,9 +182,25 @@ switch ($action) {
         $ownerController->confirmBooking();
         break;
 
+    case 'owner_qr_settings':
+        $ownerQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerQrController();
+        $ownerQrController->settings();
+        break;
 
+    case 'owner_qr_settings_update':
+        $ownerQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerQrController();
+        $ownerQrController->update();
+        break;
 
+    case 'get_owner_qr_content':
+        $courtsQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\CourtsQrController();
+        $courtsQrController->getQrContent();
+        break;
 
+    case 'get_vietqr_image':
+        $vietQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\VietQrController();
+        $vietQrController->getVietqrImage();
+        break;
 
     case 'create':
         $controller->create();

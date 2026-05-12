@@ -86,6 +86,7 @@ class OwnerController extends BaseController
                 b.customer_phone,
                 b.booking_date,
                 b.status,
+                b.payment_method,
                 b.created_at,
                 b.admin_confirmed_at,
                 b.owner_confirmed_at,

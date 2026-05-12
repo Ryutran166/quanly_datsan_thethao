@@ -608,11 +608,15 @@
 
                     <div id="qr-box" style="display:none; margin-top:12px; padding:14px; border:1.5px dashed rgba(0,192,127,.35); border-radius:12px; background:#f6fffb;">
                         <div style="font-weight:800; color:#065f46; margin-bottom:8px;">Quét mã để chuyển khoản</div>
-                        <div style="width:180px; height:180px; margin:0 auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">
-                            QR will be here
+                        <div id="qrPreviewWrap" style="width:180px; height:180px; margin:0 auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">
+                            QR sẽ hiển thị tại đây
+                        </div>
+                        <div id="qrError" style="display:none; text-align:center; margin-top:10px; color:#be123c; font-size:12px; font-weight:800;">
+                            Owner chưa cấu hình ảnh QR.
+
                         </div>
                         <div style="text-align:center; margin-top:10px; color:#64748b; font-size:12px; font-weight:700;">
-                            (Demo UI) Dùng QR thật nếu bạn cung cấp nội dung thanh toán.
+                            Hãy đưa hình ảnh thanh toán thành công của bạn khi đến sân chơi nhé
                         </div>
                     </div>
                 </div>
@@ -691,6 +695,12 @@
     const paymentMethodInput = document.getElementById('payment_method');
     const qrBox = document.getElementById('qr-box');
 
+    // Khi user chọn slot (tổng tiền thay đổi) và đang chọn QR => cập nhật VietQR
+    document.addEventListener('DOMContentLoaded', () => {
+        // debug
+        // console.log('COURT_ID', COURT_ID, 'PRICE', PRICE);
+    });
+
     function syncPaymentUI(method) {
         paymentMethodInput.value = method;
         if (method === 'qr') {
@@ -706,6 +716,104 @@
         });
     });
 
-    // init
+    // --- VietQR động theo số tiền ---
+    const COURT_ID = <?= (int)$court['id'] ?>;
+
+    let __qr_last_payload = null;
+
+    function showError(msg) {
+        const err = document.getElementById('qrError');
+        if (!err) return;
+        if (msg) err.textContent = msg;
+        err.style.display = 'block';
+    }
+
+    function hideError() {
+        const err = document.getElementById('qrError');
+        if (!err) return;
+        err.style.display = 'none';
+    }
+
+    async function fetchVietQrImage(amountVnd) {
+        try {
+            const url = `index.php?action=get_vietqr_image&court_id=${encodeURIComponent(COURT_ID)}&amount=${encodeURIComponent(amountVnd)}`;
+            const res = await fetch(url, { method: 'GET' });
+            const data = await res.json();
+            if (!data || data.success === false) return null;
+            return {
+                qr_image: (data.qr_image ?? '').toString(),
+                payload: (data.payload ?? '').toString()
+            };
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    async function renderVietQrImageIfNeeded() {
+        if (paymentMethodInput.value !== 'qr') return;
+        if (selectedSlots.length === 0) return;
+
+        const total = PRICE * selectedSlots.length;
+        const amountVnd = String(total);
+
+        const data = await fetchVietQrImage(amountVnd);
+        if (!data || !data.qr_image) {
+            console.warn('VietQR empty', data);
+            console.warn('amountVnd', amountVnd);
+            console.warn('COURT_ID', COURT_ID);
+            console.warn('selectedSlots', selectedSlots);
+
+            hideError();
+            showError('Owner chưa cấu hình VietQR.');
+            const previewWrap = document.getElementById('qrPreviewWrap');
+            if (previewWrap) previewWrap.innerHTML = '';
+            return;
+        }
+
+        if (__qr_last_payload === data.payload) return;
+        __qr_last_payload = data.payload;
+
+        hideError();
+
+        const previewWrap = document.getElementById('qrPreviewWrap');
+        if (!previewWrap) return;
+
+        previewWrap.innerHTML = '';
+        const img = document.createElement('img');
+        img.onerror = () => {
+            console.error('QR image failed load', data.qr_image);
+            showError('QR không load được ảnh. Vui lòng thử lại.');
+            // debug payload
+            console.log('vietqr payload', data.payload);
+            // giữ lại placeholder text
+        };
+        // Google Chart URL đôi khi bị chặn/không load được từ trang.
+        // Bọc thêm cache-buster để test.
+        img.src = data.qr_image + '&_=' + Date.now();
+
+        img.alt = 'VietQR thanh toán';
+        img.style.width = '160px';
+        img.style.height = '160px';
+        img.style.objectFit = 'contain';
+        previewWrap.appendChild(img);
+    }
+
+    function attachPaymentListener() {
+        document.querySelectorAll('input[name="payment_method_radio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                syncPaymentUI(e.target.value);
+                renderVietQrImageIfNeeded();
+            });
+        });
+    }
+
+    attachPaymentListener();
     syncPaymentUI(paymentMethodInput.value);
+
+    if (paymentMethodInput.value === 'qr') {
+        renderVietQrImageIfNeeded();
+    }
 </script>
+
+

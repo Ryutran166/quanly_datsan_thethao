@@ -438,7 +438,11 @@ function isActive($action, $current_action)
             <a href="index.php?action=owner_bookings" class="sub-link <?= isActive('owner_bookings', $current_action); ?>">
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
+            <!-- <a href="index.php?action=owner_qr_settings" class="sub-link <?= isActive('owner_qr_settings', $current_action); ?>">
+                <i class="fas fa-qrcode"></i> Cấu hình QR
+            </a> -->
         <?php endif; ?>
+
         <?php if (isset($_SESSION['user_id'])): 
             $role = strtolower(trim($_SESSION['user_role'] ?? ''));
             $actionLink = ($role === 'admin') ? 'contact' : 'contact';

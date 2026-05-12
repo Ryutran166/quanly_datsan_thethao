@@ -474,10 +474,22 @@
                     <div class="hint-item"><i class="fa fa-check"></i> Mô tả rõ tiện ích và quy định sân</div>
                 </div>
 
+                <!-- Thiết lập QR cho chủ sân -->
+                <div style="margin-top:12px;">
+                    <div style="font-weight:900; color:var(--navy); font-size:.95rem; margin-bottom:8px;">Cấu hình QR cho sân</div>
+                    <a href="index.php?action=owner_qr_settings" class="btn-back" style="display:flex; justify-content:center; width:100%;">
+                        <i class="fas fa-qrcode" style="margin-right:8px;"></i> Mở trang cấu hình QR
+                    </a>
+                    <div class="small-note" style="margin-top:8px; color:var(--label); font-size:.78rem; font-weight:700;">
+                        Sau khi tạo sân, bạn có thể cập nhật nội dung QR cho từng sân.
+                    </div>
+                </div>
+
                 <!-- Save -->
                 <button type="submit" class="btn-save">
                     <i class="fa fa-save"></i> Lưu thông tin sân
                 </button>
+
             </div>
 
         </div>

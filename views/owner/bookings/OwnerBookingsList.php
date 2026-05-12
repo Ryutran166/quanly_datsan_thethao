@@ -361,6 +361,19 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                                 <i class="fas fa-tag"></i>
                                 <?= number_format($b['price']) ?> VNĐ
                             </div>
+                            <div class="ab-meta-item">
+                                <i class="fas fa-credit-card"></i>
+                                <?php
+                                    $pm = strtolower((string)($b['payment_method'] ?? 'cash'));
+                                    $pmLabel = match($pm) {
+                                        'qr'   => 'Chuyển khoản bằng QR',
+                                        'cash' => 'Thanh toán trực tiếp',
+                                        default => $pm,
+                                    };
+                                ?>
+                                <?= htmlspecialchars($pmLabel) ?>
+                            </div>
+
                         </div>
 
                         <div class="ab-id"># Booking ID: <?= (int)$b['id'] ?></div>
