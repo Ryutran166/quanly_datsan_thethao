@@ -392,13 +392,10 @@ function isActive($action, $current_action)
                     <a href="index.php?action=change_password" class="dropdown-item">
                         <i class="fas fa-key"></i> Đổi mật khẩu
                     </a>
-
                     <div class="dropdown-divider"></div>
-
                     <a href="index.php?action=logout" class="dropdown-item danger">
                         <i class="fas fa-sign-out-alt"></i> Đăng xuất
                     </a>
-
                 </div>
             </div>
 
@@ -438,17 +435,22 @@ function isActive($action, $current_action)
             <a href="index.php?action=owner_bookings" class="sub-link <?= isActive('owner_bookings', $current_action); ?>">
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
-            <!-- <a href="index.php?action=owner_qr_settings" class="sub-link <?= isActive('owner_qr_settings', $current_action); ?>">
-                <i class="fas fa-qrcode"></i> Cấu hình QR
-            </a> -->
+            
+        <?php endif; ?>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'owner'): ?>
+           <a href="index.php?action=owner_qr_settings" class="sub-link <?= isActive('owner_qr_settings', $current_action); ?>">
+                        <i class="fas fa-qrcode"></i> Cấu hình phương thức thanh toán QR
+                    </a>
+            
         <?php endif; ?>
 
-        <?php if (isset($_SESSION['user_id'])): 
+
+        <?php if (isset($_SESSION['user_id'])):
             $role = strtolower(trim($_SESSION['user_role'] ?? ''));
             $actionLink = ($role === 'admin') ? 'contact' : 'contact';
         ?>
             <a href="index.php?action=<?= htmlspecialchars($actionLink) ?>" class="sub-link <?= isActive('contact', $current_action) ?>">
-                Liên hệ 
+                Liên hệ
             </a>
         <?php endif; ?>
     </nav>
@@ -470,10 +472,10 @@ function isActive($action, $current_action)
     </script>
 
     <?php
-        // Flash messages (hiển thị sau redirect)
-        if (class_exists('Nhom2\\QuanlyDatsanThethao\\Core\\FlashMessage')) {
-            \Nhom2\QuanlyDatsanThethao\Core\FlashMessage::display();
-        }
+    // Flash messages (hiển thị sau redirect)
+    if (class_exists('Nhom2\\QuanlyDatsanThethao\\Core\\FlashMessage')) {
+        \Nhom2\QuanlyDatsanThethao\Core\FlashMessage::display();
+    }
     ?>
 
     <div class="container">

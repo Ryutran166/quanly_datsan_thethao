@@ -190,7 +190,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 <label for="vietqr_account_name">Tên người thụ hưởng (account name)</label>
                 <input type="text" name="vietqr_account_name" id="vietqr_account_name" value="<?= htmlspecialchars($vietqr['vietqr_account_name'] ?? '') ?>" required>
 
-                <label for="vietqr_bank_code">Mã ngân hàng VietQR (bank code)</label>
+                <label for="vietqr_bank_code">Mã ngân hàng hoặc tên viết tắt (TCB,VCB,...) </label>
                 <input type="text" name="vietqr_bank_code" id="vietqr_bank_code" value="<?= htmlspecialchars($vietqr['vietqr_bank_code'] ?? '') ?>" required>
 
                 <label for="vietqr_account_number">Số tài khoản (account number)</label>
@@ -198,11 +198,11 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
             </div>
 
             <button type="submit" class="btn" onclick="return confirm('Lưu thông tin VietQR cho owner?')">
-                <i class="fas fa-save"></i> Lưu VietQR
+                <i class="fas fa-save"></i> Lưu
             </button>
 
             <div class="small-note">
-                QR sẽ được tạo động theo số tiền khi người dùng chọn "Chuyển khoản bằng QR".
+                QR sẽ được tạo động theo số tiền khi người dùng chọn.
             </div>
         </form>
     </div>

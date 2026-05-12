@@ -37,7 +37,7 @@ if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
 }
 $role_only_actions = [
     // Admin
-    'user','add_user','edit_user','update_user','delete_user','do_add_user','change_password','do_change_password',
+    'user','add_user','edit_user','update_user','delete_user','do_add_user',
     'admin_bookings','admin_cancel_booking','admin_confirm_booking',
 
     // Owner

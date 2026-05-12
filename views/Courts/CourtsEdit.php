@@ -71,13 +71,6 @@
                 <input type="hidden" name="id" value="<?= $court['id'] ?>">
                 <input type="hidden" name="old_image" value="<?= $court['image'] ?>">
 
-                <div style="margin:14px 0 18px; padding:14px; background:#f3fdf6; border:1px solid #d1fae5; border-radius:10px;">
-                    <div style="font-weight:800; color:#065f46; margin-bottom:8px;">Cấu hình QR cho sân này</div>
-                    <a href="index.php?action=owner_qr_settings" style="display:inline-block; width:100%; text-align:center; padding:10px 12px; background:#28a745; color:#fff; border-radius:8px; text-decoration:none; font-weight:800;">Mở trang cấu hình QR</a>
-                    <div style="margin-top:8px; font-size:12px; color:#64748b; font-weight:700;">Bạn sẽ cập nhật nội dung để QR ở CourtsBooking hiển thị đúng.</div>
-                </div>
-
-
                 <label>Tên sân</label>
                 <input type="text" name="name"
                     value="<?= htmlspecialchars($court['name']) ?>" required>
