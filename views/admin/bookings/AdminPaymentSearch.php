@@ -70,8 +70,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         <option value="" <?= $ps===''?'selected':'' ?>>Tất cả</option>
                         <option value="Pending" <?= $ps==='Pending'?'selected':'' ?>>Pending</option>
                         <option value="Confirmed" <?= $ps==='Confirmed'?'selected':'' ?>>Confirmed</option>
-                        <option value="Cancelled" <?= $ps==='Cancelled'?'selected':'' ?>>Cancelled</option>
-                        <option value="Locked" <?= $ps==='Locked'?'selected':'' ?>>Locked</option>
+        
                     </select>
                 </div>
 

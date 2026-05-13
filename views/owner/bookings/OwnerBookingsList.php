@@ -263,7 +263,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     ?>
 
     <div class="ab-header">
-        <h1>Quản lý <span>đặt sân</span></h1>
+        
         <?php
             $totalAll = count($pending) + count($confirmed) + count($cancelled);
         ?>
@@ -273,7 +273,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
             <i class="fas fa-filter" style="font-size:11px;"></i> Tìm kiếm đơn 
         </a>
     </div>
-
 
     <?php if (!empty($_GET['success'])): ?>
         <div class="ab-alert success">

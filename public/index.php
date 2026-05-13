@@ -9,7 +9,7 @@ use Nhom2\QuanlyDatsanThethao\Controllers\UserController;
 use Nhom2\QuanlyDatsanThethao\Controllers\Admin\AdminController;
 use Nhom2\QuanlyDatsanThethao\Controllers\PageController;
 
-$action = $_GET['action'] ?? 'home';
+$action = $_GET['action'] ?? 'index';
 
 $protected_actions = [
     'create',
@@ -46,7 +46,7 @@ $role_only_actions = [
     'admin_bookings','admin_cancel_booking','admin_confirm_booking',
 
     // Owner
-    'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content','owner_payment_search','owner_payment_search_ajax',
+    'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
     // Admin payment search
     'admin_payment_search','admin_payment_search_ajax',
 ];
