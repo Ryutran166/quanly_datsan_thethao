@@ -1,58 +1,312 @@
 <?php require_once PROJECT_ROOT . '/views/layout/header.php'; ?>
 
 <style>
-:root{--primary:#00c07f;--primary-dark:#00a06a;--primary-soft:#e6faf3;--warning:#f59e0b;--warning-soft:#fffbeb;--danger:#f43f5e;--danger-soft:#fff1f3;--dark:#0f172a;--mid:#475569;--muted:#94a3b8;--border:#e2e8f0;--surface:#fff;--page-bg:#f1f5f9;}
-.rp-page{max-width:1200px;margin:0 auto;padding:36px 24px 60px;}
-.rp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
-.rp-header h1{font-size:26px;font-weight:800;color:var(--dark);letter-spacing:-.4px;margin:0;}
-.rp-header h1 span{color:var(--primary);}
-.btn-group{display:flex;gap:8px;flex-wrap:wrap;}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:12px;font-size:13px;font-weight:700;border:1.5px solid var(--border);background:var(--surface);color:var(--mid);cursor:pointer;text-decoration:none;transition:all .15s;}
-.btn:hover{background:var(--page-bg);}
-.btn-primary{background:var(--primary);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(0,192,127,.25);}
-.btn-primary:hover{background:var(--primary-dark);}
-.btn-export{background:#1e293b;color:#fff;border-color:transparent;}
-.btn-export:hover{background:#334155;}
+    :root {
+        --primary: #00c07f;
+        --primary-dark: #00a06a;
+        --primary-soft: #e6faf3;
+        --warning: #f59e0b;
+        --warning-soft: #fffbeb;
+        --danger: #f43f5e;
+        --danger-soft: #fff1f3;
+        --dark: #0f172a;
+        --mid: #475569;
+        --muted: #94a3b8;
+        --border: #e2e8f0;
+        --surface: #fff;
+        --page-bg: #f1f5f9;
+    }
 
-/* Stat cards */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
-@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:520px){.stats-grid{grid-template-columns:1fr;}}
-.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:20px 20px 18px;}
-.stat-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;}
-.stat-value{font-size:26px;font-weight:800;color:var(--dark);letter-spacing:-.5px;}
-.stat-value.green{color:var(--primary);}
-.stat-sub{font-size:12px;color:var(--muted);margin-top:4px;font-weight:600;}
+    .rp-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 36px 24px 60px;
+    }
 
-/* Filter card */
-.filter-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:22px;}
-.filter-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
-.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
-.field label{font-size:12px;font-weight:800;color:var(--mid);}
-.input,.select{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;color:var(--dark);background:#fff;outline:none;}
-.input:focus,.select:focus{border-color:rgba(0,192,127,.6);box-shadow:0 0 0 3px rgba(0,192,127,.12);}
+    .rp-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
 
-/* Charts */
-.charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:22px;}
-@media(max-width:860px){.charts-grid{grid-template-columns:1fr;}}
-.chart-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:20px;}
-.chart-title{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:16px;}
+    .rp-header h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -.4px;
+        margin: 0;
+    }
 
-/* Table */
-.table-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;}
-.table-head{padding:14px 18px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.table-head h3{font-size:14px;font-weight:800;color:var(--dark);margin:0;}
-table{width:100%;border-collapse:separate;border-spacing:0;}
-th,td{padding:11px 16px;font-size:13px;text-align:left;border-bottom:1px solid var(--border);}
-th{background:var(--page-bg);font-weight:800;color:var(--mid);}
-td{font-weight:600;color:var(--dark);}
-tr:last-child td{border-bottom:none;}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;}
-.badge-cash{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
-.badge-qr{background:var(--primary-soft);color:#065f46;border:1px solid rgba(0,192,127,.25);}
-.text-right{text-align:right;}
-.text-green{color:var(--primary);font-weight:800;}
-.empty-state{padding:40px;text-align:center;color:var(--muted);font-weight:700;}
+    .rp-header h1 span {
+        color: var(--primary);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        color: var(--mid);
+        cursor: pointer;
+        text-decoration: none;
+        transition: all .15s;
+    }
+
+    .btn:hover {
+        background: var(--page-bg);
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 2px 8px rgba(0, 192, 127, .25);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-export {
+        background: #1e293b;
+        color: #fff;
+        border-color: transparent;
+    }
+
+    .btn-export:hover {
+        background: #334155;
+    }
+
+    /* Stat cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    @media(max-width:900px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media(max-width:520px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 20px 20px 18px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        letter-spacing: .4px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -.5px;
+    }
+
+    .stat-value.green {
+        color: var(--primary);
+    }
+
+    .stat-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+        font-weight: 600;
+    }
+
+    /* Filter card */
+    .filter-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin-bottom: 22px;
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .field label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--mid);
+    }
+
+    .input,
+    .select {
+        padding: 9px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-size: 13px;
+        color: var(--dark);
+        background: #fff;
+        outline: none;
+    }
+
+    .input:focus,
+    .select:focus {
+        border-color: rgba(0, 192, 127, .6);
+        box-shadow: 0 0 0 3px rgba(0, 192, 127, .12);
+    }
+
+    /* Charts */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    @media(max-width:860px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .chart-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+    }
+
+    .chart-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 16px;
+    }
+
+    /* Table */
+    .table-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .table-head {
+        padding: 14px 18px;
+        border-bottom: 1.5px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .table-head h3 {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    th,
+    td {
+        padding: 11px 16px;
+        font-size: 13px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    th {
+        background: var(--page-bg);
+        font-weight: 800;
+        color: var(--mid);
+    }
+
+    td {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .badge-cash {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+    }
+
+    .badge-qr {
+        background: var(--primary-soft);
+        color: #065f46;
+        border: 1px solid rgba(0, 192, 127, .25);
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .text-green {
+        color: var(--primary);
+        font-weight: 800;
+    }
+
+    .empty-state {
+        padding: 40px;
+        text-align: center;
+        color: var(--muted);
+        font-weight: 700;
+    }
 </style>
 
 <div class="rp-page">
@@ -61,11 +315,11 @@ tr:last-child td{border-bottom:none;}
         <h1><span>Báo cáo</span> Doanh Thu</h1>
         <div class="btn-group">
             <a href="index.php?action=admin_report_revenue_export&type=revenue&date_from=<?= urlencode($_GET['date_from'] ?? '') ?>&date_to=<?= urlencode($_GET['date_to'] ?? '') ?>" class="btn btn-export">
-                <i class="fas fa-file-csv"></i> Xuất CSV Doanh Thu
+                <i class="fas fa-file-csv"></i> Xuất Doanh Thu
             </a>
-            <a href="index.php?action=admin_report_revenue_export&type=booking&date_from=<?= urlencode($_GET['date_from'] ?? '') ?>&date_to=<?= urlencode($_GET['date_to'] ?? '') ?>" class="btn btn-export">
+            <!-- <a href="index.php?action=admin_report_revenue_export&type=booking&date_from=<?= urlencode($_GET['date_from'] ?? '') ?>&date_to=<?= urlencode($_GET['date_to'] ?? '') ?>" class="btn btn-export">
                 <i class="fas fa-file-csv"></i> Xuất CSV Đặt Sân
-            </a>
+            </a> -->
         </div>
     </div>
 
@@ -104,12 +358,13 @@ tr:last-child td{border-bottom:none;}
 
     <!-- Stat cards -->
     <?php
-        $totalBookingsAll   = array_sum(array_column($revenueByCourt, 'booking_count'));
-        $cashRevenue        = 0; $qrRevenue = 0;
-        foreach ($revenueByMethod as $m) {
-            if ($m['payment_method'] === 'cash') $cashRevenue = $m['revenue'];
-            if ($m['payment_method'] === 'qr')   $qrRevenue   = $m['revenue'];
-        }
+    $totalBookingsAll   = array_sum(array_column($revenueByCourt, 'booking_count'));
+    $cashRevenue        = 0;
+    $qrRevenue = 0;
+    foreach ($revenueByMethod as $m) {
+        if ($m['payment_method'] === 'cash') $cashRevenue = $m['revenue'];
+        if ($m['payment_method'] === 'qr')   $qrRevenue   = $m['revenue'];
+    }
     ?>
     <div class="stats-grid">
         <div class="stat-card">
@@ -147,10 +402,10 @@ tr:last-child td{border-bottom:none;}
     </div>
 
     <?php if (!empty($revenueByDay)): ?>
-    <div class="chart-card" style="margin-bottom:22px;">
-        <div class="chart-title">Doanh thu theo ngày</div>
-        <canvas id="chartDay" height="70"></canvas>
-    </div>
+        <div class="chart-card" style="margin-bottom:22px;">
+            <div class="chart-title">Doanh thu theo ngày</div>
+            <canvas id="chartDay" height="70"></canvas>
+        </div>
     <?php endif; ?>
 
     <!-- By court table -->
@@ -161,120 +416,158 @@ tr:last-child td{border-bottom:none;}
         <?php if (empty($revenueByCourt)): ?>
             <div class="empty-state"><i class="fas fa-chart-bar" style="font-size:28px;margin-bottom:8px;display:block;"></i>Không có dữ liệu</div>
         <?php else: ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sân</th>
-                    <th class="text-right">Số lần đặt</th>
-                    <th class="text-right">Doanh thu</th>
-                    <th class="text-right">Tỷ lệ</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($revenueByCourt as $court): ?>
-                <tr>
-                    <td><?= htmlspecialchars($court['court_name']) ?></td>
-                    <td class="text-right"><?= $court['booking_count'] ?></td>
-                    <td class="text-right text-green"><?= number_format($court['revenue'], 0, ',', '.') ?>đ</td>
-                    <td class="text-right">
-                        <?= $totalRevenue > 0 ? number_format($court['revenue'] / $totalRevenue * 100, 1) : 0 ?>%
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sân</th>
+                        <th class="text-right">Số lần đặt</th>
+                        <th class="text-right">Doanh thu</th>
+                        <th class="text-right">Tỷ lệ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($revenueByCourt as $court): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($court['court_name']) ?></td>
+                            <td class="text-right"><?= $court['booking_count'] ?></td>
+                            <td class="text-right text-green"><?= number_format($court['revenue'], 0, ',', '.') ?>đ</td>
+                            <td class="text-right">
+                                <?= $totalRevenue > 0 ? number_format($court['revenue'] / $totalRevenue * 100, 1) : 0 ?>%
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         <?php endif; ?>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-(function(){
-    const primary = '#00c07f';
-    const monthLabels = ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];
-    const monthData  = <?= json_encode(array_column($revenueByMonth, 'revenue')) ?>;
+    (function() {
+        const primary = '#00c07f';
+        const monthLabels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+        const monthData = <?= json_encode(array_column($revenueByMonth, 'revenue')) ?>;
 
-    new Chart(document.getElementById('chartMonth'), {
-        type: 'bar',
-        data: {
-            labels: monthLabels,
-            datasets: [{
-                label: 'Doanh thu (đ)',
-                data: monthData,
-                backgroundColor: 'rgba(0,192,127,.25)',
-                borderColor: primary,
-                borderWidth: 2,
-                borderRadius: 6,
-            }]
-        },
-        options: {
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { ticks: { callback: v => (v/1000000).toFixed(1)+'M' }, grid: { color: '#f1f5f9' } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-    <?php
-    $methodLabels = [];
-    $methodData   = [];
-    $methodColors = ['cash' => '#3b82f6', 'qr' => '#00c07f'];
-    foreach ($revenueByMethod as $m):
-        $methodLabels[] = $m['payment_method'] === 'qr' ? 'QR Code' : 'Tiền mặt';
-        $methodData[]   = $m['revenue'];
-    endforeach;
-    ?>
-    const methodData = <?= json_encode($methodData) ?>;
-    if (methodData.length > 0) {
-        new Chart(document.getElementById('chartMethod'), {
-            type: 'doughnut',
+        new Chart(document.getElementById('chartMonth'), {
+            type: 'bar',
             data: {
-                labels: <?= json_encode($methodLabels) ?>,
+                labels: monthLabels,
                 datasets: [{
-                    data: methodData,
-                    backgroundColor: ['#3b82f6','#00c07f'],
-                    borderWidth: 0,
-                    hoverOffset: 6,
+                    label: 'Doanh thu (đ)',
+                    data: monthData,
+                    backgroundColor: 'rgba(0,192,127,.25)',
+                    borderColor: primary,
+                    borderWidth: 2,
+                    borderRadius: 6,
                 }]
             },
             options: {
                 plugins: {
-                    legend: { position: 'bottom', labels: { font: { weight: '700' }, padding: 14 } }
+                    legend: {
+                        display: false
+                    }
                 },
-                cutout: '68%',
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: v => (v / 1000000).toFixed(1) + 'M'
+                        },
+                        grid: {
+                            color: '#f1f5f9'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
             }
         });
-    }
 
-    <?php if (!empty($revenueByDay)): ?>
-    const dayLabels = <?= json_encode(array_column($revenueByDay, 'day')) ?>;
-    const dayData   = <?= json_encode(array_column($revenueByDay, 'revenue')) ?>;
-    new Chart(document.getElementById('chartDay'), {
-        type: 'line',
-        data: {
-            labels: dayLabels,
-            datasets: [{
-                label: 'Doanh thu (đ)',
-                data: dayData,
-                borderColor: primary,
-                backgroundColor: 'rgba(0,192,127,.08)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: primary,
-            }]
-        },
-        options: {
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { ticks: { callback: v => (v/1000000).toFixed(1)+'M' }, grid: { color: '#f1f5f9' } },
-                x: { grid: { display: false } }
-            }
+        <?php
+        $methodLabels = [];
+        $methodData   = [];
+        $methodColors = ['cash' => '#3b82f6', 'qr' => '#00c07f'];
+        foreach ($revenueByMethod as $m):
+            $methodLabels[] = $m['payment_method'] === 'qr' ? 'QR Code' : 'Tiền mặt';
+            $methodData[]   = $m['revenue'];
+        endforeach;
+        ?>
+        const methodData = <?= json_encode($methodData) ?>;
+        if (methodData.length > 0) {
+            new Chart(document.getElementById('chartMethod'), {
+                type: 'doughnut',
+                data: {
+                    labels: <?= json_encode($methodLabels) ?>,
+                    datasets: [{
+                        data: methodData,
+                        backgroundColor: ['#3b82f6', '#00c07f'],
+                        borderWidth: 0,
+                        hoverOffset: 6,
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    weight: '700'
+                                },
+                                padding: 14
+                            }
+                        }
+                    },
+                    cutout: '68%',
+                }
+            });
         }
-    });
-    <?php endif; ?>
-})();
+
+        <?php if (!empty($revenueByDay)): ?>
+            const dayLabels = <?= json_encode(array_column($revenueByDay, 'day')) ?>;
+            const dayData = <?= json_encode(array_column($revenueByDay, 'revenue')) ?>;
+            new Chart(document.getElementById('chartDay'), {
+                type: 'line',
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Doanh thu (đ)',
+                        data: dayData,
+                        borderColor: primary,
+                        backgroundColor: 'rgba(0,192,127,.08)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: primary,
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: v => (v / 1000000).toFixed(1) + 'M'
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        <?php endif; ?>
+    })();
 </script>
 
 <?php require_once PROJECT_ROOT . '/views/layout/footer.php'; ?>

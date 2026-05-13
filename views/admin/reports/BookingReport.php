@@ -64,7 +64,7 @@ tr:last-child td{border-bottom:none;}
     <div class="rp-header">
         <h1><span>Báo cáo</span> Đặt Sân</h1>
         <a href="index.php?action=admin_report_revenue_export&type=booking&date_from=<?= urlencode($_GET['date_from'] ?? '') ?>&date_to=<?= urlencode($_GET['date_to'] ?? '') ?>" class="btn btn-export">
-            <i class="fas fa-file-csv"></i> Xuất CSV
+            <i class="fas fa-file-csv"></i> Xuất báo cáo đặt sân
         </a>
     </div>
 

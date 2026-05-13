@@ -596,7 +596,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 <div class="courts-wrapper">
 
     <!-- Top bar -->
-    <div class="topbar">
+    <!-- <div class="topbar">
         
         <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['admin', 'owner'])): ?>
             <a href="index.php?action=create" class="btn-add">
@@ -604,7 +604,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 Thêm sân mới
             </a>
         <?php endif; ?>
-    </div>
+    </div> -->
 
     <!-- Toolbar: search -->
     <div class="toolbar">
@@ -619,7 +619,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
     </div>
 
     <!-- Stats strip -->
-    <?php if (!empty($courts)): ?>
+    <!-- <?php if (!empty($courts)): ?>
         <div class="stats-strip">
             <?php
             $total     = count($courts);
@@ -638,7 +638,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 <span class="stat-dot red"></span>
                 <?= $booked ?> đã đặt
             </div>
-        </div>
+        </div> -->
     <?php endif; ?>
 
     <!-- Card grid -->
@@ -656,7 +656,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         $canEdit = true;
                     }
                 }
-                $isAvailable = $court['status'] == 'available';
+                // $isAvailable = $court['status'] == 'available';
                 $isMine      = isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner' && $court['owner_id'] == $_SESSION['user_id'];
                 ?>
 
@@ -672,22 +672,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                             <img src="/quanly_datsan_thethao/public/upload/img_courts/default.png"
                                 alt="Default Image">
                         <?php endif; ?>
-                        <!-- <span class="img-badge <?= $isAvailable ? 'available' : 'booked' ?>">
-                            <?= $isAvailable ? '● Trống' : '● Đã đặt' ?>
-                        </span> -->
-
-                        <!-- <?php if ($canEdit): ?>
-                        <div class="img-actions">
-                            <a href="index.php?action=edit&id=<?= $court['id'] ?>" class="img-btn edit" title="Chỉnh sửa">
-                                <i class="fa fa-pen"></i>
-                            </a>
-                            <a href="index.php?action=delete&id=<?= $court['id'] ?>"
-                               class="img-btn del" title="Xóa"
-                               onclick="return confirm('Bạn chắc chắn muốn xóa sân này?')">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </div>
-                        <?php endif; ?> -->
+                       
                     </div>
 
                     <!-- Body -->
@@ -696,7 +681,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'owner'): ?>
                             <div class="owner-chip <?= $isMine ? 'mine' : '' ?>">
                                 <i class="fa fa-<?= $isMine ? 'star' : 'user' ?>" style="font-size:10px;"></i>
-                                <?= $isMine ? 'Sân của bạn' : 'Sân của chủ khác' ?>
+                                <?= $isMine ? 'Sân của bạn' : '' ?>
                             </div>
                         <?php endif; ?>
 
@@ -708,25 +693,8 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         </div> -->
 
                         <div class="card-footer">
-
-                            <?php if ($canEdit): ?>
-                                <div class="inline-actions">
-                                    <a href="index.php?action=edit&id=<?= $court['id'] ?>"
-                                        class="action-btn" title="Chỉnh sửa">
-                                        <i class="fa fa-pen"></i>
-                                    </a>
-                                    <a href="index.php?action=delete&id=<?= $court['id'] ?>"
-                                        class="action-btn danger" title="Xóa"
-                                        onclick="return confirm('Bạn chắc chắn muốn xóa sân này?')">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
-                                </div>
-                            <?php else: ?>
-                                <div></div>
-                            <?php endif; ?>
-
                             <a href="index.php?action=booking&id=<?= $court['id'] ?>" class="btn-book">
-                                Đặt sân <i class="fa fa-arrow-right" style="font-size:11px;"></i>
+                                Đặt sân <i class="fa fa-arrow-right" style="font-size:20px;"></i>
                             </a>
 
                         </div>
@@ -775,10 +743,6 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
                 <h2 id="modalName"></h2>
 
-                <!-- <div class="modal-price">
-                    <span id="modalPrice"></span>
-                    <small>VNĐ / giờ</small>
-                </div> -->
                 <div class="modal-address">
                     <i class="fa fa-location-dot"></i>
                     <span id="modalAddress"></span>
@@ -789,10 +753,10 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                     <span id="modalOwnerPhone"></span>
                 </div>
 
-                <p>
+                <!-- <p>
                     <strong>Trạng thái:</strong>
                     <span id="modalStatus"></span>
-                </p>
+                </p> -->
 
                 <a href="#" class="btn-book" id="modalBookingBtn">
                     Đặt sân
@@ -845,8 +809,8 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 document.getElementById('modalAddress').innerText =
                     court.address || 'Chưa cập nhật địa chỉ';
 
-                document.getElementById('modalStatus').innerText =
-                    court.status;
+                // document.getElementById('modalStatus').innerText =
+                //     court.status;
 
                 const phone = court.owner_phone || court.owner && court.owner.phone || court.phone;
                 const modalPhoneEl = document.getElementById('modalOwnerPhone');

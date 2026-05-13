@@ -47,14 +47,16 @@ $role_only_actions = [
 
     // Owner
     'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
+
     // Admin payment search
     'admin_payment_search','admin_payment_search_ajax',
     // Admin reports
     'admin_report_revenue','admin_report_booking','admin_report_customer',
     'admin_report_revenue_export','admin_report_customer_export',
     // Owner reports
-    'owner_report_revenue','owner_report_booking','owner_report_revenue_export',
-];
+    // 'owner_report_revenue','owner_report_booking','owner_report_revenue_export',
+    // 'owner_report_customer','owner_report_customer_export',
+    ];
 if (in_array($action, $role_only_actions)) {
     $role = strtolower(trim($_SESSION['user_role'] ?? ''));
 
@@ -248,6 +250,17 @@ switch ($action) {
         $ownerController->bookingReport();
         break;
 
+    case 'owner_report_customer':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->customerReport();
+        break;
+
+    case 'owner_report_customer_export':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->customerReportExport();
+        break;
+
+
     case 'owner_payment_search':
         $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
         $ownerController->paymentSearch();
@@ -267,6 +280,12 @@ switch ($action) {
         $ownerQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerQrController();
         $ownerQrController->update();
         break;
+
+    case 'owner_my_courts':
+        $ownerCourtsController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerCourtsController();
+        $ownerCourtsController->myCourts();
+        break;
+
 
     case 'get_owner_qr_content':
         $courtsQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\CourtsQrController();

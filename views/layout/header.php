@@ -6,8 +6,15 @@ function isActive($action, $current_action)
 {
     $court_actions  = ['courts', 'index', 'add', 'edit', 'update', 'delete', 'booking'];
     $user_actions   = ['user', 'add_user', 'edit_user', 'update_user', 'delete_user'];
-    $report_actions = ['admin_report_revenue', 'admin_report_booking', 'admin_report_customer',
-                       'admin_report_revenue_export', 'admin_report_customer_export'];
+    $report_actions = [
+        'admin_report_revenue', 'admin_report_booking', 'admin_report_customer',
+        'admin_report_revenue_export', 'admin_report_customer_export',
+        'owner_report_revenue', 'owner_report_booking', 'owner_report_customer',
+        'owner_report_revenue_export', 'owner_report_customer_export',
+        'owner_report_booking_export',
+
+    ];
+
 
     if ($action === 'courts'  && in_array($current_action, $court_actions))  return 'active';
     if ($action === 'user'    && in_array($current_action, $user_actions))   return 'active';
@@ -427,6 +434,11 @@ function isActive($action, $current_action)
         <a href="index.php?action=index" class="sub-link <?= isActive('courts', $current_action) ?>">
             <i class="fas fa-table-tennis-paddle-ball"></i> Danh sách sân
         </a>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'owner'): ?>
+            <a href="index.php?action=owner_my_courts" class="sub-link <?= isActive('owner_my_courts', $current_action); ?>">
+                <i class="fas fa-table-tennis-paddle-ball"></i> Sân của tôi
+            </a>
+        <?php endif;?>
         <?php if (isset($_SESSION['user_id'])): ?>
             <a href="index.php?action=my_bookings" class="sub-link <?= isActive('my_bookings', $current_action) ?>">
                 <i class="fas fa-calendar-check"></i> Lịch sử đặt sân
@@ -467,14 +479,17 @@ function isActive($action, $current_action)
             <a href="index.php?action=owner_report_booking" class="sub-link <?= isActive('owner_report_booking', $current_action) ?>">
                 <i class="fas fa-chart-bar"></i> Đặt sân
             </a>
+            <a href="index.php?action=owner_report_customer" class="sub-link <?= isActive('owner_report_customer', $current_action) ?>">
+                <i class="fas fa-users"></i> Khách hàng
+            </a>
+
             <div class="sub-divider"></div>
+            <a href="index.php?action=owner_qr_settings" class="sub-link <?= isActive('owner_qr_settings', $current_action); ?>">
+                <i class="fas fa-qrcode"></i> Liên kết ngân hàng
+            </a>
+
         <?php endif; ?>
-        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'owner'): ?>
-           <a href="index.php?action=owner_qr_settings" class="sub-link <?= isActive('owner_qr_settings', $current_action); ?>">
-                        <i class="fas fa-qrcode"></i> Cấu hình phương thức thanh toán QR
-                    </a>
-            
-        <?php endif; ?>
+
 
 
         <?php if (isset($_SESSION['user_id'])):

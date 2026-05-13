@@ -85,7 +85,6 @@
         background: #334155;
     }
 
-    /* Stats */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -133,7 +132,6 @@
         font-weight: 600;
     }
 
-    /* Filter */
     .filter-card {
         background: var(--surface);
         border: 1.5px solid var(--border);
@@ -180,7 +178,6 @@
         box-shadow: 0 0 0 3px rgba(0, 192, 127, .12);
     }
 
-    /* Chart */
     .chart-card {
         background: var(--surface);
         border: 1.5px solid var(--border);
@@ -196,7 +193,6 @@
         margin-bottom: 16px;
     }
 
-    /* Tables */
     .two-col {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -291,15 +287,16 @@
 
     <div class="rp-header">
         <h1><span>Báo cáo</span> Khách Hàng</h1>
-        <a href="index.php?action=admin_report_customer_export&date_from=<?= urlencode($_GET['date_from'] ?? '') ?>&date_to=<?= urlencode($_GET['date_to'] ?? '') ?>" class="btn btn-export">
+        <a href="index.php?action=owner_report_customer_export&date_from=<?= urlencode($_GET['date_from'] ?? '') ?>&date_to=<?= urlencode($_GET['date_to'] ?? '') ?>" class="btn btn-export">
             <i class="fas fa-file-csv"></i> Xuất báo cáo khách hàng
         </a>
     </div>
 
-    <!-- Filter -->
     <div class="filter-card">
         <form method="get" action="index.php">
-            <input type="hidden" name="action" value="admin_report_customer" />
+            <input type="hidden" name="action" value="owner_report_customer" />
+            <?php $year = (int)($_GET['year'] ?? date('Y')); ?>
+
             <div class="filter-row">
                 <div class="field">
                     <label>Ngày đăng ký từ</label>
@@ -323,18 +320,28 @@
                 </div>
                 <div class="field" style="flex:0">
                     <label>&nbsp;</label>
-                    <a href="index.php?action=admin_report_customer" class="btn">Reset</a>
+                    <a href="index.php?action=owner_report_customer" class="btn">Reset</a>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- Stat cards -->
+    <?php
+    // owner view giống admin: tổng, mới trong tháng, và list count
+    $year = $year ?? (int)date('Y');
+    $totalCustomers = $totalCustomers ?? 0;
+    $newThisMonth = $newThisMonth ?? 0;
+    $customerList = $customerList ?? [];
+    $topCustomers = $topCustomers ?? [];
+    $newByMonth = $newByMonth ?? [];
+    ?>
+
+
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-label">Tổng khách hàng</div>
             <div class="stat-value"><?= $totalCustomers ?></div>
-            <div class="stat-sub">Tất cả tài khoản customer</div>
+            <div class="stat-sub">Tất cả tài khoản customer có đặt sân của owner</div>
         </div>
         <div class="stat-card">
             <div class="stat-label">Khách mới tháng này</div>
@@ -342,21 +349,18 @@
             <div class="stat-sub"><?= date('m/Y') ?></div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Khách đang lọc</div>
+            <div class="stat-label">Khách trong khoảng</div>
             <div class="stat-value"><?= count($customerList) ?></div>
             <div class="stat-sub">Trong khoảng thời gian đã chọn</div>
         </div>
     </div>
 
-    <!-- Chart: new customers by month -->
     <div class="chart-card">
         <div class="chart-title">Khách hàng mới theo tháng – <?= $year ?></div>
         <canvas id="chartCustomers" height="70"></canvas>
     </div>
 
-    <!-- Top customers + customer list -->
     <div class="two-col">
-        <!-- Top customers -->
         <div class="table-card" style="margin-bottom:0">
             <div class="table-head">
                 <h3>Top khách hàng đặt sân nhiều nhất</h3>
@@ -377,10 +381,10 @@
                         <?php foreach ($topCustomers as $i => $c): ?>
                             <tr>
                                 <td>
-                                    <?php if ($i === 0) echo '<span class="medal">🥇</span>';
-                                    elseif ($i === 1) echo '<span class="medal">🥈</span>';
-                                    elseif ($i === 2) echo '<span class="medal">🥉</span>';
-                                    else echo $i + 1; ?>
+                                     <?php if ($i === 0) echo '<span class="medal">🥇</span>';
+                                        elseif ($i === 1) echo '<span class="medal">🥈</span>';
+                                        elseif ($i === 2) echo '<span class="medal">🥉</span>';
+                                        else echo $i + 1; ?>
                                 </td>
                                 <td>
                                     <div style="font-weight:700"><?= htmlspecialchars($c['name']) ?></div>
@@ -395,7 +399,6 @@
             <?php endif; ?>
         </div>
 
-        <!-- New customer list (recent 10) -->
         <div class="table-card" style="margin-bottom:0">
             <div class="table-head">
                 <h3>Danh sách khách hàng mới</h3>
@@ -425,9 +428,7 @@
                     </tbody>
                 </table>
                 <?php if (count($customerList) > 15): ?>
-                    <div style="padding:10px 16px;font-size:12px;color:var(--muted);font-weight:700;">
-                        ... và <?= count($customerList) - 15 ?> khách hàng khác. Xuất CSV để xem đầy đủ.
-                    </div>
+                    <div style="padding:10px 16px;font-size:12px;color:var(--muted);font-weight:700;">... và <?= count($customerList) - 15 ?> khách hàng khác. Xuất CSV để xem đầy đủ.</div>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

@@ -391,7 +391,7 @@
 
                 <div class="row-2">
                     <div class="field">
-                        <label class="lbl">Giá theo giờ (VNĐ)</label>
+                        <label class="lbl">Giá VNĐ /30 phút </label>
                         <div class="input-group">
                             <span class="input-group-text">₫</span>
                             <input type="number" name="price" class="form-control" placeholder="300,000" required>

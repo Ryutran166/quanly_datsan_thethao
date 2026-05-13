@@ -83,12 +83,12 @@
                 <input  type ="text" name="address" 
                     value="<?=$court['address']?>" required>
 
-                <label>Trạng thái</label>
+                <!-- <label>Trạng thái</label>
                 <select name="status">
                     <option value="available" <?= $court['status'] == 'available' ? 'selected' : '' ?>>Available</option>
                     <option value="booked" <?= $court['status'] == 'booked' ? 'selected' : '' ?>>Booked</option>
                     <option value="maintenance" <?= $court['status'] == 'maintenance' ? 'selected' : '' ?>>Maintenance</option>
-                </select>
+                </select> -->
 
                 <p>Ảnh hiện tại:</p>
                 <img src="/quanly_datsan_thethao/public/upload/img_courts/<?= htmlspecialchars($court['image']) ?>"

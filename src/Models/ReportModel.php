@@ -24,22 +24,30 @@ class ReportModel
      */
     private function slotJoin(): string
     {
+        // Gom tổng phút + tổng doanh thu theo booking_id để tránh nhân bản khi booking_details có nhiều dòng.
         return "LEFT JOIN (
                     SELECT bd.booking_id,
-                           SUM(TIMESTAMPDIFF(MINUTE, ts.start_time, ts.end_time)) AS total_mins
+                           SUM(TIMESTAMPDIFF(MINUTE, ts.start_time, ts.end_time)) AS total_mins,
+                           SUM(c.price * COALESCE(ts.price_modifier, 1)) AS total_amount
                     FROM booking_details bd
                     JOIN time_slots ts ON bd.slot_id = ts.id
+                    JOIN bookings b ON b.id = bd.booking_id
+                    JOIN courts c ON c.id = b.court_id
                     GROUP BY bd.booking_id
                 ) sd ON sd.booking_id = b.id";
     }
 
+
     /**
-     * Biểu thức SQL tính doanh thu: phút / 60 × 100.000đ.
-     * Booking không có slot: mặc định 60 phút (1 giờ).
+     * Biểu thức SQL tính doanh thu.
+     * - Ưu tiên sd.total_amount = court_price * price_modifier theo từng slot.
+     * - Nếu booking không có slot hoặc tổng_amount bị null/0 → fallback theo tổng phút.
      */
     private function revenueExpr(): string
     {
         return "CASE
+                    WHEN sd.total_amount IS NOT NULL AND sd.total_amount > 0
+                        THEN sd.total_amount
                     WHEN sd.total_mins IS NOT NULL AND sd.total_mins > 0
                         THEN sd.total_mins / 60.0 * " . self::PRICE_PER_HOUR . "
                     ELSE " . self::PRICE_PER_HOUR . "
@@ -579,4 +587,161 @@ class ReportModel
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // ─── OWNER CUSTOMER REPORT ───────────────────────────────────
+
+    public function getOwnerTotalCustomers(int $ownerId): int
+    {
+        $sql = "SELECT COUNT(*)
+                FROM users u
+                WHERE u.role = 'customer'
+                  AND EXISTS (
+                      SELECT 1
+                      FROM bookings b
+                      JOIN courts c ON b.court_id = c.id
+                      WHERE b.user_id = u.id
+                        AND b.status = 'Confirmed'
+                        AND c.owner_id = :owner_id
+                  )";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':owner_id' => $ownerId]);
+        return (int)($stmt->fetchColumn() ?? 0);
+    }
+
+    public function getOwnerNewCustomersThisMonth(int $ownerId): int
+    {
+        $sql = "SELECT COUNT(*)
+                FROM users u
+                WHERE u.role = 'customer'
+                  AND YEAR(u.created_at) = YEAR(CURDATE())
+                  AND MONTH(u.created_at) = MONTH(CURDATE())
+                  AND EXISTS (
+                      SELECT 1
+                      FROM bookings b
+                      JOIN courts c ON b.court_id = c.id
+                      WHERE b.user_id = u.id
+                        AND b.status = 'Confirmed'
+                        AND c.owner_id = :owner_id
+                  )";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':owner_id' => $ownerId]);
+        return (int)($stmt->fetchColumn() ?? 0);
+    }
+
+    public function getOwnerNewCustomersByMonth(int $ownerId, int $year): array
+    {
+        // 12 tháng luôn đủ để chart không lỗi
+        $sql = "SELECT MONTH(u.created_at) AS month, COUNT(*) AS count
+                FROM users u
+                WHERE u.role = 'customer'
+                  AND YEAR(u.created_at) = :year
+                  AND EXISTS (
+                      SELECT 1
+                      FROM bookings b
+                      JOIN courts c ON b.court_id = c.id
+                      WHERE b.user_id = u.id
+                        AND b.status = 'Confirmed'
+                        AND c.owner_id = :owner_id
+                  )
+                GROUP BY MONTH(u.created_at)
+                ORDER BY month ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':year' => $year, ':owner_id' => $ownerId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int)$r['month']] = (int)$r['count'];
+        }
+
+        $result = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $result[] = ['month' => $m, 'count' => $map[$m] ?? 0];
+        }
+        return $result;
+    }
+
+    public function getOwnerTopCustomersByBooking(int $ownerId, string $dateFrom = '', string $dateTo = '', int $limit = 10): array
+    {
+        [$where, $params] = $this->buildDateWhere('b.booking_date', $dateFrom, $dateTo);
+        $where[] = "b.status = 'Confirmed'";
+        $where[] = "b.user_id IS NOT NULL";
+        $where[] = "c.owner_id = :owner_id";
+        $params[':owner_id'] = $ownerId;
+
+        $rev = $this->revenueExpr();
+
+        $sql = "SELECT u.name, u.email, u.phone,
+                       COUNT(*) AS booking_count,
+                       SUM({$rev}) AS total_spent
+                FROM bookings b
+                JOIN users u ON b.user_id = u.id
+                JOIN courts c ON b.court_id = c.id
+                " . $this->slotJoin() . "
+                WHERE " . implode(' AND ', $where) . "
+                GROUP BY b.user_id, u.name, u.email, u.phone
+                ORDER BY booking_count DESC
+                LIMIT :lim";
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getOwnerCustomerList(int $ownerId, string $dateFrom = '', string $dateTo = ''): array
+    {
+        [$where, $params] = $this->buildDateWhere('u.created_at', $dateFrom, $dateTo);
+        $where[] = "u.role = 'customer'";
+        $where[] = "EXISTS (
+            SELECT 1
+            FROM bookings b4
+            JOIN courts c4 ON b4.court_id = c4.id
+            WHERE b4.user_id = u.id
+              AND b4.status = 'Confirmed'
+              AND c4.owner_id = :owner_id
+        )";
+        $params[':owner_id'] = $ownerId;
+
+        $sql = "SELECT u.id, u.name, u.email, u.phone, u.created_at,
+                       (SELECT COUNT(*)
+                        FROM bookings b2
+                        JOIN courts c2 ON b2.court_id = c2.id
+                        WHERE b2.user_id = u.id
+                          AND b2.status = 'Confirmed'
+                          AND c2.owner_id = :owner_id) AS booking_count,
+                       (SELECT COALESCE(SUM(
+                           CASE
+                               WHEN sd2.total_mins IS NOT NULL AND sd2.total_mins > 0
+                                   THEN sd2.total_mins / 60.0 * " . self::PRICE_PER_HOUR . "
+                               ELSE " . self::PRICE_PER_HOUR . "
+                           END
+                       ), 0)
+                        FROM bookings b3
+                        JOIN courts c3 ON b3.court_id = c3.id
+                        LEFT JOIN (
+                            SELECT bd.booking_id,
+                                   SUM(TIMESTAMPDIFF(MINUTE, ts.start_time, ts.end_time)) AS total_mins
+                            FROM booking_details bd
+                            JOIN time_slots ts ON bd.slot_id = ts.id
+                            GROUP BY bd.booking_id
+                        ) sd2 ON sd2.booking_id = b3.id
+                        WHERE b3.user_id = u.id
+                          AND b3.status = 'Confirmed'
+                          AND c3.owner_id = :owner_id) AS total_spent
+                FROM users u
+                WHERE " . implode(' AND ', $where) . "
+                ORDER BY u.created_at DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
+

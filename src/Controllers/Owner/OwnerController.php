@@ -216,6 +216,66 @@ class OwnerController extends BaseController
         require_once PROJECT_ROOT . '/views/owner/reports/BookingReport.php';
     }
 
+    // ─── CUSTOMER REPORT (OWNER) ────────────────────────────────
+
+    public function customerReport(): void
+    {
+        $ownerId = (int)($_SESSION['user_id'] ?? 0);
+        if (!$ownerId) { header('Location: index.php'); exit(); }
+
+        $pdo   = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $year     = (int)($_GET['year'] ?? date('Y'));
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+
+        $totalCustomers = $model->getOwnerTotalCustomers($ownerId);
+        $newThisMonth   = $model->getOwnerNewCustomersThisMonth($ownerId);
+        $newByMonth     = $model->getOwnerNewCustomersByMonth($ownerId, $year);
+        $topCustomers   = $model->getOwnerTopCustomersByBooking($ownerId, $dateFrom, $dateTo);
+        $customerList   = $model->getOwnerCustomerList($ownerId, $dateFrom, $dateTo);
+
+        require_once PROJECT_ROOT . '/views/owner/reports/CustomerReport.php';
+    }
+
+    public function customerReportExport(): void
+    {
+        $ownerId = (int)($_SESSION['user_id'] ?? 0);
+        if (!$ownerId) { header('Location: index.php'); exit(); }
+
+        $pdo   = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+
+        $rows = $model->getOwnerCustomerList($ownerId, $dateFrom, $dateTo);
+
+        $filename = 'bao_cao_khach_hang_' . date('Ymd') . '.csv';
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+
+        $out = fopen('php://output', 'w');
+        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($out, ['Tên', 'Email', 'Số điện thoại', 'Ngày đăng ký', 'Số lần đặt', 'Tổng chi tiêu']);
+
+        foreach ($rows as $r) {
+            fputcsv($out, [
+                $r['name'],
+                $r['email'],
+                $r['phone'] ?? '',
+                $r['created_at'],
+                $r['booking_count'],
+                number_format((float)$r['total_spent'], 0, ',', '.'),
+            ]);
+        }
+
+        fclose($out);
+        exit();
+    }
+
     private function collectPaymentSearchFilters(): array
     {
         return [
