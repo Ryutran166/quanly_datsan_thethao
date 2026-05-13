@@ -255,37 +255,39 @@ class CourtsController
 
         // Danh sách khung giờ cố định\
         $timeSlots = [
-            ['id' => 1,  'start_time' => '06:00:00', 'end_time' => '07:00:00'],
-            ['id' => 2,  'start_time' => '06:30:00', 'end_time' => '07:30:00'],
-            ['id' => 3,  'start_time' => '07:00:00', 'end_time' => '08:00:00'],
-            ['id' => 4,  'start_time' => '07:30:00', 'end_time' => '08:30:00'],
-            ['id' => 5,  'start_time' => '08:00:00', 'end_time' => '09:00:00'],
-            ['id' => 6,  'start_time' => '08:30:00', 'end_time' => '09:30:00'],
-            ['id' => 7,  'start_time' => '09:00:00', 'end_time' => '10:00:00'],
-            ['id' => 8,  'start_time' => '09:30:00', 'end_time' => '10:30:00'],
-            ['id' => 9,  'start_time' => '10:00:00', 'end_time' => '11:00:00'],
-            ['id' => 10, 'start_time' => '10:30:00', 'end_time' => '11:30:00'],
-            ['id' => 11, 'start_time' => '11:00:00', 'end_time' => '12:00:00'],
-            ['id' => 12, 'start_time' => '11:30:00', 'end_time' => '12:30:00'],
-            ['id' => 13, 'start_time' => '12:00:00', 'end_time' => '13:00:00'],
-            ['id' => 14, 'start_time' => '12:30:00', 'end_time' => '13:30:00'],
-            ['id' => 15, 'start_time' => '13:00:00', 'end_time' => '14:00:00'],
-            ['id' => 16, 'start_time' => '13:30:00', 'end_time' => '14:30:00'],
-            ['id' => 17, 'start_time' => '14:00:00', 'end_time' => '15:00:00'],
-            ['id' => 18, 'start_time' => '14:30:00', 'end_time' => '15:30:00'],
-            ['id' => 19, 'start_time' => '15:00:00', 'end_time' => '16:00:00'],
-            ['id' => 20, 'start_time' => '15:30:00', 'end_time' => '16:30:00'],
-            ['id' => 21, 'start_time' => '16:00:00', 'end_time' => '17:00:00'],
-            ['id' => 22, 'start_time' => '16:30:00', 'end_time' => '17:30:00'],
-            ['id' => 23, 'start_time' => '17:00:00', 'end_time' => '18:00:00'],
-            ['id' => 24, 'start_time' => '17:30:00', 'end_time' => '18:30:00'],
-            ['id' => 25, 'start_time' => '18:00:00', 'end_time' => '19:00:00'],
-            ['id' => 26, 'start_time' => '18:30:00', 'end_time' => '19:30:00'],
-            ['id' => 27, 'start_time' => '19:00:00', 'end_time' => '20:00:00'],
-            ['id' => 28, 'start_time' => '19:30:00', 'end_time' => '20:30:00'],
-            ['id' => 29, 'start_time' => '20:00:00', 'end_time' => '21:00:00'],
-            ['id' => 30, 'start_time' => '20:30:00', 'end_time' => '21:30:00'],
-            ['id' => 31, 'start_time' => '21:00:00', 'end_time' => '22:00:00'],
+
+            ['id' => 1,  'start_time' => '06:00:00', 'end_time' => '06:30:00'],
+            ['id' => 2,  'start_time' => '06:30:00', 'end_time' => '07:00:00'],
+            ['id' => 3,  'start_time' => '07:00:00', 'end_time' => '07:30:00'],
+            ['id' => 4,  'start_time' => '07:30:00', 'end_time' => '08:00:00'],
+            ['id' => 5,  'start_time' => '08:00:00', 'end_time' => '08:30:00'],
+            ['id' => 6,  'start_time' => '08:30:00', 'end_time' => '09:00:00'],
+            ['id' => 7,  'start_time' => '09:00:00', 'end_time' => '09:30:00'],
+            ['id' => 8,  'start_time' => '09:30:00', 'end_time' => '10:00:00'],
+            ['id' => 9,  'start_time' => '10:00:00', 'end_time' => '10:30:00'],
+            ['id' => 10, 'start_time' => '10:30:00', 'end_time' => '11:00:00'],
+            ['id' => 11, 'start_time' => '11:00:00', 'end_time' => '11:30:00'],
+            ['id' => 12, 'start_time' => '11:30:00', 'end_time' => '12:00:00'],
+            ['id' => 13, 'start_time' => '12:00:00', 'end_time' => '12:30:00'],
+            ['id' => 14, 'start_time' => '12:30:00', 'end_time' => '13:00:00'],
+            ['id' => 15, 'start_time' => '13:00:00', 'end_time' => '13:30:00'],
+            ['id' => 16, 'start_time' => '13:30:00', 'end_time' => '14:00:00'],
+            ['id' => 17, 'start_time' => '14:00:00', 'end_time' => '14:30:00'],
+            ['id' => 18, 'start_time' => '14:30:00', 'end_time' => '15:00:00'],
+            ['id' => 19, 'start_time' => '15:00:00', 'end_time' => '15:30:00'],
+            ['id' => 20, 'start_time' => '15:30:00', 'end_time' => '16:00:00'],
+            ['id' => 21, 'start_time' => '16:00:00', 'end_time' => '16:30:00'],
+            ['id' => 22, 'start_time' => '16:30:00', 'end_time' => '17:00:00'],
+            ['id' => 23, 'start_time' => '17:00:00', 'end_time' => '17:30:00'],
+            ['id' => 24, 'start_time' => '17:30:00', 'end_time' => '18:00:00'],
+            ['id' => 25, 'start_time' => '18:00:00', 'end_time' => '18:30:00'],
+            ['id' => 26, 'start_time' => '18:30:00', 'end_time' => '19:00:00'],
+            ['id' => 27, 'start_time' => '19:00:00', 'end_time' => '19:30:00'],
+            ['id' => 28, 'start_time' => '19:30:00', 'end_time' => '20:00:00'],
+            ['id' => 29, 'start_time' => '20:00:00', 'end_time' => '20:30:00'],
+            ['id' => 30, 'start_time' => '20:30:00', 'end_time' => '21:00:00'],
+            ['id' => 31, 'start_time' => '21:00:00', 'end_time' => '21:30:00'],
+            ['id' => 32, 'start_time' => '21:30:00', 'end_time' => '22:00:00'],
         ];
 
 
@@ -369,24 +371,26 @@ class CourtsController
 
 
 
-        foreach ($slotIds as $slotId) {
-
-            $this->bookingModel->createBooking([
+        $this->bookingModel->createBookingWithSlots(
+            [
                 'court_id'          => $courtId,
-                'slot_id'           => (int)$slotId,
                 'booking_date'      => $date,
                 'customer_name'     => $customerName,
                 'customer_phone'    => $customerPhone,
                 'status'            => 'Pending',
-
                 'user_id'           => $userId,
-                'payment_method'    => $paymentMethod,
-            ]);
+                'payment_method'   => $paymentMethod,
+            ],
+            $slotIds
+        );
 
-        }
+
 
         FlashMessage::set('booking_success', 'Đặt sân thành công!', 'success');
-        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&payment_method=" . urlencode($paymentMethodRedirect));
+        // Truyền slot_id sang trang success để tính đúng danh sách + tổng tiền
+        $slotIdsParam = implode(',', array_map('intval', $slotIds));
+        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&payment_method=" . urlencode($paymentMethodRedirect) . "&slot_id=" . urlencode($slotIdsParam));
+
 
         exit();
     }
@@ -441,7 +445,12 @@ class CourtsController
 
         $court = $this->courtsModel->getCourtById($courtId);
         $slotIdsRaw = $_GET['slot_id'] ?? '';
+        // normalize: loại khoảng trắng, hỗ trợ dạng "3, 7" hoặc "3;7"
+        $slotIdsRaw = trim((string)$slotIdsRaw);
+        $slotIdsRaw = str_replace([' ', ';'], [',', ','], (string)$slotIdsRaw);
+
         $slotIds = array_filter(array_map('intval', explode(',', (string)$slotIdsRaw)));
+
 
 
         $slots = [];

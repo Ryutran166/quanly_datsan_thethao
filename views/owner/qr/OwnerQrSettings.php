@@ -190,10 +190,46 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 <label for="vietqr_account_name">Tên người thụ hưởng (account name)</label>
                 <input type="text" name="vietqr_account_name" id="vietqr_account_name" value="<?= htmlspecialchars($vietqr['vietqr_account_name'] ?? '') ?>" required>
 
-                <label for="vietqr_bank_code">Mã ngân hàng hoặc tên viết tắt (TCB,VCB,...) </label>
-                <input type="text" name="vietqr_bank_code" id="vietqr_bank_code" value="<?= htmlspecialchars($vietqr['vietqr_bank_code'] ?? '') ?>" required>
+                <label for="vietqr_bank_code">Mã ngân hàng hoặc tên viết tắt (TCB,VCB,...)</label>
+                <input
+                    type="text"
+                    name="vietqr_bank_code"
+                    id="vietqr_bank_code"
+                    list="vietqr_bank_code_list"
+                    value="<?= htmlspecialchars($vietqr['vietqr_bank_code'] ?? '') ?>"
+                    required>
+
+                <datalist id="vietqr_bank_code_list">
+                    <option value="TCB"></option>
+                    <option value="VCB"></option>
+                    <option value="BIDV"></option>
+                    <option value="ACB"></option>
+                    <option value="MBB"></option>
+                    <option value="STB"></option>
+                    <option value="TPB"></option>
+                    <option value="OCB"></option>
+                    <option value="SHB"></option>
+                    <option value="MSB"></option>
+                    <option value="HDB"></option>
+                    <option value="VIB"></option>
+                    <option value="ABB"></option>
+                    <option value="ABBANK"></option>
+                    <option value="IVB"></option>
+                    <option value="VAB"></option>
+                    <option value="TPBank"></option>
+                    <option value="Techcombank"></option>
+                    <option value="VietinBank"></option>
+                    <option value="Vietcombank"></option>
+                    <option value="Bảo Việt"></option>
+                    <option value="Nam A Bank"></option>
+                </datalist>
+
+
+
+
 
                 <label for="vietqr_account_number">Số tài khoản (account number)</label>
+
                 <input type="text" name="vietqr_account_number" id="vietqr_account_number" value="<?= htmlspecialchars($vietqr['vietqr_account_number'] ?? '') ?>" required>
             </div>
 

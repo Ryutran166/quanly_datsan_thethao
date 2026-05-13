@@ -73,12 +73,20 @@ class VietQrController
 
         // Use Google Chart API to render QR image from payload
         // Dùng VietQR API trực tiếp
+        // VietQR API cần đúng số tiền (VND nguyên)
+        // Frontend gửi amountVnd dạng số nguyên theo tổng slot.
+        // Ép kiểu lại để tránh trường hợp ''/float/chuỗi lạ.
+        // VietQR cần số tiền VND dạng nguyên. Frontend đang truyền tổng = PRICE * số slot.
+        $amountNormalized = (string)max(0, (int)round((float)str_replace(',', '.', trim($amount))));
+
+
         $qrUrl = 'https://img.vietqr.io/image/'
             . urlencode($bankCode) . '-'
             . urlencode($accountNumber) . '-compact2.png'
-            . '?amount=' . urlencode($amount)
+            . '?amount=' . urlencode($amountNormalized)
             . '&addInfo=' . urlencode($description)
             . '&accountName=' . urlencode($accountName);
+
 
         echo json_encode(['success' => true, 'qr_image' => $qrUrl]);
         exit();

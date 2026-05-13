@@ -75,7 +75,7 @@
                 <input type="text" name="name"
                     value="<?= htmlspecialchars($court['name']) ?>" required>
 
-                <label>Giá (VNĐ / giờ)</label>
+                <label>Giá (VNĐ / 30 phút)</label>
                 <input type="number" name="price"
                     value="<?= $court['price'] ?>" required>
 

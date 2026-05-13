@@ -385,11 +385,16 @@ function statusBadge(string $status, string $date): string
 
     <!-- Booking list -->
     <?php
+    $upcoming  = $upcoming  ?? [];
+    $past      = $past      ?? [];
+    $cancelled = $cancelled ?? [];
+
     $displayList = match ($activeTab) {
         'past'      => $past,
         'cancelled' => $cancelled,
         default     => $upcoming,
     };
+
     ?>
 
     <?php if (empty($displayList)): ?>
@@ -415,8 +420,6 @@ function statusBadge(string $status, string $date): string
 
         <div class="booking-list">
             <?php foreach ($displayList as $b):
-                $canCancel = $b['booking_status'] === 'confirmed'
-                    && strtotime($b['booking_date'] . ' ' . $b['start_time']) - time() > 12 * 3600;
             ?>
                 <div class="booking-card">
 
@@ -435,15 +438,22 @@ function statusBadge(string $status, string $date): string
                                 <i class="fas fa-calendar"></i>
                                 <?= date('d/m/Y', strtotime($b['booking_date'])) ?>
                             </span>
+
                             <span>
                                 <i class="fas fa-clock"></i>
-                                <?= substr($b['start_time'], 0, 5) ?> – <?= substr($b['end_time'], 0, 5) ?>
+                                <?php if (!empty($b['slots'])): ?>
+                                    <?= htmlspecialchars(substr((string)$b['slots'][0]['start_time'], 0, 5)) ?> – <?= htmlspecialchars(substr((string)$b['slots'][array_key_last($b['slots'])]['end_time'], 0, 5)) ?>
+                                <?php else: ?>
+                                    <?= htmlspecialchars(substr((string)($b['start_time'] ?? ''), 0, 5)) ?> – <?= htmlspecialchars(substr((string)($b['end_time'] ?? ''), 0, 5)) ?>
+                                <?php endif; ?>
                             </span>
+
                             <span>
                                 <i class="fas fa-tag"></i>
-                                <?= number_format($b['price']) ?> VNĐ
+                                <?= number_format((float)($b['total_amount'] ?? ($b['price'] ?? 0)), 0, '.', ',') ?> VNĐ
                             </span>
                         </div>
+
 
                         <div class="booking-created">
                             Đặt lúc <?= date('H:i · d/m/Y', strtotime($b['created_at'])) ?>
@@ -456,11 +466,22 @@ function statusBadge(string $status, string $date): string
                             <i class="fas fa-rotate-right" style="font-size:11px;margin-right:4px;"></i>Đặt lại
                         </a>
 
-                        <a href="index.php?action=cancel_booking&id=<?= (int)$b['booking_id'] ?>"
-                            class="btn-cancel"
-                            onclick="return confirm('Bạn chắc chắn muốn hủy lịch này?')">
-                            <i class="fas fa-xmark" style="font-size:11px;margin-right:4px;"></i>Hủy lịch
-                        </a>
+                        <?php if ($activeTab === 'upcoming' && strtolower($b['booking_status'] ?? '') === 'confirmed') : ?>
+                            <?php
+                                // canCancel: chỉ cho tab Sắp tới và lịch chưa quá 12 tiếng
+                                $firstStart = $b['slots'][0]['start_time'] ?? null;
+                                $canCancel = $b['booking_status'] === 'confirmed' || !empty($firstStart)
+                                    && (strtotime($b['booking_date'] . ' ' . $firstStart) - time() > 12 * 3600);
+                            ?>
+
+                            <?php if ($canCancel): ?>
+                                <a href="index.php?action=cancel_booking&id=<?= (int)$b['booking_id'] ?>"
+                                    class="btn-cancel"
+                                    onclick="return confirm('Bạn chắc chắn muốn hủy lịch này?')">
+                                    <i class="fas fa-xmark" style="font-size:11px;margin-right:4px;"></i>Hủy lịch
+                                </a>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </div>
 
                 </div>

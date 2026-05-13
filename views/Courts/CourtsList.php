@@ -2,7 +2,6 @@
 require_once PROJECT_ROOT . '/views/layout/header.php';
 ?>
 
-<title>Quản Lý Sân</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -598,8 +597,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
     <!-- Top bar -->
     <div class="topbar">
-        <h1 class="topbar-title">Quản lý <span>sân</span></h1>
-
+        
         <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['admin', 'owner'])): ?>
             <a href="index.php?action=create" class="btn-add">
                 <i class="fa fa-plus" style="font-size:12px;"></i>
@@ -704,10 +702,10 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
                         <div class="court-name"><?= htmlspecialchars($court['name']) ?></div>
 
-                        <div class="price-row">
+                        <!-- <div class="price-row">
                             <span class="price-amount"><?= number_format($court['price']) ?></span>
                             <span class="price-unit">VNĐ / giờ</span>
-                        </div>
+                        </div> -->
 
                         <div class="card-footer">
 
@@ -777,10 +775,10 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
 
                 <h2 id="modalName"></h2>
 
-                <div class="modal-price">
+                <!-- <div class="modal-price">
                     <span id="modalPrice"></span>
                     <small>VNĐ / giờ</small>
-                </div>
+                </div> -->
                 <div class="modal-address">
                     <i class="fa fa-location-dot"></i>
                     <span id="modalAddress"></span>
@@ -841,8 +839,8 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 document.getElementById('modalName').innerText =
                     court.name;
 
-                document.getElementById('modalPrice').innerText =
-                    Number(court.price).toLocaleString();
+                // document.getElementById('modalPrice').innerText =
+                //     Number(court.price).toLocaleString();
                     
                 document.getElementById('modalAddress').innerText =
                     court.address || 'Chưa cập nhật địa chỉ';

@@ -29,6 +29,11 @@ $protected_actions = [
     'change_password',
     'do_change_password',
 
+    // Payment search module
+    'owner_payment_search',
+    'owner_payment_search_ajax',
+    'admin_payment_search',
+    'admin_payment_search_ajax',
 ];
 
 if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
@@ -41,7 +46,9 @@ $role_only_actions = [
     'admin_bookings','admin_cancel_booking','admin_confirm_booking',
 
     // Owner
-    'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
+    'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content','owner_payment_search','owner_payment_search_ajax',
+    // Admin payment search
+    'admin_payment_search','admin_payment_search_ajax',
 ];
 if (in_array($action, $role_only_actions)) {
     $role = strtolower(trim($_SESSION['user_role'] ?? ''));
@@ -54,6 +61,7 @@ if (in_array($action, $role_only_actions)) {
     };
 
     if (!in_array($role, $allowed, true)) {
+        error_log("[DEBUG] Deny action={$action} role={$role} user_id=" . ($_SESSION['user_id'] ?? 'null'));
         header("Location:index.php");
         exit();
     }
@@ -171,6 +179,16 @@ switch ($action) {
         $adminController->confirmBooking();
         break;
 
+    case 'admin_payment_search':
+        $adminController = new AdminController();
+        $adminController->paymentSearch();
+        break;
+
+    case 'admin_payment_search_ajax':
+        $adminController = new AdminController();
+        $adminController->paymentSearchAjax();
+        break;
+
     // OWNER BOOKINGS
     case 'owner_bookings':
         $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
@@ -180,6 +198,16 @@ switch ($action) {
     case 'owner_confirm_booking':
         $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
         $ownerController->confirmBooking();
+        break;
+
+    case 'owner_payment_search':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->paymentSearch();
+        break;
+
+    case 'owner_payment_search_ajax':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->paymentSearchAjax();
         break;
 
     case 'owner_qr_settings':

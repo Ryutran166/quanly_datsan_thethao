@@ -268,6 +268,10 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
             $totalAll = count($pending) + count($confirmed) + count($cancelled);
         ?>
         <span class="total-chip"><?= $totalAll ?> booking</span>
+
+        <a href="?action=owner_payment_search" class="btn-ok" style="height:fit-content; padding:8px 14px;">
+            <i class="fas fa-filter" style="font-size:11px;"></i> Tìm kiếm đơn 
+        </a>
     </div>
 
 
@@ -353,14 +357,13 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                                 <i class="fas fa-calendar"></i>
                                 <?= date('d/m/Y', strtotime($b['booking_date'])) ?>
                             </div>
-                            <div class="ab-meta-item">
-                                <i class="fas fa-clock"></i>
-                                <?= substr($b['start_time'],0,5) ?> – <?= substr($b['end_time'],0,5) ?>
-                            </div>
+                            
+
                             <div class="ab-meta-item">
                                 <i class="fas fa-tag"></i>
-                                <?= number_format($b['price']) ?> VNĐ
+                                <?= number_format($b['total_amount'] ?? ($b['price'] ?? 0)) ?> VNĐ
                             </div>
+
                             <div class="ab-meta-item">
                                 <i class="fas fa-credit-card"></i>
                                 <?php
@@ -377,6 +380,20 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         </div>
 
                         <div class="ab-id"># Booking ID: <?= (int)$b['id'] ?></div>
+
+                        <?php if (!empty($b['slots'])): ?>
+                            <div style="margin-top:10px; font-size:12px; color:var(--mid);">
+                                <div style="font-weight:800; color:var(--dark); margin-bottom:6px;">Khung giờ:</div>
+                                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                                    <?php foreach ($b['slots'] as $s): ?>
+                                        <span style="padding:4px 10px; border:1px solid var(--border); border-radius:999px; background:#fff;">
+                                            <?= substr($s['start_time'],0,5) ?>-<?= substr($s['end_time'],0,5) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
                     </div>
 
                     <div class="ab-actions">

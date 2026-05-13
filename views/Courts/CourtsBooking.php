@@ -582,11 +582,6 @@
                     <span class="info-label">Giờ chơi</span>
                     <span class="info-value highlight" id="display-time">Chưa chọn</span>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Đơn giá</span>
-                    <span class="info-value"><?= number_format($court['price']) ?> VNĐ/giờ</span>
-                </div>
-
                 <div class="total-box">
                     <span class="total-label">Tổng cộng</span>
                     <span class="total-amount" id="display-total">— VNĐ</span>

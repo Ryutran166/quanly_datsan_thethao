@@ -60,11 +60,16 @@
 
                 </div>
             <?php endif; ?>
-            <?php $pm = $_GET['payment_method'] ?? 'cash'; ?>
+            <?php
+                $pm = $_GET['payment_method'] ?? 'cash';
+                $total = (!empty($slots) && !empty($court)) ? ((int)$court['price'] * count($slots)) : 0;
+            ?>
             <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:0.9rem;">
                 <span style="color:#888;">Tổng tiền</span>
-                <strong style="color:#059669;"><?= number_format($court['price']) ?> VNĐ</strong>
+                <strong style="color:#059669;"><?= number_format($total) ?> VNĐ</strong>
             </div>
+
+
             <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:0.9rem;">
                 <span style="color:#888;">Phương thức thanh toán</span>
                 <strong style="color:#111;">
