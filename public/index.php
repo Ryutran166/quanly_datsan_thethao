@@ -49,12 +49,20 @@ $role_only_actions = [
     'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
     // Admin payment search
     'admin_payment_search','admin_payment_search_ajax',
+    // Admin reports
+    'admin_report_revenue','admin_report_booking','admin_report_customer',
+    'admin_report_revenue_export','admin_report_customer_export',
+    // Owner reports
+    'owner_report_revenue','owner_report_booking','owner_report_revenue_export',
 ];
 if (in_array($action, $role_only_actions)) {
     $role = strtolower(trim($_SESSION['user_role'] ?? ''));
 
     $allowed = match ($action) {
         'admin_bookings', 'admin_cancel_booking', 'admin_confirm_booking' => ['admin'],
+        'admin_report_revenue', 'admin_report_booking', 'admin_report_customer',
+        'admin_report_revenue_export', 'admin_report_customer_export' => ['admin'],
+        'owner_report_revenue', 'owner_report_booking', 'owner_report_revenue_export' => ['owner'],
         'owner_bookings', 'owner_confirm_booking', 'owner_qr_settings', 'owner_qr_settings_update' => ['owner'],
         'get_owner_qr_content' => ['owner'],
         default => ['admin'], // các action user/quản trị còn lại chỉ admin
@@ -189,6 +197,31 @@ switch ($action) {
         $adminController->paymentSearchAjax();
         break;
 
+    case 'admin_report_revenue':
+        $adminController = new AdminController();
+        $adminController->revenueReport();
+        break;
+
+    case 'admin_report_revenue_export':
+        $adminController = new AdminController();
+        $adminController->revenueReportExport();
+        break;
+
+    case 'admin_report_booking':
+        $adminController = new AdminController();
+        $adminController->bookingReport();
+        break;
+
+    case 'admin_report_customer':
+        $adminController = new AdminController();
+        $adminController->customerReport();
+        break;
+
+    case 'admin_report_customer_export':
+        $adminController = new AdminController();
+        $adminController->customerReportExport();
+        break;
+
     // OWNER BOOKINGS
     case 'owner_bookings':
         $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
@@ -198,6 +231,21 @@ switch ($action) {
     case 'owner_confirm_booking':
         $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
         $ownerController->confirmBooking();
+        break;
+
+    case 'owner_report_revenue':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->revenueReport();
+        break;
+
+    case 'owner_report_revenue_export':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->revenueReportExport();
+        break;
+
+    case 'owner_report_booking':
+        $ownerController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerController();
+        $ownerController->bookingReport();
         break;
 
     case 'owner_payment_search':

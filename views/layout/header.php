@@ -4,12 +4,15 @@ $current_action = $_GET['action'] ?? 'index';
 
 function isActive($action, $current_action)
 {
-    $court_actions = ['courts', 'index', 'add', 'edit', 'update', 'delete', 'booking'];
-    $user_actions  = ['user', 'add_user', 'edit_user', 'update_user', 'delete_user'];
+    $court_actions  = ['courts', 'index', 'add', 'edit', 'update', 'delete', 'booking'];
+    $user_actions   = ['user', 'add_user', 'edit_user', 'update_user', 'delete_user'];
+    $report_actions = ['admin_report_revenue', 'admin_report_booking', 'admin_report_customer',
+                       'admin_report_revenue_export', 'admin_report_customer_export'];
 
-    if ($action === 'courts' && in_array($current_action, $court_actions)) return 'active';
-    if ($action === 'user'   && in_array($current_action, $user_actions))  return 'active';
-    if ($action === 'my_bookings' && $current_action === 'my_bookings') return 'active';
+    if ($action === 'courts'  && in_array($current_action, $court_actions))  return 'active';
+    if ($action === 'user'    && in_array($current_action, $user_actions))   return 'active';
+    if ($action === 'my_bookings' && $current_action === 'my_bookings')      return 'active';
+    if (in_array($action, $report_actions) && $action === $current_action) return 'active';
 
     return ($action === $current_action) ? 'active' : '';
 }
@@ -341,6 +344,15 @@ function isActive($action, $current_action)
             box-shadow: 0 2px 8px rgba(0, 192, 127, .3);
         }
 
+        /* ── Sub nav divider ── */
+        .sub-divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255,255,255,.12);
+            margin: 0 4px;
+            flex-shrink: 0;
+        }
+
         /* ── Page container ── */
         .container {
             width: 100%;
@@ -430,12 +442,32 @@ function isActive($action, $current_action)
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
         <?php endif; ?>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+            <div class="sub-divider"></div>
+            <a href="index.php?action=admin_report_revenue" class="sub-link <?= isActive('admin_report_revenue', $current_action) ?>">
+                <i class="fas fa-dollar-sign"></i> Doanh thu
+            </a>
+            <a href="index.php?action=admin_report_booking" class="sub-link <?= isActive('admin_report_booking', $current_action) ?>">
+                <i class="fas fa-chart-bar"></i> Đặt sân
+            </a>
+            <a href="index.php?action=admin_report_customer" class="sub-link <?= isActive('admin_report_customer', $current_action) ?>">
+                <i class="fas fa-users"></i> Khách hàng
+            </a>
+            <div class="sub-divider"></div>
+        <?php endif; ?>
 
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'owner'): ?>
             <a href="index.php?action=owner_bookings" class="sub-link <?= isActive('owner_bookings', $current_action); ?>">
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
-            
+            <div class="sub-divider"></div>
+            <a href="index.php?action=owner_report_revenue" class="sub-link <?= isActive('owner_report_revenue', $current_action) ?>">
+                <i class="fas fa-dollar-sign"></i> Doanh thu
+            </a>
+            <a href="index.php?action=owner_report_booking" class="sub-link <?= isActive('owner_report_booking', $current_action) ?>">
+                <i class="fas fa-chart-bar"></i> Đặt sân
+            </a>
+            <div class="sub-divider"></div>
         <?php endif; ?>
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'owner'): ?>
            <a href="index.php?action=owner_qr_settings" class="sub-link <?= isActive('owner_qr_settings', $current_action); ?>">
@@ -459,12 +491,10 @@ function isActive($action, $current_action)
         document.addEventListener('DOMContentLoaded', function() {
             const navUser = document.getElementById('nav-user');
             if (!navUser) return;
-
             navUser.addEventListener('click', function(e) {
                 this.classList.toggle('open');
                 e.stopPropagation();
             });
-
             document.addEventListener('click', function() {
                 navUser.classList.remove('open');
             });

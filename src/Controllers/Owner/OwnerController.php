@@ -126,6 +126,96 @@ class OwnerController extends BaseController
         require_once PROJECT_ROOT . '/views/owner/bookings/partials/OwnerPaymentSearchResults.php';
     }
 
+    // ─── REVENUE REPORT ───────────────────────────────────────────
+
+    public function revenueReport(): void
+    {
+        $ownerId = (int)($_SESSION['user_id'] ?? 0);
+        if (!$ownerId) { header('Location: index.php'); exit(); }
+
+        $pdo   = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $year     = (int)($_GET['year'] ?? date('Y'));
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+
+        $totalRevenue    = $model->getOwnerTotalRevenue($ownerId, $dateFrom, $dateTo);
+        $revenueByMonth  = $model->getOwnerRevenueByMonth($ownerId, $year);
+        $revenueByCourt  = $model->getOwnerRevenueByCourt($ownerId, $dateFrom, $dateTo);
+        $revenueByMethod = $model->getOwnerRevenueByPaymentMethod($ownerId, $dateFrom, $dateTo);
+
+        $revenueByDay = [];
+        if ($dateFrom !== '' && $dateTo !== '') {
+            $revenueByDay = $model->getOwnerRevenueByDay($ownerId, $dateFrom, $dateTo);
+        }
+
+        require_once PROJECT_ROOT . '/views/owner/reports/RevenueReport.php';
+    }
+
+    public function revenueReportExport(): void
+    {
+        $ownerId = (int)($_SESSION['user_id'] ?? 0);
+        if (!$ownerId) { header('Location: index.php'); exit(); }
+
+        $pdo      = Database::getInstance()->getConnection();
+        $model    = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+        $type     = trim((string)($_GET['type'] ?? 'revenue'));
+
+        if ($type === 'booking') {
+            $rows     = $model->getOwnerBookingExportData($ownerId, $dateFrom, $dateTo);
+            $filename = 'bao_cao_dat_san_' . date('Ymd') . '.csv';
+            $headers  = ['Mã đặt sân', 'Tên khách hàng', 'Số điện thoại', 'Sân', 'Ngày đặt', 'Trạng thái', 'Thanh toán', 'Số phút', 'Doanh thu (đ)', 'Ngày tạo'];
+            $mapper   = fn($r) => [
+                $r['id'], $r['customer_name'], $r['customer_phone'],
+                $r['court_name'], $r['booking_date'], $r['status'],
+                $r['payment_method'] === 'qr' ? 'QR' : 'Tiền mặt',
+                $r['total_mins'], number_format($r['revenue'], 0, ',', '.'), $r['created_at'],
+            ];
+        } else {
+            $rows     = $model->getOwnerRevenueExportData($ownerId, $dateFrom, $dateTo);
+            $filename = 'bao_cao_doanh_thu_' . date('Ymd') . '.csv';
+            $headers  = ['Mã đặt sân', 'Tên khách hàng', 'Số điện thoại', 'Sân', 'Ngày đặt', 'Thanh toán', 'Số phút', 'Doanh thu (đ)', 'Ngày tạo'];
+            $mapper   = fn($r) => [
+                $r['id'], $r['customer_name'], $r['customer_phone'],
+                $r['court_name'], $r['booking_date'],
+                $r['payment_method'] === 'qr' ? 'QR' : 'Tiền mặt',
+                $r['total_mins'], number_format($r['revenue'], 0, ',', '.'), $r['created_at'],
+            ];
+        }
+
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        $out = fopen('php://output', 'w');
+        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($out, $headers);
+        foreach ($rows as $r) { fputcsv($out, $mapper($r)); }
+        fclose($out);
+        exit();
+    }
+
+    // ─── BOOKING REPORT ───────────────────────────────────────────
+
+    public function bookingReport(): void
+    {
+        $ownerId = (int)($_SESSION['user_id'] ?? 0);
+        if (!$ownerId) { header('Location: index.php'); exit(); }
+
+        $pdo   = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+
+        $statsByStatus = $model->getOwnerBookingStatsByStatus($ownerId, $dateFrom, $dateTo);
+        $byCourt       = $model->getOwnerBookingsByCourt($ownerId, $dateFrom, $dateTo);
+
+        require_once PROJECT_ROOT . '/views/owner/reports/BookingReport.php';
+    }
+
     private function collectPaymentSearchFilters(): array
     {
         return [

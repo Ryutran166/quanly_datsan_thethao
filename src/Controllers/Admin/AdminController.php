@@ -61,6 +61,147 @@ class AdminController extends BaseController
         ];
     }
 
+    // ─── REVENUE REPORT ───────────────────────────────────────────
+
+    public function revenueReport(): void
+    {
+        $pdo = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $year      = (int)($_GET['year'] ?? date('Y'));
+        $dateFrom  = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo    = trim((string)($_GET['date_to'] ?? ''));
+        $viewMode  = trim((string)($_GET['view'] ?? 'month')); // month | day
+
+        $totalRevenue      = $model->getTotalRevenue($dateFrom, $dateTo);
+        $revenueByMonth    = $model->getRevenueByMonth($year);
+        $revenueByCourt    = $model->getRevenueByCourt($dateFrom, $dateTo);
+        $revenueByMethod   = $model->getRevenueByPaymentMethod($dateFrom, $dateTo);
+
+        $revenueByDay = [];
+        if ($viewMode === 'day' && $dateFrom !== '' && $dateTo !== '') {
+            $revenueByDay = $model->getRevenueByDay($dateFrom, $dateTo);
+        }
+
+        require_once PROJECT_ROOT . '/views/admin/reports/RevenueReport.php';
+    }
+
+    public function revenueReportExport(): void
+    {
+        $pdo = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+        $type     = trim((string)($_GET['type'] ?? 'revenue')); // revenue | booking
+
+        if ($type === 'booking') {
+            $rows = $model->getBookingExportData($dateFrom, $dateTo);
+            $filename = 'bao_cao_dat_san_' . date('Ymd') . '.csv';
+            $headers = ['Mã đặt sân', 'Tên khách hàng', 'Số điện thoại', 'Sân', 'Ngày đặt', 'Trạng thái', 'Thanh toán', 'Số phút', 'Doanh thu (đ)', 'Ngày tạo'];
+            $mapper = fn($r) => [
+                $r['id'], $r['customer_name'], $r['customer_phone'],
+                $r['court_name'], $r['booking_date'], $r['status'],
+                $r['payment_method'] === 'qr' ? 'QR' : 'Tiền mặt',
+                $r['total_mins'],
+                number_format($r['revenue'], 0, ',', '.'),
+                $r['created_at'],
+            ];
+        } else {
+            $rows = $model->getRevenueExportData($dateFrom, $dateTo);
+            $filename = 'bao_cao_doanh_thu_' . date('Ymd') . '.csv';
+            $headers = ['Mã đặt sân', 'Tên khách hàng', 'Số điện thoại', 'Sân', 'Ngày đặt', 'Thanh toán', 'Số phút', 'Doanh thu (đ)', 'Ngày tạo'];
+            $mapper = fn($r) => [
+                $r['id'], $r['customer_name'], $r['customer_phone'],
+                $r['court_name'], $r['booking_date'],
+                $r['payment_method'] === 'qr' ? 'QR' : 'Tiền mặt',
+                $r['total_mins'],
+                number_format($r['revenue'], 0, ',', '.'),
+                $r['created_at'],
+            ];
+        }
+
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+
+        $out = fopen('php://output', 'w');
+        // UTF-8 BOM for Excel
+        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($out, $headers);
+        foreach ($rows as $r) {
+            fputcsv($out, $mapper($r));
+        }
+        fclose($out);
+        exit();
+    }
+
+    // ─── BOOKING REPORT ───────────────────────────────────────────
+
+    public function bookingReport(): void
+    {
+        $pdo = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+
+        $statsByStatus  = $model->getBookingStatsByStatus($dateFrom, $dateTo);
+        $byCourt        = $model->getBookingsByCourt($dateFrom, $dateTo);
+        $byDay          = ($dateFrom !== '' && $dateTo !== '')
+                          ? $model->getBookingsByDay($dateFrom, $dateTo)
+                          : [];
+
+        require_once PROJECT_ROOT . '/views/admin/reports/BookingReport.php';
+    }
+
+    // ─── CUSTOMER REPORT ──────────────────────────────────────────
+
+    public function customerReport(): void
+    {
+        $pdo = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $year    = (int)($_GET['year'] ?? date('Y'));
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+
+        $totalCustomers        = $model->getTotalCustomers();
+        $newThisMonth          = $model->getNewCustomersThisMonth();
+        $newByMonth            = $model->getNewCustomersByMonth($year);
+        $topCustomers          = $model->getTopCustomersByBooking($dateFrom, $dateTo);
+        $customerList          = $model->getCustomerList($dateFrom, $dateTo);
+
+        require_once PROJECT_ROOT . '/views/admin/reports/CustomerReport.php';
+    }
+
+    public function customerReportExport(): void
+    {
+        $pdo = Database::getInstance()->getConnection();
+        $model = new \Nhom2\QuanlyDatsanThethao\Models\ReportModel($pdo);
+
+        $dateFrom = trim((string)($_GET['date_from'] ?? ''));
+        $dateTo   = trim((string)($_GET['date_to'] ?? ''));
+        $rows     = $model->getCustomerList($dateFrom, $dateTo);
+
+        $filename = 'bao_cao_khach_hang_' . date('Ymd') . '.csv';
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+
+        $out = fopen('php://output', 'w');
+        fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($out, ['Tên', 'Email', 'Số điện thoại', 'Ngày đăng ký', 'Số lần đặt', 'Tổng chi tiêu']);
+        foreach ($rows as $r) {
+            fputcsv($out, [
+                $r['name'], $r['email'], $r['phone'] ?? '', $r['created_at'],
+                $r['booking_count'], number_format($r['total_spent'], 0, ',', '.'),
+            ]);
+        }
+        fclose($out);
+        exit();
+    }
+
 
     // Danh sách tất cả bookings cho admin
     public function bookings()

@@ -25,6 +25,10 @@ class CourtsController
 
     public function home()
     {
+        $pdo    = Database::getInstance()->getConnection();
+        $stmt   = $pdo->query("SELECT id, name, price, status, address, image FROM courts WHERE status != 'maintenance' ORDER BY id DESC LIMIT 6");
+        $courts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
         require_once PROJECT_ROOT . '/views/layout/header.php';
         require_once PROJECT_ROOT . '/views/Home/Home.php';
         require_once PROJECT_ROOT . '/views/layout/footer.php';
