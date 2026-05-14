@@ -11,6 +11,102 @@ class BookingModel {
         $this->pdo = $pdo;
     }
 
+    public function createBookingWithSlotsAndServices(array $data, array $slotIds, array $serviceIds): void
+    {
+        $slotIds = array_values(array_filter(array_map('intval', $slotIds), fn($x) => $x > 0));
+        if (empty($slotIds)) {
+            throw new \InvalidArgumentException('slotIds rỗng');
+        }
+
+
+        $serviceIds = array_values(array_filter(array_map('intval', $serviceIds), fn($x) => $x > 0));
+
+        $this->pdo->beginTransaction();
+
+        // create booking
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO bookings (court_id, customer_name, customer_phone, booking_date, status, user_id, payment_method)
+             VALUES (:court_id, :customer_name, :customer_phone, :booking_date, :status, :user_id, :payment_method)"
+        );
+        $stmt->execute([
+            ':court_id'          => $data['court_id'],
+            ':customer_name'     => $data['customer_name'] ?? 'Khbch ha3ng',
+            ':customer_phone'    => $data['customer_phone'] ?? null,
+            ':booking_date'      => $data['booking_date'],
+            ':status'            => $data['status'] ?? 'Pending',
+            ':user_id'           => $data['user_id'] ?? null,
+            ':payment_method'   => $data['payment_method'] ?? 'cash',
+        ]);
+
+        $bookingId = (int)$this->pdo->lastInsertId();
+
+        // booking_details (slots)
+        $detailStmt = $this->pdo->prepare(
+            "INSERT INTO booking_details (booking_id, slot_id)
+             VALUES (:booking_id, :slot_id)"
+        );
+        foreach ($slotIds as $slotId) {
+            $detailStmt->execute([
+                ':booking_id' => $bookingId,
+                ':slot_id'    => $slotId,
+            ]);
+        }
+
+        // booking_services
+        if (!empty($serviceIds)) {
+            $bsStmt = $this->pdo->prepare(
+                "INSERT INTO booking_services (booking_id, service_id)
+                 VALUES (:booking_id, :service_id)"
+            );
+            foreach ($serviceIds as $serviceId) {
+                $bsStmt->execute([
+                    ':booking_id' => $bookingId,
+                    ':service_id' => $serviceId,
+                ]);
+            }
+        }
+
+        // compute total_amount = court_price*slot_count (có price_modifier theo time_slots) + sum(service.price)
+        $totalAmount = 0.0;
+
+        $courtStmt = $this->pdo->prepare("SELECT price FROM courts WHERE id = ? LIMIT 1");
+        $courtStmt->execute([(int)$data['court_id']]);
+        $courtPrice = (float)($courtStmt->fetch(PDO::FETCH_ASSOC)['price'] ?? 0);
+
+        // Lấy price_modifier theo từng slot để total khớp với phần hiển thị/RevenueReport
+        // total = court_price * SUM(price_modifier) + sum(service.price)
+        $totalModifier = 0.0;
+        if (!empty($slotIds)) {
+            $inSlots = implode(',', array_fill(0, count($slotIds), '?'));
+            $slotPriceStmt = $this->pdo->prepare(
+                "SELECT COALESCE(SUM(COALESCE(ts.price_modifier,1)),0) AS total_modifier
+                 FROM time_slots ts
+                 WHERE ts.id IN ($inSlots)"
+            );
+            $slotPriceStmt->execute($slotIds);
+            $totalModifier = (float)($slotPriceStmt->fetch(PDO::FETCH_ASSOC)['total_modifier'] ?? 0);
+        }
+
+        $totalAmount += $courtPrice * $totalModifier;
+
+        // Dịch vụ
+        if (!empty($serviceIds)) {
+            $in = implode(',', array_fill(0, count($serviceIds), '?'));
+            $svcStmt = $this->pdo->prepare("SELECT COALESCE(SUM(price),0) AS total FROM services WHERE id IN ($in)");
+            $svcStmt->execute($serviceIds);
+            $totalAmount += (float)($svcStmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
+        }
+
+        $upd = $this->pdo->prepare("UPDATE bookings SET total_amount = :total_amount WHERE id = :id");
+        $upd->execute([
+            ':total_amount' => $totalAmount,
+            ':id' => $bookingId,
+        ]);
+
+        $this->pdo->commit();
+    }
+
+
     // Trả về mảng slot_id đã đặt theo court + date
     public function getBookedSlots(int $courtId, string $date): array {
         $stmt = $this->pdo->prepare(

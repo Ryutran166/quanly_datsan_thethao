@@ -341,16 +341,10 @@ class OwnerController extends BaseController
         foreach ($base as &$b) {
             $b['slots'] = $slotsByBooking[(int)$b['id']] ?? [];
 
-            // total_amount: nếu booking.total_amount null thì tính theo court.price * time_slots.price_modifier
-            if (!array_key_exists('total_amount', $b) || $b['total_amount'] === null || $b['total_amount'] === '') {
-                $courtPrice = (float)($b['price'] ?? 0);
-                $total = 0.0;
-                foreach ($b['slots'] as $s) {
-                    $modifier = isset($s['price_modifier']) ? (float)$s['price_modifier'] : 1.0;
-                    $total += $courtPrice * $modifier;
-                }
-                $b['total_amount'] = $total;
-            }
+            // Luôn lấy total_amount đúng theo bảng bookings.
+            // Nếu DB null/empty thì hiển thị 0 (không tự tính lại để tránh lệch với booking_services).
+            $b['total_amount'] = (float)($b['total_amount'] ?? 0);
+
         }
         unset($b);
 
