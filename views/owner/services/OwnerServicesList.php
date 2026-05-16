@@ -72,9 +72,10 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                             <div style="display:flex; justify-content:space-between; gap:10px;">
                                 <div>
                                     <div style="font-weight:900;">
-                                    
+                                        Tên dịch vụ: <?= htmlspecialchars((string)($s['service_name'] ?? '')) ?>
+                                    </div>
                                     <div style="color:#64748b; font-size:13px; margin-top:4px;">
-                                        Court: <?= htmlspecialchars((string)($s['court_name'] ?? '')) ?>
+                                        Sân: <?= htmlspecialchars((string)($s['court_name'] ?? '')) ?>
                                     </div>
                                 </div>
                                 <div style="text-align:right;">

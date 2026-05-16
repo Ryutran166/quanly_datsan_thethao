@@ -477,6 +477,118 @@
         background: var(--primary) !important;
         border-color: var(--primary-dark) !important;
     }
+
+    /* ═══════════════════════════════
+   SERVICES UI
+═══════════════════════════════ */
+
+.service-section {
+    margin-top: 22px;
+}
+
+.service-label {
+    margin-bottom: 14px;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.service-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    transition: all .22s ease;
+    overflow: hidden;
+}
+
+.service-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0,192,127,.35);
+    box-shadow: 0 8px 24px rgba(15,23,42,.06);
+}
+
+.service-card input {
+    display: none;
+}
+
+.service-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: all .2s;
+}
+
+.service-content {
+    flex: 1;
+}
+
+.service-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.service-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--mid);
+}
+
+.service-check {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #fff;
+    font-size: 10px;
+    transition: all .2s;
+}
+
+/* selected */
+
+.service-card:has(input:checked) {
+    border-color: var(--primary);
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f0fdf7 100%
+    );
+    box-shadow: 0 8px 24px rgba(0,192,127,.12);
+}
+
+.service-card:has(input:checked) .service-icon {
+    background: var(--primary);
+    color: #fff;
+}
+
+.service-card:has(input:checked) .service-check {
+    background: var(--primary);
+    border-color: var(--primary);
+}
 </style>
 
 <div class="booking-page">
@@ -574,6 +686,67 @@
                 </div>
 
             </div>
+          <!-- ═════════ SERVICES ═════════ -->
+<?php if (!empty($services ?? [])): ?>
+    <div class="service-section">
+
+        <div class="section-label service-label">
+            Dịch vụ đi kèm
+        </div>
+
+        <div class="service-grid">
+
+            <?php foreach ($services as $sv):
+                $sid = (int)($sv['id'] ?? 0);
+                $sPrice = (float)($sv['price'] ?? 0);
+
+                // icon đơn giản theo tên
+                $icon = 'fa-star';
+
+                $name = strtolower($sv['service_name']);
+
+                if (strpos($name, 'giày') !== false) {
+                    $icon = 'fa-shoe-prints';
+                } elseif (strpos($name, 'áo') !== false || strpos($name, 'bib') !== false) {
+                    $icon = 'fa-shirt';
+                } elseif (strpos($name, 'nước') !== false) {
+                    $icon = 'fa-bottle-water';
+                }
+            ?>
+
+                <label class="service-card">
+
+                    <input
+                        type="checkbox"
+                        class="svc-checkbox"
+                        value="<?= $sid ?>"
+                        data-service-price="<?= $sPrice ?>">
+
+                    <div class="service-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+
+                    <div class="service-icon">
+                        <i class="fas <?= $icon ?>"></i>
+                    </div>
+
+                    <div class="service-content">
+                        <div class="service-name">
+                            <?= htmlspecialchars((string)($sv['service_name'] ?? '')) ?>
+                        </div>
+
+                        <div class="service-price">
+                            + <?= number_format($sPrice, 0, '.', ',') ?> VNĐ
+                        </div>
+                    </div>
+
+                </label>
+
+            <?php endforeach; ?>
+
+        </div>
+    </div>
+<?php endif; ?>
 
             <!-- ══ RIGHT: Summary ══ -->
             <div class="bk-card">
@@ -626,31 +799,7 @@
                     </div>
                 </div>
 
-                <!-- Services (dịch vụ) -->
-                <?php if (!empty($services ?? [])): ?>
-                    <div style="margin-top:18px;">
-                        <div class="section-label" style="margin:0 0 10px;">Chọn dịch vụ</div>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <?php foreach ($services as $sv):
-                                $sid = (int)($sv['id'] ?? 0);
-                                $sPrice = (float)($sv['price'] ?? 0);
-                                $checked = false;
-                            ?>
-                                <label style="display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; background:var(--surface); cursor:pointer;">
-                                    <input type="checkbox" class="svc-checkbox" value="<?= $sid ?>" data-service-price="<?= $sPrice ?>" style="margin-top:3px; accent-color: var(--primary);">
-                                    <div style="flex:1;">
-                                        <div style="font-weight:900; color:var(--dark); font-size:13px;">
-                                            <?= htmlspecialchars((string)($sv['service_name'] ?? '')) ?>
-                                        </div>
-                                        <div style="font-weight:800; color:var(--mid); font-size:12px; margin-top:4px;">
-                                            + <?= number_format($sPrice, 0, '.', ',') ?> VNĐ
-                                        </div>
-                                    </div>
-                                </label>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
+                
 
                 <button type="submit" id="btn-confirm" class="btn-confirm" disabled>
                     <i class="fas fa-check"></i> Xác nhận đặt sân
