@@ -80,6 +80,8 @@
         <input type="hidden" name="court_id" value="<?= $courtId ?>">
         <input type="hidden" name="slot_id" value="<?= htmlspecialchars($slotIds) ?>">
         <input type="hidden" name="booking_date" value="<?= $date ?>">
+        <input type="hidden" name="selected_service_ids" value="<?= htmlspecialchars((string)($selectedServiceIds ?? '')) ?>">
+        <input type="hidden" name="payment_method" value="<?= htmlspecialchars((string)($paymentMethod ?? 'cash')) ?>">
 
         <div class="form-group">
             <label for="customer_name">Họ và tên</label>

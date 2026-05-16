@@ -394,7 +394,7 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                         
                         <div class="ab-meta-item">
                             <i class="fas fa-tag"></i>
-                            <?= number_format($b['price']) ?> VNĐ
+                            <?= number_format((float)($b['total_amount'] ?? ($b['price'] ?? 0)), 0, '.', ',') ?> VNĐ
                         </div>
                     </div>
 

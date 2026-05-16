@@ -1,35 +1,23 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Chỉnh sửa sân</title>
-
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-        }
-
-        .container {
+<style>
+        .court-edit-page {
             max-width: 500px;
             margin: 50px auto;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .card {
+        .court-edit-card {
             background: white;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
-        h1 {
+        .court-edit-card h1 {
             margin-bottom: 20px;
         }
 
-        input,
-        select {
+        .court-edit-card input,
+        .court-edit-card select {
             width: 100%;
             padding: 10px;
             margin-bottom: 12px;
@@ -37,7 +25,7 @@
             border: 1px solid #ddd;
         }
 
-        button {
+        .court-edit-card button {
             width: 100%;
             padding: 12px;
             background: #28a745;
@@ -47,26 +35,24 @@
             cursor: pointer;
         }
 
-        button:hover {
+        .court-edit-card button:hover {
             background: #218838;
         }
 
-        a {
+        .court-edit-card a {
             display: inline-block;
             margin-top: 15px;
             text-decoration: none;
             color: #007bff;
         }
-    </style>
-</head>
+</style>
 
-<body>
-
-    <div class="container">
-        <div class="card">
+    <div class="court-edit-page">
+        <div class="court-edit-card">
             <h1>Chỉnh sửa sân</h1>
 
             <form action="index.php?action=update" method="POST" enctype="multipart/form-data">
+
 
                 <input type="hidden" name="id" value="<?= $court['id'] ?>">
                 <input type="hidden" name="old_image" value="<?= $court['image'] ?>">
@@ -97,6 +83,17 @@
                 <label>Chọn ảnh mới</label>
                 <input type="file" name="image">
 
+                <!-- Quản lý dịch vụ cho sân này -->
+                <div style="margin-top:16px; padding:14px; border:1px solid #ddd; border-radius:12px; background:#fafafa;">
+                    <div style="font-weight:800; margin-bottom:10px;">Dịch vụ của sân</div>
+                    
+                    <a href="index.php?action=owner_services&court_id=<?= (int)($court['id'] ?? 0) ?>" style="display:inline-block; padding:10px 14px; background:#00c07f; color:#fff; border-radius:10px; text-decoration:none; font-weight:700;">
+                        Quản lý dịch vụ
+                    </a>
+
+                </div>
+
+
                 <button type="submit">Lưu thay đổi</button>
 
             </form>
@@ -104,7 +101,3 @@
             <a href="index.php?action=index">← Quay về danh sách</a>
         </div>
     </div>
-
-</body>
-
-</html>

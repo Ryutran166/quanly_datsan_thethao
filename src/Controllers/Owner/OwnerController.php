@@ -302,6 +302,7 @@ class OwnerController extends BaseController
                 b.status,
                 b.payment_method,
                 b.created_at,
+                b.total_amount,
                 b.admin_confirmed_at,
                 b.owner_confirmed_at,
                 c.name AS court_name,

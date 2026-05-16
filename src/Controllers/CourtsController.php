@@ -239,6 +239,7 @@ class CourtsController
         $id   = (int) ($_GET['id']   ?? 0);
         $date = $_GET['date'] ?? date('Y-m-d');
 
+
         // Validate ngày hợp lệ
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             $date = date('Y-m-d');
@@ -297,12 +298,18 @@ class CourtsController
 
         $bookedSlots = $this->bookingModel->getBookedSlots($id, $date);
 
-        extract([
-            'court'       => $court,
-            'date'        => $date,
-            'timeSlots'   => $timeSlots,
-            'bookedSlots' => $bookedSlots,
-        ]);
+        // Load active services for selecting when booking
+        $pdo = Database::getInstance()->getConnection();
+        $servicesModel = new \Nhom2\QuanlyDatsanThethao\Models\ServicesModel($pdo);
+        $services = $servicesModel->getActiveServicesByCourt($id);
+
+
+        // Pass variables to view (avoid extract)
+        $court = $court;
+        $date = $date;
+        $timeSlots = $timeSlots;
+        $bookedSlots = $bookedSlots;
+
 
         require_once PROJECT_ROOT . '/views/layout/header.php';
         require_once PROJECT_ROOT . '/views/Courts/CourtsBooking.php';
@@ -375,7 +382,13 @@ class CourtsController
 
 
 
-        $this->bookingModel->createBookingWithSlots(
+        $selectedServiceIdsRaw = $_POST['selected_service_ids'] ?? '';
+        $selectedServiceIdsRaw = trim((string)$selectedServiceIdsRaw);
+        $selectedServiceIdsRaw = str_replace([' ', ';'], [',', ','], $selectedServiceIdsRaw);
+        // ensure we don't pass empty string -> [0] -> không insert được booking_services
+        $serviceIds = array_values(array_filter(array_map('intval', explode(',', (string)$selectedServiceIdsRaw)), fn($x) => $x > 0));
+
+        $bookingId = $this->bookingModel->createBookingWithSlotsAndServices(
             [
                 'court_id'          => $courtId,
                 'booking_date'      => $date,
@@ -385,15 +398,18 @@ class CourtsController
                 'user_id'           => $userId,
                 'payment_method'   => $paymentMethod,
             ],
-            $slotIds
+            $slotIds,
+            $serviceIds
         );
+
 
 
 
         FlashMessage::set('booking_success', 'Đặt sân thành công!', 'success');
         // Truyền slot_id sang trang success để tính đúng danh sách + tổng tiền
         $slotIdsParam = implode(',', array_map('intval', $slotIds));
-        header("Location: index.php?action=booking_success&court_id=$courtId&date=$date&payment_method=" . urlencode($paymentMethodRedirect) . "&slot_id=" . urlencode($slotIdsParam));
+        $serviceIdsParam = implode(',', array_map('intval', $serviceIds));
+        header("Location: index.php?action=booking_success&booking_id=$bookingId&court_id=$courtId&date=$date&payment_method=" . urlencode($paymentMethodRedirect) . "&slot_id=" . urlencode($slotIdsParam) . "&service_id=" . urlencode($serviceIdsParam));
 
 
         exit();
@@ -404,6 +420,8 @@ class CourtsController
         $courtId = $_GET['court_id'] ?? 0;
         $slotIds  = $_GET['slot_id'] ?? 0;
         $date    = $_GET['date'] ?? '';
+        $selectedServiceIds = $_GET['selected_service_ids'] ?? '';
+        $paymentMethod = $_GET['payment_method'] ?? 'cash';
 
         require_once PROJECT_ROOT . '/views/layout/header.php';
         require_once PROJECT_ROOT . '/views/Bookings/GuestForm.php';
@@ -415,6 +433,9 @@ class CourtsController
         $courtId = $_POST['court_id'] ?? 0;
         $slotIds = trim($_POST['slot_id'] ?? '');
         $date    = $_POST['booking_date'] ?? '';
+        $selectedServiceIds = trim((string)($_POST['selected_service_ids'] ?? ''));
+        $paymentMethod = $_POST['payment_method'] ?? 'cash';
+        $paymentMethod = in_array($paymentMethod, ['cash', 'qr'], true) ? $paymentMethod : 'cash';
 
         if (!$courtId || $slotIds === '' || !$date) {
 
@@ -435,25 +456,32 @@ class CourtsController
         }
 
         // Guest
-        header("Location: index.php?action=guest_form"
-            . "&court_id=$courtId&slot_id=$slotIds&date=$date");
+        header("Location: index.php?" . http_build_query([
+            'action' => 'guest_form',
+            'court_id' => $courtId,
+            'slot_id' => $slotIds,
+            'date' => $date,
+            'selected_service_ids' => $selectedServiceIds,
+            'payment_method' => $paymentMethod,
+        ]));
         var_dump($_POST);
         exit();
     }
     public function booking_success()
     {
         $courtId = (int) ($_GET['court_id'] ?? 0);
+        $bookingId = (int)($_GET['booking_id'] ?? 0);
         $date    = $_GET['date'] ?? '';
         $paymentMethod = $_GET['payment_method'] ?? 'cash';
 
 
         $court = $this->courtsModel->getCourtById($courtId);
+        // slot_id được truyền từ trang booking để hiển thị danh sách khung giờ
         $slotIdsRaw = $_GET['slot_id'] ?? '';
-        // normalize: loại khoảng trắng, hỗ trợ dạng "3, 7" hoặc "3;7"
         $slotIdsRaw = trim((string)$slotIdsRaw);
         $slotIdsRaw = str_replace([' ', ';'], [',', ','], (string)$slotIdsRaw);
-
         $slotIds = array_filter(array_map('intval', explode(',', (string)$slotIdsRaw)));
+
 
 
 

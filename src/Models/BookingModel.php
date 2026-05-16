@@ -11,7 +11,7 @@ class BookingModel {
         $this->pdo = $pdo;
     }
 
-    public function createBookingWithSlotsAndServices(array $data, array $slotIds, array $serviceIds): void
+    public function createBookingWithSlotsAndServices(array $data, array $slotIds, array $serviceIds): int
     {
         $slotIds = array_values(array_filter(array_map('intval', $slotIds), fn($x) => $x > 0));
         if (empty($slotIds)) {
@@ -104,6 +104,8 @@ class BookingModel {
         ]);
 
         $this->pdo->commit();
+
+        return $bookingId;
     }
 
 

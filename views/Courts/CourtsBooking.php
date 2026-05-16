@@ -487,6 +487,16 @@
         <input type="hidden" name="booking_date" value="<?= htmlspecialchars($date) ?>">
         <input type="hidden" name="slot_id" id="selected_slot_ids" value="">
         <input type="hidden" name="payment_method" id="payment_method" value="cash">
+        <input type="hidden" name="selected_service_ids" id="selected_service_ids" value="">
+
+        <!-- Services data (for JS total/service ids) -->
+        <?php
+            // $services is provided by CourtsController::booking()
+            // Keep a map of id => price for total/service calculation.
+        ?>
+        <?php foreach (($services ?? []) as $sv): ?>
+            <input type="hidden" class="svc-price" data-sid="<?= (int)($sv['id'] ?? 0) ?>" value="<?= (float)($sv['price'] ?? 0) ?>">
+        <?php endforeach; ?>
 
 
         <div class="booking-layout">
@@ -603,8 +613,8 @@
 
                     <div id="qr-box" style="display:none; margin-top:12px; padding:14px; border:1.5px dashed rgba(0,192,127,.35); border-radius:12px; background:#f6fffb;">
                         <div style="font-weight:800; color:#065f46; margin-bottom:8px;">Quét mã để chuyển khoản</div>
-                        <div id="qrPreviewWrap" style="width:180px; height:180px; margin:0 auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700;">
-                            QR sẽ hiển thị tại đây
+                        <div id="qrPreviewWrap" style="width:180px; height:180px; margin:0 auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; font-weight:700; text-align:center; padding:14px; line-height:1.45;">
+                            Chọn khung giờ để tạo QR.
                         </div>
                         <div id="qrError" style="display:none; text-align:center; margin-top:10px; color:#be123c; font-size:12px; font-weight:800;">
                             Owner chưa cấu hình ảnh QR.
@@ -615,6 +625,32 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Services (dịch vụ) -->
+                <?php if (!empty($services ?? [])): ?>
+                    <div style="margin-top:18px;">
+                        <div class="section-label" style="margin:0 0 10px;">Chọn dịch vụ</div>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <?php foreach ($services as $sv):
+                                $sid = (int)($sv['id'] ?? 0);
+                                $sPrice = (float)($sv['price'] ?? 0);
+                                $checked = false;
+                            ?>
+                                <label style="display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; background:var(--surface); cursor:pointer;">
+                                    <input type="checkbox" class="svc-checkbox" value="<?= $sid ?>" data-service-price="<?= $sPrice ?>" style="margin-top:3px; accent-color: var(--primary);">
+                                    <div style="flex:1;">
+                                        <div style="font-weight:900; color:var(--dark); font-size:13px;">
+                                            <?= htmlspecialchars((string)($sv['service_name'] ?? '')) ?>
+                                        </div>
+                                        <div style="font-weight:800; color:var(--mid); font-size:12px; margin-top:4px;">
+                                            + <?= number_format($sPrice, 0, '.', ',') ?> VNĐ
+                                        </div>
+                                    </div>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <button type="submit" id="btn-confirm" class="btn-confirm" disabled>
                     <i class="fas fa-check"></i> Xác nhận đặt sân
@@ -677,7 +713,15 @@
         }
 
         // Tổng tiền
-        const total = PRICE * selectedSlots.length;
+        // Tổng tiền: sân + dịch vụ đã chọn
+        let servicesTotal = 0;
+        document.querySelectorAll('.svc-checkbox:checked').forEach(chk => {
+            const pv = parseFloat(chk.dataset.servicePrice || '0');
+            if (!isNaN(pv)) servicesTotal += pv;
+        });
+
+        const courtTotal = PRICE * selectedSlots.length;
+        const total = courtTotal + servicesTotal;
 
         document.getElementById('display-total').innerText =
             total.toLocaleString('vi-VN') + ' VNĐ';
@@ -685,15 +729,19 @@
         // Disable nút nếu chưa chọn slot
         document.getElementById('btn-confirm').disabled =
             selectedSlots.length === 0;
+
+        renderVietQrImageIfNeeded();
+
     }
     // Payment toggle
     const paymentMethodInput = document.getElementById('payment_method');
     const qrBox = document.getElementById('qr-box');
+    let qrRequestSeq = 0;
 
     // Khi user chọn slot (tổng tiền thay đổi) và đang chọn QR => cập nhật VietQR
     document.addEventListener('DOMContentLoaded', () => {
         // debug
-        // console.log('COURT_ID', COURT_ID, 'PRICE', PRICE);
+        // console.log('PRICE', PRICE);
     });
 
     function syncPaymentUI(method) {
@@ -705,16 +753,54 @@
         }
     }
 
+    // Services selection -> fill hidden input selected_service_ids
+    function syncSelectedServicesIds() {
+        const hidden = document.getElementById('selected_service_ids');
+        if (!hidden) return;
+
+        const checks = document.querySelectorAll('.svc-checkbox');
+        const ids = [];
+        checks.forEach(chk => {
+            if (chk.checked) {
+                ids.push(String(chk.value));
+            }
+        });
+
+        hidden.value = ids.join(',');
+
+        // Update total price shown (court price + services price)
+        const selectedServicePrices = [];
+        // svc-price hidden inputs keep id=>price
+        const priceNodes = document.querySelectorAll('.svc-price');
+        const priceById = {};
+        priceNodes.forEach(n => {
+            const sid = String(n.dataset.sid || '');
+            const pv = parseFloat(n.value || '0');
+            if (sid) priceById[sid] = pv;
+        });
+
+        const servicesTotal = ids.reduce((sum, sid) => sum + (priceById[sid] || 0), 0);
+        const courtTotal = PRICE * selectedSlots.length;
+        const grandTotal = courtTotal + servicesTotal;
+
+        const totalEl = document.getElementById('display-total');
+        if (totalEl) {
+            totalEl.innerText = grandTotal.toLocaleString('vi-VN') + ' VNĐ';
+        }
+    }
+
+    document.querySelectorAll('.svc-checkbox').forEach(chk => {
+        chk.addEventListener('change', () => {
+            syncSelectedServicesIds();
+            renderVietQrImageIfNeeded();
+        });
+    });
+
     document.querySelectorAll('input[name="payment_method_radio"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
             syncPaymentUI(e.target.value);
         });
     });
-
-    // --- VietQR động theo số tiền ---
-    const COURT_ID = <?= (int)$court['id'] ?>;
-
-    let __qr_last_payload = null;
 
     function showError(msg) {
         const err = document.getElementById('qrError');
@@ -729,69 +815,55 @@
         err.style.display = 'none';
     }
 
-    async function fetchVietQrImage(amountVnd) {
-        try {
-            const url = `index.php?action=get_vietqr_image&court_id=${encodeURIComponent(COURT_ID)}&amount=${encodeURIComponent(amountVnd)}`;
-            const res = await fetch(url, { method: 'GET' });
-            const data = await res.json();
-            if (!data || data.success === false) return null;
-            return {
-                qr_image: (data.qr_image ?? '').toString(),
-                payload: (data.payload ?? '').toString()
-            };
-        } catch (e) {
-            console.error(e);
-            return null;
-        }
+    function getSelectedServiceIds() {
+        return Array.from(document.querySelectorAll('.svc-checkbox:checked')).map(chk => chk.value);
     }
 
     async function renderVietQrImageIfNeeded() {
         if (paymentMethodInput.value !== 'qr') return;
-        if (selectedSlots.length === 0) return;
+        const previewWrap = document.getElementById('qrPreviewWrap');
+        if (!previewWrap) return;
+        hideError();
 
-        const total = PRICE * selectedSlots.length;
-        const amountVnd = String(total);
-
-        const data = await fetchVietQrImage(amountVnd);
-        if (!data || !data.qr_image) {
-            console.warn('VietQR empty', data);
-            console.warn('amountVnd', amountVnd);
-            console.warn('COURT_ID', COURT_ID);
-            console.warn('selectedSlots', selectedSlots);
-
-            hideError();
-            showError('Owner chưa cấu hình VietQR.');
-            const previewWrap = document.getElementById('qrPreviewWrap');
-            if (previewWrap) previewWrap.innerHTML = '';
+        if (selectedSlots.length === 0) {
+            previewWrap.textContent = 'Chọn khung giờ để tạo QR.';
             return;
         }
 
-        if (__qr_last_payload === data.payload) return;
-        __qr_last_payload = data.payload;
+        const currentSeq = ++qrRequestSeq;
+        previewWrap.textContent = 'Đang tạo QR...';
 
-        hideError();
+        try {
+            const params = new URLSearchParams({
+                action: 'get_vietqr_image',
+                court_id: '<?= (int)$court['id'] ?>',
+                slot_ids: selectedSlots.map(slot => slot.id).join(','),
+                service_ids: getSelectedServiceIds().join(','),
+                description: 'DAT SAN <?= (int)$court['id'] ?>'
+            });
 
-        const previewWrap = document.getElementById('qrPreviewWrap');
-        if (!previewWrap) return;
+            const res = await fetch('index.php?' + params.toString(), { method: 'GET' });
+            const data = await res.json();
 
-        previewWrap.innerHTML = '';
-        const img = document.createElement('img');
-        img.onerror = () => {
-            console.error('QR image failed load', data.qr_image);
-            showError('QR không load được ảnh. Vui lòng thử lại.');
-            // debug payload
-            console.log('vietqr payload', data.payload);
-            // giữ lại placeholder text
-        };
-        // Google Chart URL đôi khi bị chặn/không load được từ trang.
-        // Bọc thêm cache-buster để test.
-        img.src = data.qr_image + '&_=' + Date.now();
+            if (currentSeq !== qrRequestSeq) return;
 
-        img.alt = 'VietQR thanh toán';
-        img.style.width = '160px';
-        img.style.height = '160px';
-        img.style.objectFit = 'contain';
-        previewWrap.appendChild(img);
+            if (!data || data.success === false || !data.qr_image) {
+                throw new Error(data?.error || 'Không tạo được QR');
+            }
+
+            previewWrap.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = data.qr_image + '&_=' + Date.now();
+            img.alt = 'VietQR thanh toán';
+            img.style.width = '160px';
+            img.style.height = '160px';
+            img.style.objectFit = 'contain';
+            previewWrap.appendChild(img);
+        } catch (err) {
+            if (currentSeq !== qrRequestSeq) return;
+            previewWrap.textContent = '';
+            showError('Không tạo được VietQR. Vui lòng kiểm tra cấu hình ngân hàng.');
+        }
     }
 
     function attachPaymentListener() {

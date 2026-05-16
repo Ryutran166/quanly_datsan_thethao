@@ -46,7 +46,9 @@ $role_only_actions = [
     'admin_bookings','admin_cancel_booking','admin_confirm_booking',
 
     // Owner
-    'owner_bookings','owner_confirm_booking','owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
+    'owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
+    // 'owner_services','owner_service_create','owner_service_store','owner_service_edit','owner_service_update','owner_service_delete','owner_service_toggle_status',
+
 
     // Admin payment search
     'admin_payment_search','admin_payment_search_ajax',
@@ -286,8 +288,44 @@ switch ($action) {
         $ownerCourtsController->myCourts();
         break;
 
+    // OWNER SERVICES
+    case 'owner_services':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->index();
+        break;
+
+    case 'owner_service_create':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->create();
+        break;
+
+    case 'owner_service_store':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->store();
+        break;
+
+    case 'owner_service_edit':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->edit();
+        break;
+
+    case 'owner_service_update':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->update();
+        break;
+
+    case 'owner_service_delete':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->delete();
+        break;
+
+    case 'owner_service_toggle_status':
+        $ownerServicesController = new \Nhom2\QuanlyDatsanThethao\Controllers\Owner\OwnerServicesController();
+        $ownerServicesController->toggleStatus();
+        break;
 
     case 'get_owner_qr_content':
+
         $courtsQrController = new \Nhom2\QuanlyDatsanThethao\Controllers\CourtsQrController();
         $courtsQrController->getQrContent();
         break;

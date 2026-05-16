@@ -39,19 +39,12 @@ class ReportModel
 
 
     /**
-     * Biểu thức SQL tính doanh thu.
-     * - Ưu tiên sd.total_amount = court_price * price_modifier theo từng slot.
-     * - Nếu booking không có slot hoặc tổng_amount bị null/0 → fallback theo tổng phút.
+     * Biểu thức SQL tính doanh thu theo số tiền đã lưu trong booking.
+     * total_amount đã bao gồm tiền sân và dịch vụ tại thời điểm đặt.
      */
     private function revenueExpr(): string
     {
-        return "CASE
-                    WHEN sd.total_amount IS NOT NULL AND sd.total_amount > 0
-                        THEN sd.total_amount
-                    WHEN sd.total_mins IS NOT NULL AND sd.total_mins > 0
-                        THEN sd.total_mins / 60.0 * " . self::PRICE_PER_HOUR . "
-                    ELSE " . self::PRICE_PER_HOUR . "
-                END";
+        return "COALESCE(b.total_amount, 0)";
     }
 
     private function buildDateWhere(string $col, string $dateFrom, string $dateTo): array
@@ -307,19 +300,8 @@ class ReportModel
         $sql = "SELECT u.id, u.name, u.email, u.phone, u.created_at,
                        (SELECT COUNT(*) FROM bookings b2
                         WHERE b2.user_id = u.id AND b2.status = 'Confirmed') AS booking_count,
-                       (SELECT COALESCE(SUM(
-                           CASE WHEN sd2.total_mins IS NOT NULL AND sd2.total_mins > 0
-                               THEN sd2.total_mins / 60.0 * " . self::PRICE_PER_HOUR . "
-                               ELSE " . self::PRICE_PER_HOUR . "
-                           END
-                       ), 0)
+                       (SELECT COALESCE(SUM(b3.total_amount), 0)
                         FROM bookings b3
-                        LEFT JOIN (
-                            SELECT bd.booking_id,
-                                   SUM(TIMESTAMPDIFF(MINUTE, ts.start_time, ts.end_time)) AS total_mins
-                            FROM booking_details bd JOIN time_slots ts ON bd.slot_id = ts.id
-                            GROUP BY bd.booking_id
-                        ) sd2 ON sd2.booking_id = b3.id
                         WHERE b3.user_id = u.id AND b3.status = 'Confirmed') AS total_spent
                 FROM users u
                 WHERE " . implode(' AND ', $where) . "
@@ -716,22 +698,9 @@ class ReportModel
                         WHERE b2.user_id = u.id
                           AND b2.status = 'Confirmed'
                           AND c2.owner_id = :owner_id) AS booking_count,
-                       (SELECT COALESCE(SUM(
-                           CASE
-                               WHEN sd2.total_mins IS NOT NULL AND sd2.total_mins > 0
-                                   THEN sd2.total_mins / 60.0 * " . self::PRICE_PER_HOUR . "
-                               ELSE " . self::PRICE_PER_HOUR . "
-                           END
-                       ), 0)
+                       (SELECT COALESCE(SUM(b3.total_amount), 0)
                         FROM bookings b3
                         JOIN courts c3 ON b3.court_id = c3.id
-                        LEFT JOIN (
-                            SELECT bd.booking_id,
-                                   SUM(TIMESTAMPDIFF(MINUTE, ts.start_time, ts.end_time)) AS total_mins
-                            FROM booking_details bd
-                            JOIN time_slots ts ON bd.slot_id = ts.id
-                            GROUP BY bd.booking_id
-                        ) sd2 ON sd2.booking_id = b3.id
                         WHERE b3.user_id = u.id
                           AND b3.status = 'Confirmed'
                           AND c3.owner_id = :owner_id) AS total_spent

@@ -60,13 +60,62 @@
 
                 </div>
             <?php endif; ?>
+
             <?php
                 $pm = $_GET['payment_method'] ?? 'cash';
-                $total = (!empty($slots) && !empty($court)) ? ((int)$court['price'] * count($slots)) : 0;
+
+                $courtPrice = (float)($court['price'] ?? 0);
+                $slotsCount = (!empty($slots) ? count($slots) : 0);
+
+                // Fallback: court price * slot count (nếu không truy được booking trong DB)
+                $total = (!empty($court) ? (int)round($courtPrice * $slotsCount) : 0);
+
+                // Lấy total_amount (đã bao gồm: tiền sân + tổng giá dịch vụ)
+                // từ DB để đảm bảo luôn đúng khi user chọn dịch vụ.
+                $pdo = \Nhom2\QuanlyDatsanThethao\Database::getInstance()->getConnection();
+
+                $slotIdsForQuery = array_map('intval', array_column((array)$slots, 'id'));
+                if (!empty($slotIdsForQuery)) {
+                    $slotIn = implode(',', array_fill(0, count($slotIdsForQuery), '?'));
+
+                    if (empty($bookingId ?? 0)) {
+                        // Lấy booking_id phù hợp nhất (đủ các slot)
+                        $stmtBooking = $pdo->prepare(
+                            "SELECT bd.booking_id
+                             FROM booking_details bd
+                             JOIN bookings b ON b.id = bd.booking_id
+                             WHERE b.court_id = ? AND b.booking_date = ?
+                               AND bd.slot_id IN ($slotIn)
+                             GROUP BY bd.booking_id
+                             HAVING COUNT(DISTINCT bd.slot_id) = ?
+                             LIMIT 1"
+                        );
+
+                        $params = array_merge([(int)($court['id'] ?? 0), (string)$date], $slotIdsForQuery);
+                        $stmtBooking->execute(array_merge($params, [count($slotIdsForQuery)]));
+                        $bookingRow = $stmtBooking->fetch(PDO::FETCH_ASSOC);
+                        $bookingId = (int)($bookingRow['booking_id'] ?? 0);
+                    }
+
+                    if ($bookingId > 0) {
+                        $stmtTotals = $pdo->prepare(
+                            "SELECT COALESCE(total_amount, 0) AS total
+                             FROM bookings
+                             WHERE id = ?"
+                        );
+                        $stmtTotals->execute([$bookingId]);
+                        $dbTotal = (float)($stmtTotals->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
+
+                        if ($dbTotal > 0) {
+                            $total = (int)round($dbTotal);
+                        }
+                    }
+                }
             ?>
+
             <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:0.9rem;">
                 <span style="color:#888;">Tổng tiền</span>
-                <strong style="color:#059669;"><?= number_format($total) ?> VNĐ</strong>
+                <strong style="color:#059669;"><?= number_format((float)$total, 0, ',', '.') ?> VNĐ</strong>
             </div>
 
 
@@ -77,6 +126,16 @@
                 </strong>
             </div>
 
+            <!-- <?php if ($pm === 'qr' && !empty($bookingId ?? 0)): ?>
+                <div style="padding:14px 0 4px; border-top:1px solid #eee; text-align:center;">
+                    <div style="font-weight:700; color:#111; margin-bottom:10px;">Quét mã để thanh toán</div>
+                    <div id="savedVietQrWrap" style="width:190px; height:190px; margin:0 auto; border:1px solid #e5e7eb; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#888; font-size:13px;">
+                        Đang tạo QR...
+                    </div>
+                    <div id="savedVietQrError" style="display:none; color:#be123c; font-size:12px; font-weight:700; margin-top:10px;"></div>
+                </div>
+            <?php endif; ?>
+ -->
 
 
         </div>
@@ -95,3 +154,43 @@
 
     </div>
 </div>
+
+<!-- <?php if ($pm === 'qr' && !empty($bookingId ?? 0)): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const wrap = document.getElementById('savedVietQrWrap');
+            const error = document.getElementById('savedVietQrError');
+            if (!wrap) return;
+
+            try {
+                const url = 'index.php?' + new URLSearchParams({
+                    action: 'get_vietqr_image',
+                    booking_id: '<?= (int)$bookingId ?>',
+                    court_id: '<?= (int)($court['id'] ?? 0) ?>',
+                    description: 'BOOKING<?= (int)$bookingId ?>'
+                }).toString();
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!data || data.success === false || !data.qr_image) {
+                    throw new Error(data?.error || 'Không tạo được QR');
+                }
+
+                // wrap.innerHTML = '';
+                // const img = document.createElement('img');
+                // // img.src = data.qr_image + '&_=' + Date.now();
+                // // img.alt = 'VietQR thanh toán';
+                // img.style.width = '170px';
+                // img.style.height = '170px';
+                // img.style.objectFit = 'contain';
+                // wrap.appendChild(img);
+            } catch (err) {
+                wrap.textContent = '';
+                if (error) {
+                    error.textContent = 'Không tạo được VietQR. Vui lòng kiểm tra cấu hình ngân hàng.';
+                    error.style.display = 'block';
+                }
+            }
+        });
+    </script>
+<?php endif; ?> -->
