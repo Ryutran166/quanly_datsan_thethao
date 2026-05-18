@@ -417,25 +417,14 @@ require_once PROJECT_ROOT . '/views/layout/header.php';
                 </div>
 
                 <div class="ab-actions">
-                    <?php if ($statusKey === 'pending'): ?>
-
-                        <a href="?action=admin_confirm_booking&id=<?= (int)$b['id'] ?>"
-                           class="btn-ok"
-                           onclick="return confirm('Xác nhận booking này?')">
-                            <i class="fas fa-check" style="font-size:11px;"></i> Xác nhận
-                        </a>
-                        <a href="?action=admin_cancel_booking&id=<?= (int)$b['id'] ?>"
-                           class="btn-ko"
-                           onclick="return confirm('Hủy booking này?')">
-                            <i class="fas fa-xmark" style="font-size:11px;"></i> Hủy
-                        </a>
-                    <?php elseif ($statusKey === 'confirmed'): ?>
+                    <?php if ($statusKey === 'pending' || $statusKey === 'confirmed'): ?>
                         <a href="?action=admin_cancel_booking&id=<?= (int)$b['id'] ?>"
                            class="btn-ko"
                            onclick="return confirm('Hủy booking này?')">
                             <i class="fas fa-xmark" style="font-size:11px;"></i> Hủy
                         </a>
                     <?php endif; ?>
+
                 </div>
 
             </div>

@@ -233,25 +233,7 @@ class AdminController extends BaseController
         exit();
     }
 
-    // Xác nhận booking
-    public function confirmBooking()
-    {
-        $bookingId = (int)($_GET['id'] ?? 0);
 
-        if (!$bookingId) {
-            header("Location: index.php?action=admin_bookings&error=invalid_id");
-            exit();
-        }
-
-        $pdo = Database::getInstance()->getConnection();
-
-        $updateSql = "UPDATE bookings SET admin_confirmed_at = NOW(), status = 'Confirmed' WHERE id = ?";
-        $stmt = $pdo->prepare($updateSql);
-        $stmt->execute([$bookingId]);
-
-        header("Location: index.php?action=admin_bookings&success=confirmed");
-        exit();
-    }
 
     // Helper: Lấy tất cả bookings (mỗi booking.id = 1 card, kèm danh sách slots)
     private function getAllBookings(): array

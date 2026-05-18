@@ -43,7 +43,9 @@ if (in_array($action, $protected_actions) && !isset($_SESSION['user_id'])) {
 $role_only_actions = [
     // Admin
     'user','add_user','edit_user','update_user','delete_user','do_add_user',
-    'admin_bookings','admin_cancel_booking','admin_confirm_booking',
+    'admin_bookings','admin_cancel_booking',
+
+
 
     // Owner
     'owner_qr_settings','owner_qr_settings_update','get_owner_qr_content',
@@ -63,7 +65,8 @@ if (in_array($action, $role_only_actions)) {
     $role = strtolower(trim($_SESSION['user_role'] ?? ''));
 
     $allowed = match ($action) {
-        'admin_bookings', 'admin_cancel_booking', 'admin_confirm_booking' => ['admin'],
+        'admin_bookings', 'admin_cancel_booking' => ['admin'],
+
         'admin_report_revenue', 'admin_report_booking', 'admin_report_customer',
         'admin_report_revenue_export', 'admin_report_customer_export' => ['admin'],
         'owner_report_revenue', 'owner_report_booking', 'owner_report_revenue_export' => ['owner'],
@@ -186,10 +189,7 @@ switch ($action) {
         $adminController->cancelBooking();
         break;
 
-    case 'admin_confirm_booking':
-        $adminController = new AdminController();
-        $adminController->confirmBooking();
-        break;
+
 
     case 'admin_payment_search':
         $adminController = new AdminController();

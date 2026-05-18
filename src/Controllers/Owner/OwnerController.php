@@ -290,8 +290,8 @@ class OwnerController extends BaseController
     {
         $pdo = Database::getInstance()->getConnection();
 
-
         // Lấy booking (1 card = 1 booking_id). Không JOIN booking_details để tránh nhân bản.
+        // Lưu ý: KHÔNG loại trừ status Cancelled để tab "Đã hủy" hiển thị đúng.
         $stmt = $pdo->prepare(
             "SELECT
                 b.id,
@@ -309,16 +309,29 @@ class OwnerController extends BaseController
                 c.price
              FROM bookings b
              JOIN courts c ON b.court_id = c.id
-             WHERE c.owner_id = ? AND b.status != 'Cancelled'
+             WHERE c.owner_id = ?
              ORDER BY b.created_at DESC"
         );
 
         $stmt->execute([$ownerId]);
         $base = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        if (empty($base)) {
+            return [];
+        }
+
         // Lấy slots theo từng booking để hiển thị nhiều giờ trong 1 card
-        $bookingIds = array_map(fn($x) => (int)$x['id'], $base);
+        $bookingIds = array_values(array_filter(array_map(
+            fn($x) => (int)($x['id'] ?? 0),
+            $base
+        ), fn($id) => $id > 0));
+
         if (empty($bookingIds)) {
+            foreach ($base as &$b) {
+                $b['slots'] = [];
+                $b['total_amount'] = (float)($b['total_amount'] ?? 0);
+            }
+            unset($b);
             return $base;
         }
 
@@ -336,16 +349,15 @@ class OwnerController extends BaseController
         $slotsByBooking = [];
         foreach ($rows as $r) {
             $bid = (int)$r['booking_id'];
-            $slotsByBooking[$bid][] = $r;
+            if ($bid > 0) {
+                $slotsByBooking[$bid][] = $r;
+            }
         }
 
         foreach ($base as &$b) {
-            $b['slots'] = $slotsByBooking[(int)$b['id']] ?? [];
-
-            // Luôn lấy total_amount đúng theo bảng bookings.
-            // Nếu DB null/empty thì hiển thị 0 (không tự tính lại để tránh lệch với booking_services).
+            $bid = (int)$b['id'];
+            $b['slots'] = $slotsByBooking[$bid] ?? [];
             $b['total_amount'] = (float)($b['total_amount'] ?? 0);
-
         }
         unset($b);
 

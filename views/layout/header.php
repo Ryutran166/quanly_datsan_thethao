@@ -449,11 +449,11 @@ function isActive($action, $current_action)
                 Quản lý User
             </a>
         <?php endif; ?>
-        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+        <!-- <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
             <a href="index.php?action=admin_bookings" class="sub-link <?= isActive('admin_bookings', $current_action); ?>">
                 <i class="fas fa-calendar-alt"></i> Quản lý đặt sân
             </a>
-        <?php endif; ?>
+        <?php endif; ?> -->
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
             <div class="sub-divider"></div>
             <a href="index.php?action=admin_report_revenue" class="sub-link <?= isActive('admin_report_revenue', $current_action) ?>">
